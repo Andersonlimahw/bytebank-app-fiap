@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "ByteBank",
+    "slug": "bytebank-app",
+    "scheme": "bytebank",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./contents/figma/bytebank-figma/Logo.png",
+    "splash": {
+      "image": "./contents/figma/bytebank-figma/Logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A0A0A"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bytebank.app"
+    },
+    "android": {
+      "package": "com.bytebank.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./contents/figma/bytebank-figma/Favicon 64px.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "00000000-0000-0000-0000-000000000000"
+      }
+    }
+  }
+}
+

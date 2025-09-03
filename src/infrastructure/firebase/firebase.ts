@@ -1,0 +1,50 @@
+import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithCredential, onAuthStateChanged as fbOnAuthStateChanged, signOut as fbSignOut, signInAnonymously, Auth, OAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { AppConfig } from '../../config/appConfig';
+
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
+
+export function ensureFirebase() {
+  if (AppConfig.useMock) return null;
+  if (!app) {
+    const cfg = AppConfig.firebase as any;
+    if (!cfg?.apiKey || !cfg?.projectId || !cfg?.appId) {
+      throw new Error('Firebase config is missing. Set EXPO_PUBLIC_FIREBASE_* envs or enable mock mode.');
+    }
+    app = getApps().length ? getApps()[0] : initializeApp(cfg);
+    auth = getAuth(app);
+    db = getFirestore(app);
+  }
+  return { app, auth, db } as { app: FirebaseApp; auth: Auth; db: Firestore };
+}
+
+export const Providers = {
+  google: () => new GoogleAuthProvider(),
+  apple: () => new OAuthProvider('apple.com'),
+  facebook: () => new OAuthProvider('facebook.com')
+};
+
+export const FirebaseAPI = {
+  ensureFirebase,
+  get auth() {
+    ensureFirebase();
+    if (!auth) throw new Error('Auth not initialized');
+    return auth;
+  },
+  get db() {
+    ensureFirebase();
+    if (!db) throw new Error('Firestore not initialized');
+    return db;
+  },
+  fbOnAuthStateChanged,
+  fbSignOut,
+  signInAnonymously,
+  signInWithPopup,
+  signInWithCredential,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  Providers
+};
