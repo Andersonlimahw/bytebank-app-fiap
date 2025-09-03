@@ -3,11 +3,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useAuth } from '../providers/AuthProvider';
 import { LoginScreen } from '../screens/Auth/LoginScreen';
+import { OnboardingScreen } from '../screens/Onboarding/OnboardingScreen';
 import { HomeScreen } from '../screens/Home/HomeScreen';
 import { DashboardScreen } from '../screens/Dashboard/DashboardScreen';
 import { Text } from 'react-native';
 
 type AuthStackParamList = {
+  Onboarding: undefined;
   Login: undefined;
 };
 
@@ -37,7 +39,8 @@ export function RootNavigator() {
 
   if (!user) {
     return (
-      <AuthStack.Navigator>
+      <AuthStack.Navigator initialRouteName="Onboarding">
+        <AuthStack.Screen name="Onboarding" component={OnboardingScreen} options={{ headerShown: false }} />
         <AuthStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       </AuthStack.Navigator>
     );
