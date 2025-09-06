@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { Button } from '../../components/Button';
+import { Input } from '../../components/Input';
 import { useAuthViewModel } from '../../viewmodels/useAuthViewModel';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
+import { theme } from '../../theme/theme';
 
 export const RegisterScreen: React.FC<any> = ({ navigation }) => {
   const { signUp } = useAuthViewModel();
@@ -44,30 +46,29 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
       <Text style={styles.title}>Crie sua conta</Text>
       <Text style={styles.subtitle}>É rápido e seguro</Text>
 
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Email"
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
+        accessibilityLabel="Email"
       />
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Senha"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
+        accessibilityLabel="Senha"
       />
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Confirmar senha"
         secureTextEntry
         value={confirmPassword}
         onChangeText={setConfirmPassword}
+        accessibilityLabel="Confirmar senha"
+        errorText={error}
       />
-
-      {!!error && <Text style={styles.error}>{error}</Text>}
 
       <Button title={loading ? 'Criando...' : 'Criar conta'} onPress={handleRegister} />
 
@@ -79,11 +80,9 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, alignItems: 'center', justifyContent: 'center' },
-  illustration: { width: 160, height: 160, resizeMode: 'contain', marginBottom: 16 },
-  title: { fontSize: 24, fontWeight: '700' },
-  subtitle: { color: '#6b7280', marginTop: 4, marginBottom: 16 },
-  input: { width: '100%', borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, marginBottom: 8 },
-  error: { color: '#dc2626', alignSelf: 'flex-start', marginBottom: 8 },
-  link: { marginTop: 16, color: '#2563eb' },
+  container: { flex: 1, padding: theme.spacing.xl, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.background },
+  illustration: { width: 160, height: 160, resizeMode: 'contain', marginBottom: theme.spacing.md },
+  title: { fontSize: theme.text.h1, fontWeight: '700', color: theme.colors.text },
+  subtitle: { color: theme.colors.muted, marginTop: 4, marginBottom: theme.spacing.md },
+  link: { marginTop: theme.spacing.md, color: theme.colors.primary },
 });

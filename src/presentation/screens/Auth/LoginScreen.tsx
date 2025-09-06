@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Platform, Animated } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Platform, Animated } from 'react-native';
 import { Button } from '../../components/Button';
+import { Input } from '../../components/Input';
 import { useAuthViewModel } from '../../viewmodels/useAuthViewModel';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
+import { theme } from '../../theme/theme';
 
 export const LoginScreen: React.FC<any> = ({ navigation }) => {
   const { signIn } = useAuthViewModel();
@@ -17,7 +19,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
       <Text style={styles.title}>Welcome to ByteBank</Text>
       <Text style={styles.subtitle}>Sign in to continue</Text>
 
-      <View style={{ height: 12 }} />
+      <View style={{ height: theme.spacing.md }} />
       <Button
         title="Continue with Google"
         onPress={async () => {
@@ -29,7 +31,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
           }
         }}
       />
-      <View style={{ height: 10 }} />
+      <View style={{ height: theme.spacing.sm }} />
       {Platform.OS === 'ios' && (
         <Button
           title="Continue with Apple"
@@ -43,7 +45,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
           }}
         />
       )}
-      <View style={{ height: 10 }} />
+      <View style={{ height: theme.spacing.sm }} />
       <Button
         title="Continue Anonymously"
         onPress={async () => {
@@ -56,24 +58,24 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
         }}
       />
 
-      <View style={{ height: 16 }} />
+      <View style={{ height: theme.spacing.lg }} />
       <Text style={styles.altTitle}>Or use email</Text>
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Email"
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
+        accessibilityLabel="Email"
       />
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Password"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
+        accessibilityLabel="Password"
+        errorText={error}
       />
-      {!!error && <Text style={styles.error}>{error}</Text>}
       <Button
         title="Sign in with Email"
         onPress={async () => {
@@ -101,13 +103,11 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, alignItems: 'center', justifyContent: 'center' },
-  logo: { width: 96, height: 96, resizeMode: 'contain', marginBottom: 16 },
-  title: { fontSize: 24, fontWeight: '700' },
-  subtitle: { color: '#6b7280', marginTop: 4, marginBottom: 16 },
-  altTitle: { alignSelf: 'flex-start', marginBottom: 8, color: '#6b7280' },
-  input: { width: '100%', borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, marginBottom: 8 },
-  error: { color: '#dc2626', alignSelf: 'flex-start', marginBottom: 8 },
-  hint: { marginTop: 16, color: '#6b7280', textAlign: 'center' },
-  link: { marginTop: 12, color: '#2563eb' }
+  container: { flex: 1, padding: theme.spacing.xl, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.background },
+  logo: { width: 96, height: 96, resizeMode: 'contain', marginBottom: theme.spacing.md },
+  title: { fontSize: theme.text.h1, fontWeight: '700', color: theme.colors.text },
+  subtitle: { color: theme.colors.muted, marginTop: 4, marginBottom: theme.spacing.md },
+  altTitle: { alignSelf: 'flex-start', marginBottom: theme.spacing.sm, color: theme.colors.muted },
+  hint: { marginTop: theme.spacing.md, color: theme.colors.muted, textAlign: 'center' },
+  link: { marginTop: theme.spacing.sm, color: theme.colors.primary }
 });
