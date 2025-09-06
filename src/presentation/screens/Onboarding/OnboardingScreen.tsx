@@ -25,7 +25,7 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
         key: 'insights',
         title: 'Clear insights at a glance',
         subtitle: 'Understand your spending with beautiful, easy charts.',
-        image: require('../../../../contents/figma/icons/Gráfico pizza.png'),
+        image: require('../../../../public/assets/images/icons/Gráfico pizza.png'),
       },
       {
         key: 'login',

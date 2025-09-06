@@ -22,7 +22,7 @@ export const DashboardScreen: React.FC = () => {
           <Text style={styles.hello}>Olá,</Text>
           <Text style={styles.username}>{user?.name || 'Usuário'}</Text>
         </View>
-        <Image source={require('../../../../contents/figma/icons/Avatar.png')} style={styles.avatar} />
+        <Image source={require('../../../../public/assets/images/icons/Avatar.png')} style={styles.avatar} />
       </View>
 
       <Image source={require('../../../../contents/figma/dashboard/Mobile _ Inicial.png')} style={styles.banner} />
@@ -44,12 +44,12 @@ export const DashboardScreen: React.FC = () => {
 
       <Text style={styles.sectionTitle}>Atalhos</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.actionsRow}>
-        <QuickAction label="Pix" icon={require('../../../../contents/figma/icons/Ícone Pix.png')} />
-        <QuickAction label="Cartões" icon={require('../../../../contents/figma/icons/Ícone cartões.png')} style={styles.actionGap} />
-        <QuickAction label="Empréstimo" icon={require('../../../../contents/figma/icons/Ícone empréstimo.png')} style={styles.actionGap} />
-        <QuickAction label="Saque" icon={require('../../../../contents/figma/icons/Ícone Saque.png')} style={styles.actionGap} />
-        <QuickAction label="Seguros" icon={require('../../../../contents/figma/icons/Ícone seguros.png')} style={styles.actionGap} />
-        <QuickAction label="Doações" icon={require('../../../../contents/figma/icons/Ícone doações.png')} style={styles.actionGap} />
+        <QuickAction label="Pix" icon={require('../../../../public/assets/images/icons/Ícone Pix.png')} />
+        <QuickAction label="Cartões" icon={require('../../../../public/assets/images/icons/Ícone cartões.png')} style={styles.actionGap} />
+        <QuickAction label="Empréstimo" icon={require('../../../../public/assets/images/icons/Ícone empréstimo.png')} style={styles.actionGap} />
+        <QuickAction label="Saque" icon={require('../../../../public/assets/images/icons/Ícone Saque.png')} style={styles.actionGap} />
+        <QuickAction label="Seguros" icon={require('../../../../public/assets/images/icons/Ícone seguros.png')} style={styles.actionGap} />
+        <QuickAction label="Doações" icon={require('../../../../public/assets/images/icons/Ícone doações.png')} style={styles.actionGap} />
       </ScrollView>
 
       <Text style={styles.sectionTitle}>Meus cartões</Text>
@@ -59,7 +59,7 @@ export const DashboardScreen: React.FC = () => {
       </ScrollView>
 
       <Text style={styles.sectionTitle}>Resumo de gastos</Text>
-      <Animated.Image source={require('../../../../contents/figma/icons/Gráfico pizza.png')} style={[styles.chart, chartStyle as any]} />
+      <Animated.Image source={require('../../../../public/assets/images/icons/Gráfico pizza.png')} style={[styles.chart, chartStyle as any]} />
       <Text style={styles.caption}>Distribuição por categoria (exemplo)</Text>
 
       <Text style={styles.sectionTitle}>Últimas transações</Text>
