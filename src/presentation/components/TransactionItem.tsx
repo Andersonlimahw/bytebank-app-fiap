@@ -2,10 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import type { Transaction } from '../../domain/entities/Transaction';
 import { formatCurrency, formatDateShort } from '../../utils/format';
+import { theme } from '../theme/theme';
 
 export const TransactionItem: React.FC<{ tx: Transaction }> = ({ tx }) => {
   const sign = tx.type === 'credit' ? '+' : '-';
-  const color = tx.type === 'credit' ? '#16a34a' : '#dc2626';
+  const color = tx.type === 'credit' ? theme.colors.success : theme.colors.danger;
   return (
     <View style={styles.row}>
       <View style={{ flex: 1 }}>
@@ -20,9 +21,8 @@ export const TransactionItem: React.FC<{ tx: Transaction }> = ({ tx }) => {
 };
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#eee' },
+  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: theme.colors.border },
   title: { fontWeight: '600', fontSize: 16 },
-  date: { color: '#6b7280', marginTop: 2 },
+  date: { color: theme.colors.muted, marginTop: 2 },
   amount: { fontWeight: '700' }
 });
-

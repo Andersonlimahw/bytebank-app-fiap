@@ -4,12 +4,13 @@ import { formatCurrency } from '../../../utils/format';
 import { QuickAction } from '../../components/QuickAction';
 import { TransactionItem } from '../../components/TransactionItem';
 import { useDashboardViewModel } from '../../viewmodels/useDashboardViewModel';
+import { theme } from '../../theme/theme';
 
 export const DashboardScreen: React.FC = () => {
   const { user, balance, transactions, loading, refresh, addDemoCredit, addDemoDebit } = useDashboardViewModel();
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 24 }}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: theme.spacing.xl }}>
       <View style={styles.header}>
         <View>
           <Text style={styles.hello}>Olá,</Text>
@@ -24,11 +25,11 @@ export const DashboardScreen: React.FC = () => {
         <Text style={styles.cardLabel}>Saldo total</Text>
         <Text style={styles.cardValue}>{formatCurrency(balance)}</Text>
         <View style={styles.row}>
-          <TouchableOpacity onPress={addDemoCredit} style={[styles.smallBtn, { backgroundColor: '#16a34a' }]}
+          <TouchableOpacity onPress={addDemoCredit} style={[styles.smallBtn, { backgroundColor: theme.colors.success }]}
             accessibilityRole="button" accessibilityLabel="Adicionar crédito demo">
             <Text style={styles.smallBtnText}>+ Crédito demo</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={addDemoDebit} style={[styles.smallBtn, { backgroundColor: '#dc2626', marginLeft: 8 }]}
+          <TouchableOpacity onPress={addDemoDebit} style={[styles.smallBtn, { backgroundColor: theme.colors.danger, marginLeft: theme.spacing.sm }]}
             accessibilityRole="button" accessibilityLabel="Adicionar débito demo">
             <Text style={styles.smallBtnText}>- Débito demo</Text>
           </TouchableOpacity>
@@ -69,22 +70,22 @@ export const DashboardScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  hello: { color: '#6b7280' },
-  username: { fontSize: 20, fontWeight: '700' },
+  container: { flex: 1, padding: theme.spacing.lg, backgroundColor: theme.colors.background },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.spacing.lg },
+  hello: { color: theme.colors.muted },
+  username: { fontSize: theme.text.h2, fontWeight: '700', color: theme.colors.text },
   avatar: { width: 40, height: 40, borderRadius: 20 },
-  banner: { width: '100%', height: 120, resizeMode: 'cover', borderRadius: 12, marginBottom: 16 },
-  card: { backgroundColor: '#111827', padding: 16, borderRadius: 12, marginBottom: 16 },
+  banner: { width: '100%', height: 120, resizeMode: 'cover', borderRadius: theme.radius.md, marginBottom: theme.spacing.lg },
+  card: { backgroundColor: theme.colors.card, padding: theme.spacing.lg, borderRadius: theme.radius.md, marginBottom: theme.spacing.lg },
   cardLabel: { color: '#9CA3AF' },
-  cardValue: { color: '#fff', fontSize: 28, fontWeight: '800', marginTop: 6, marginBottom: 12 },
+  cardValue: { color: theme.colors.cardText, fontSize: 28, fontWeight: '800', marginTop: 6, marginBottom: theme.spacing.md },
   row: { flexDirection: 'row', alignItems: 'center' },
-  smallBtn: { borderRadius: 8, paddingVertical: 8, paddingHorizontal: 12 },
-  smallBtnText: { color: '#fff', fontWeight: '700' },
-  sectionTitle: { fontWeight: '700', fontSize: 16, marginBottom: 8, marginTop: 4 },
-  actionsRow: { paddingVertical: 4 },
-  actionGap: { marginLeft: 12 },
+  smallBtn: { borderRadius: theme.radius.sm, paddingVertical: theme.spacing.sm, paddingHorizontal: theme.spacing.md },
+  smallBtnText: { color: theme.colors.cardText, fontWeight: '700' },
+  sectionTitle: { fontWeight: '700', fontSize: 16, marginBottom: theme.spacing.sm, marginTop: theme.spacing.xs, color: theme.colors.text },
+  actionsRow: { paddingVertical: theme.spacing.sm },
+  actionGap: { marginLeft: theme.spacing.md },
   cardImage: { width: 260, height: 160, resizeMode: 'contain' },
   chart: { width: '100%', height: 200, resizeMode: 'contain' },
-  caption: { color: '#6b7280', textAlign: 'center', marginTop: 8 }
+  caption: { color: theme.colors.muted, textAlign: 'center', marginTop: theme.spacing.sm }
 });

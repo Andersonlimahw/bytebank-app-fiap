@@ -1,7 +1,7 @@
 import type { TransactionRepository } from '../../domain/repositories/TransactionRepository';
 import type { Transaction } from '../../domain/entities/Transaction';
 import { FirebaseAPI } from '../../infrastructure/firebase/firebase';
-import { collection, query, where, orderBy, limit as qlimit, addDoc, getDocs, serverTimestamp, doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit as qlimit, addDoc, getDocs, serverTimestamp } from 'firebase/firestore';
 
 export class FirebaseTransactionRepository implements TransactionRepository {
   async listRecent(userId: string, limit = 10): Promise<Transaction[]> {
@@ -13,15 +13,22 @@ export class FirebaseTransactionRepository implements TransactionRepository {
       qlimit(limit)
     );
     const snap = await getDocs(q);
-    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+    return snap.docs.map((d) => {
+      const data = d.data() as any;
+      const createdAt = data.createdAt?.toMillis ? data.createdAt.toMillis() : Number(data.createdAt) || Date.now();
+      return { id: d.id, ...data, createdAt } as Transaction;
+    });
   }
 
   async add(tx: Omit<Transaction, 'id' | 'createdAt'>): Promise<string> {
     const db = FirebaseAPI.db;
-    const res = await addDoc(collection(db, 'transactions'), {
-      ...tx,
-      createdAt: Date.now()
-    });
+    const res = await addDoc(
+      collection(db, 'transactions'),
+      {
+        ...tx,
+        createdAt: serverTimestamp(),
+      }
+    );
     return res.id;
   }
 
@@ -31,4 +38,3 @@ export class FirebaseTransactionRepository implements TransactionRepository {
     return txs.reduce((acc, t) => acc + (t.type === 'credit' ? t.amount : -t.amount), 0);
   }
 }
-

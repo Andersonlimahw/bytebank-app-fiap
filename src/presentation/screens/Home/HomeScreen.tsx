@@ -5,13 +5,14 @@ import { TransactionItem } from '../../components/TransactionItem';
 import { useAuthViewModel } from '../../viewmodels/useAuthViewModel';
 import { formatCurrency } from '../../../utils/format';
 import { QuickAction } from '../../components/QuickAction';
+import { theme } from '../../theme/theme';
 
 export const HomeScreen: React.FC = () => {
   const { loading, transactions, balance, refresh } = useHomeViewModel();
   const { user, signOut } = useAuthViewModel();
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 24 }}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: theme.spacing.xl }}>
       <View style={styles.header}>
         <View>
           <Text style={styles.hello}>Olá,</Text>
@@ -52,17 +53,17 @@ export const HomeScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  hello: { color: '#6b7280' },
-  username: { fontSize: 20, fontWeight: '700' },
+  container: { flex: 1, padding: theme.spacing.lg, backgroundColor: theme.colors.background },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.spacing.lg },
+  hello: { color: theme.colors.muted },
+  username: { fontSize: theme.text.h2, fontWeight: '700', color: theme.colors.text },
   avatar: { width: 40, height: 40, borderRadius: 20 },
-  banner: { width: '100%', height: 120, resizeMode: 'cover', borderRadius: 12, marginBottom: 16 },
-  card: { backgroundColor: '#111827', padding: 16, borderRadius: 12, marginBottom: 16 },
+  banner: { width: '100%', height: 120, resizeMode: 'cover', borderRadius: theme.radius.md, marginBottom: theme.spacing.lg },
+  card: { backgroundColor: theme.colors.card, padding: theme.spacing.lg, borderRadius: theme.radius.md, marginBottom: theme.spacing.lg },
   cardLabel: { color: '#9CA3AF' },
-  cardValue: { color: '#fff', fontSize: 28, fontWeight: '800', marginTop: 6 },
-  signOut: { color: '#A78BFA', marginTop: 8 },
-  sectionTitle: { fontWeight: '700', fontSize: 16, marginBottom: 8 },
-  actionsRow: { paddingVertical: 4 },
-  actionGap: { marginLeft: 12 },
+  cardValue: { color: theme.colors.cardText, fontSize: 28, fontWeight: '800', marginTop: 6 },
+  signOut: { color: theme.colors.accent, marginTop: theme.spacing.sm },
+  sectionTitle: { fontWeight: '700', fontSize: 16, marginBottom: theme.spacing.sm, color: theme.colors.text },
+  actionsRow: { paddingVertical: theme.spacing.sm },
+  actionGap: { marginLeft: theme.spacing.md },
 });

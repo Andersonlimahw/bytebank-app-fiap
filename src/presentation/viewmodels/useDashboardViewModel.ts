@@ -4,6 +4,8 @@ import { TOKENS } from '../../core/di/container';
 import type { Transaction, TransactionType } from '../../domain/entities/Transaction';
 import type { TransactionRepository } from '../../domain/repositories/TransactionRepository';
 import { useAuthViewModel } from './useAuthViewModel';
+import { GetRecentTransactions } from '../../application/usecases/GetRecentTransactions';
+import { GetBalance } from '../../application/usecases/GetBalance';
 
 export function useDashboardViewModel() {
   const di = useDI();
@@ -12,18 +14,20 @@ export function useDashboardViewModel() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [balance, setBalance] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const getRecentUC = useMemo(() => new GetRecentTransactions(txRepo), [txRepo]);
+  const getBalanceUC = useMemo(() => new GetBalance(txRepo), [txRepo]);
 
   const refresh = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     const [txs, bal] = await Promise.all([
-      txRepo.listRecent(user.id, 5),
-      txRepo.getBalance(user.id)
+      getRecentUC.execute(user.id, 5),
+      getBalanceUC.execute(user.id),
     ]);
     setTransactions(txs);
     setBalance(bal);
     setLoading(false);
-  }, [txRepo, user]);
+  }, [getRecentUC, getBalanceUC, user]);
 
   const addDemoTx = useCallback(
     async (type: TransactionType) => {

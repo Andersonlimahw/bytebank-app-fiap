@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Image, Text, StyleSheet, ViewStyle } from 'react-native';
+import { theme } from '../theme/theme';
 
 type Props = {
   label: string;
@@ -21,13 +22,12 @@ const styles = StyleSheet.create({
   container: {
     width: 88,
     height: 88,
-    borderRadius: 12,
-    backgroundColor: '#F3F4F6',
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 8,
+    padding: theme.spacing.sm,
   },
   icon: { width: 28, height: 28, resizeMode: 'contain', marginBottom: 6 },
-  label: { fontSize: 12, fontWeight: '600', textAlign: 'center', color: '#111827' },
+  label: { fontSize: 12, fontWeight: '600', textAlign: 'center', color: theme.colors.text },
 });
-

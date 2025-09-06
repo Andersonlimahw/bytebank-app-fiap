@@ -6,6 +6,7 @@ import { MockTransactionRepository } from '../../data/mock/MockTransactionReposi
 import { FirebaseAuthRepository } from '../../data/firebase/FirebaseAuthRepository';
 import { FirebaseTransactionRepository } from '../../data/firebase/FirebaseTransactionRepository';
 import { AuthProvider } from './AuthProvider';
+import { FirebaseAPI } from '../../infrastructure/firebase/firebase';
 
 const DIContext = createContext<DI | null>(null);
 export function useDI(): DI {
@@ -22,6 +23,8 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       c.set(TOKENS.TransactionRepository, new MockTransactionRepository());
     } else {
       // Register Firebase-backed repositories for real implementation
+      // Initialize Firebase early to fail fast on missing config
+      FirebaseAPI.ensureFirebase();
       c.set(TOKENS.AuthRepository, new FirebaseAuthRepository());
       c.set(TOKENS.TransactionRepository, new FirebaseTransactionRepository());
     }

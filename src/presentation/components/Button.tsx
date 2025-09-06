@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, GestureResponderEvent, ViewStyle, TextStyle } from 'react-native';
+import { theme } from '../theme/theme';
 
 type Props = {
   title: string;
@@ -16,7 +17,6 @@ export const Button: React.FC<Props> = ({ title, onPress, style, textStyle }) =>
 );
 
 const styles = StyleSheet.create({
-  btn: { backgroundColor: '#4F46E5', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 10 },
-  text: { color: '#fff', fontWeight: '600', textAlign: 'center' }
+  btn: { backgroundColor: theme.colors.primary, paddingVertical: 12, paddingHorizontal: 16, borderRadius: theme.radius.md },
+  text: { color: theme.colors.cardText, fontWeight: '600', textAlign: 'center' }
 });
-

@@ -6,6 +6,7 @@ Overview
 - Auth repository with anonymous login (mock by default)
 - Mock mode enabled by default so the app runs without Firebase
 - Features: Login, Home (balance + transactions), Dashboard (summary)
+ - Shared theme tokens for consistent colors, spacing, and typography
 
 Project Structure
 - app.json: Expo app configuration
@@ -18,6 +19,7 @@ Project Structure
 - src/data/mock: Mock repository implementations (default)
 - src/infrastructure/firebase: Firebase initialization + providers [TBD]
 - src/presentation: Screens, navigation, providers, components
+  - presentation/theme: App theme (colors, spacing, radius)
 - src/utils: Format helpers
 
 Getting Started
@@ -51,18 +53,32 @@ Switching to Firebase
    - EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
    You can copy .env.example to .env and edit.
 
-3) Install required packages if not present
+3) Google/Apple providers (native)
+   - Google Sign-In uses expo-auth-session. Set one of:
+     - EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID (works on Expo Go), or
+     - Platform-specific: EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID / ANDROID / WEB.
+   - Apple Sign-In works only on iOS. Ensure your Apple capabilities are configured for your Bundle ID.
+
+4) Install required packages if not present
   - npx expo install expo-auth-session expo-apple-authentication expo-web-browser expo-constants
   - npm i firebase @react-navigation/native @react-navigation/native-stack @react-navigation/bottom-tabs react-native-screens react-native-safe-area-context
   - npx expo install react-native-screens react-native-safe-area-context
 
-4) Providers (native)
+5) Providers (native)
    - Google/Apple/Facebook on native require Expo AuthSession flows and native config.
    - This starter includes a Firebase popup flow for Web; on native, wire sign-in via expo-auth-session and pass credentials to Firebase (see comments in FirebaseAuthRepository and Expo docs).
 
-5) Run with Firebase
+6) Run with Firebase
    - npm run start
    - Ensure .env is loaded (Expo reads EXPO_PUBLIC_* automatically)
+
+Data Standardization Notes
+- Firestore transactions use `createdAt` stored as `serverTimestamp()`; readers map Firestore `Timestamp` to epoch milliseconds to match domain model.
+- ViewModels now use application usecases (`GetRecentTransactions`, `GetBalance`, `SignInWithProvider`, `SignOut`) to keep layers consistent with Clean Architecture.
+ - UI uses centralized theme tokens in `src/presentation/theme/theme.ts` to standardize colors (primary, success, danger, text, muted, border), spacing, and radius.
+
+Firebase Initialization (Real Mode)
+- When `EXPO_PUBLIC_USE_MOCK=false`, Firebase is initialized early inside `AppProviders` via `FirebaseAPI.ensureFirebase()`. This fails fast if any required Firebase env vars are missing, helping catch config issues on startup.
 
 Notes
 - Assets are referenced from the repo’s contents/figma folder to reflect designs without duplicating files.
