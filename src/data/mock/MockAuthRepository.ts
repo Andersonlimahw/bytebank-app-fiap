@@ -40,4 +40,10 @@ export class MockAuthRepository implements AuthRepository {
   async signOut(): Promise<void> {
     this.user = null;
   }
+
+  async signUp(options: { email: string; password: string }): Promise<User> {
+    const name = options.email.split('@')[0] || 'User';
+    this.user = { id: 'new-' + Date.now().toString(36), name, email: options.email };
+    return this.user;
+  }
 }

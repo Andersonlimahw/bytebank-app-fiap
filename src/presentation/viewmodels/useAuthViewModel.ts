@@ -24,6 +24,7 @@ export function useAuthViewModel() {
     [authRepo]
   );
   const signOut = useCallback(() => authRepo.signOut(), [authRepo]);
+  const signUp = useCallback((options: { email: string; password: string }) => authRepo.signUp(options), [authRepo]);
 
-  return { initializing, user, signIn, signOut };
+  return { initializing, user, signIn, signOut, signUp };
 }

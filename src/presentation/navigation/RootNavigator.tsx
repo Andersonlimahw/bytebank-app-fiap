@@ -11,11 +11,14 @@ import { Text } from 'react-native';
 type AuthStackParamList = {
   Onboarding: undefined;
   Login: undefined;
+  Register: undefined;
 };
 
 type AppTabParamList = {
   Home: undefined;
   Dashboard: undefined;
+  Onboarding: undefined;
+  Login: undefined;
 };
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
@@ -26,6 +29,8 @@ function AppTabs() {
     <Tab.Navigator screenOptions={{ headerShown: true }}>
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: 'Home', headerTitle: 'Home' }} />
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ tabBarLabel: 'Dashboard', headerTitle: 'Dashboard' }} />
+      <Tab.Screen name="Onboarding" component={OnboardingScreen} options={{ tabBarLabel: 'Onboarding', headerTitle: 'Onboarding' }} />
+      <Tab.Screen name="Login" component={DashboardScreen} options={{ tabBarLabel: 'Login', headerTitle: 'Login' }} />
     </Tab.Navigator>
   );
 }
@@ -42,6 +47,7 @@ export function RootNavigator() {
       <AuthStack.Navigator initialRouteName="Onboarding">
         <AuthStack.Screen name="Onboarding" component={OnboardingScreen} options={{ headerShown: false }} />
         <AuthStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <AuthStack.Screen name="Register" component={require('../screens/Auth/RegisterScreen').RegisterScreen} options={{ headerShown: false }} />
       </AuthStack.Navigator>
     );
   }

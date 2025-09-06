@@ -2,6 +2,8 @@ import type { AuthRepository } from '../../domain/repositories/AuthRepository';
 import type { User } from '../../domain/entities/User';
 import type { AuthProvider } from '../../domain/entities/AuthProvider';
 import { FirebaseAPI } from '../../infrastructure/firebase/firebase';
+import { Platform } from 'react-native';
+import { signInWithGoogleNative, signInWithAppleNative } from '../../infrastructure/auth/expoAuth';
 
 function mapUser(u: any): User {
   return {
@@ -38,8 +40,18 @@ export class FirebaseAuthRepository implements AuthRepository {
       if (!res.user) throw new Error('Anonymous sign-in failed');
       return mapUser(res.user);
     }
-    // Note: For native apps, use Expo Auth Session for Google/Apple/Facebook.
-    // This repository assumes Web or preconfigured native credential flow.
+    // Native apps: handle Google/Apple using Expo Auth Session
+    if (Platform.OS !== 'web') {
+      if (provider === 'google') {
+        const u = await signInWithGoogleNative();
+        return mapUser(u as any);
+      }
+      if (provider === 'apple') {
+        const u = await signInWithAppleNative();
+        return mapUser(u as any);
+      }
+    }
+    // Web fallback using popup providers
     const provFactory = (FirebaseAPI.Providers as any)[provider];
     if (!provFactory) throw new Error(`Provider ${provider} not supported`);
     const prov = provFactory();
@@ -49,5 +61,11 @@ export class FirebaseAuthRepository implements AuthRepository {
 
   async signOut(): Promise<void> {
     await FirebaseAPI.fbSignOut(FirebaseAPI.auth);
+  }
+
+  async signUp(options: { email: string; password: string }): Promise<User> {
+    const auth = FirebaseAPI.auth;
+    const res = await FirebaseAPI.createUserWithEmailAndPassword(auth as any, options.email, options.password);
+    return mapUser(res.user);
   }
 }
