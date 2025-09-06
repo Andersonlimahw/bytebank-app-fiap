@@ -91,7 +91,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
           }
         }}
       />
-      <TouchableOpacity onPress={(navigation as any)?.navigate ? () => (navigation as any).navigate('Register') : undefined}>
+      <TouchableOpacity onPress={() => (navigation as any)?.navigate?.('Register')}>
         <Text style={styles.link}>No account? Create one</Text>
       </TouchableOpacity>
 

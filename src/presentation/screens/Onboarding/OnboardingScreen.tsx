@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions, Image, NativeSyntheticEvent, NativeScrollEvent, Animated } from 'react-native';
 import { Button } from '../../components/Button';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
+import { goToLogin } from '../../navigation/navigationUtils';
 
 const { width } = Dimensions.get('window');
 
@@ -53,8 +54,8 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
   };
 
   const finish = () => {
-    // Replace to avoid going back to onboarding
-    navigation.replace('Login');
+    // Usa reset para evitar voltar ao onboarding; funciona em Stack/Tab
+    goToLogin(navigation);
   };
 
   return (

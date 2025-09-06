@@ -36,6 +36,7 @@ function AppTabs() {
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: 'Home', headerTitle: 'Home' }} />
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ tabBarLabel: 'Dashboard', headerTitle: 'Dashboard' }} />
       <Tab.Screen name="Onboarding" component={OnboardingScreen} options={{ tabBarLabel: 'Onboarding', headerTitle: 'Onboarding' }} />
+      <Tab.Screen name="Login" component={LoginScreen} options={{ tabBarLabel: 'Login', headerTitle: 'Login' }} />
     </Tab.Navigator>
   );
 }
