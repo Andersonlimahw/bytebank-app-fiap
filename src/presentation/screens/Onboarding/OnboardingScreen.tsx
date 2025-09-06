@@ -18,19 +18,19 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
         key: 'secure-banking',
         title: 'All-in-one digital banking',
         subtitle: 'Track balance, send money, and manage cards in one place.',
-        image: require('../../../../contents/figma/bytebank-figma/Banner1.png'),
+        image: require('../../../../contents/figma/home/Banner1-7.png'),
       },
       {
         key: 'insights',
         title: 'Clear insights at a glance',
         subtitle: 'Understand your spending with beautiful, easy charts.',
-        image: require('../../../../contents/figma/bytebank-figma/Gráfico pizza.png'),
+        image: require('../../../../contents/figma/icons/Gráfico pizza.png'),
       },
       {
         key: 'login',
         title: 'Sign in your way',
         subtitle: 'Google, Apple, email, or just try it anonymously.',
-        image: require('../../../../contents/figma/bytebank-figma/Ilustração Login.png'),
+        image: require('../../../../contents/figma/login/Ilustração-1.png'),
       },
     ],
     []
@@ -108,4 +108,3 @@ const styles = StyleSheet.create({
   dotActive: { backgroundColor: '#111827' },
   actions: { flexDirection: 'row', justifyContent: 'center' },
 });
-
