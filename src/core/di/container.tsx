@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import type { AuthRepository } from '../../domain/repositories/AuthRepository';
 import type { TransactionRepository } from '../../domain/repositories/TransactionRepository';
+import type { InvestmentRepository } from '../../domain/repositories/InvestmentRepository';
 
 export type Token<T> = symbol & { __type?: T };
 
@@ -38,6 +39,7 @@ export type DI = { resolve<T>(token: Token<T>): T };
 export const TOKENS = {
   AuthRepository: Symbol('AuthRepository') as Token<AuthRepository>,
   TransactionRepository: Symbol('TransactionRepository') as Token<TransactionRepository>,
+  InvestmentRepository: Symbol('InvestmentRepository') as Token<InvestmentRepository>,
 };
 
 export function createDI(container: Container): DI {

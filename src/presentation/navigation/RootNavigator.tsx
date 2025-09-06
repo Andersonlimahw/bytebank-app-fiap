@@ -6,6 +6,7 @@ import { LoginScreen } from '../screens/Auth/LoginScreen';
 import { OnboardingScreen } from '../screens/Onboarding/OnboardingScreen';
 import { HomeScreen } from '../screens/Home/HomeScreen';
 import { DashboardScreen } from '../screens/Dashboard/DashboardScreen';
+import { InvestmentsScreen } from '../screens/Investments/InvestmentsScreen';
 import { Text } from 'react-native';
 
 type AuthStackParamList = {
@@ -17,6 +18,7 @@ type AuthStackParamList = {
 type AppTabParamList = {
   Home: undefined;
   Dashboard: undefined;
+  Investments: undefined;
   Onboarding: undefined;
   Login: undefined;
 };
@@ -35,6 +37,7 @@ function AppTabs() {
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: 'Home', headerTitle: 'Home' }} />
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ tabBarLabel: 'Dashboard', headerTitle: 'Dashboard' }} />
+      <Tab.Screen name="Investments" component={InvestmentsScreen} options={{ tabBarLabel: 'Investimentos', headerTitle: 'Investimentos' }} />
       <Tab.Screen name="Onboarding" component={OnboardingScreen} options={{ tabBarLabel: 'Onboarding', headerTitle: 'Onboarding' }} />
       <Tab.Screen name="Login" component={LoginScreen} options={{ tabBarLabel: 'Login', headerTitle: 'Login' }} />
     </Tab.Navigator>
