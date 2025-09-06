@@ -1,16 +1,22 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, FlatList, TouchableOpacity, Animated } from 'react-native';
 import { formatCurrency } from '../../../utils/format';
 import { QuickAction } from '../../components/QuickAction';
 import { TransactionItem } from '../../components/TransactionItem';
 import { useDashboardViewModel } from '../../viewmodels/useDashboardViewModel';
 import { theme } from '../../theme/theme';
+import { useFadeSlideInOnFocus, useChartEntranceAndPulse } from '../../hooks/animations';
 
 export const DashboardScreen: React.FC = () => {
   const { user, balance, transactions, loading, refresh, addDemoCredit, addDemoDebit } = useDashboardViewModel();
+  const { animatedStyle } = useFadeSlideInOnFocus();
+  const { animatedStyle: chartStyle } = useChartEntranceAndPulse(transactions?.length ?? 0);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: theme.spacing.xl }}>
+    <Animated.ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: theme.spacing.xl }}
+      showsVerticalScrollIndicator={false}
+    >
+      <Animated.View style={animatedStyle as any}>
       <View style={styles.header}>
         <View>
           <Text style={styles.hello}>Olá,</Text>
@@ -53,7 +59,7 @@ export const DashboardScreen: React.FC = () => {
       </ScrollView>
 
       <Text style={styles.sectionTitle}>Resumo de gastos</Text>
-      <Image source={require('../../../../contents/figma/icons/Gráfico pizza.png')} style={styles.chart} />
+      <Animated.Image source={require('../../../../contents/figma/icons/Gráfico pizza.png')} style={[styles.chart, chartStyle as any]} />
       <Text style={styles.caption}>Distribuição por categoria (exemplo)</Text>
 
       <Text style={styles.sectionTitle}>Últimas transações</Text>
@@ -65,7 +71,8 @@ export const DashboardScreen: React.FC = () => {
         onRefresh={refresh}
         scrollEnabled={false}
       />
-    </ScrollView>
+      </Animated.View>
+    </Animated.ScrollView>
   );
 };
 

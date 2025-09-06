@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, Image, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, Image, NativeSyntheticEvent, NativeScrollEvent, Animated } from 'react-native';
 import { Button } from '../../components/Button';
+import { useFadeSlideInOnFocus } from '../../hooks/animations';
 
 const { width } = Dimensions.get('window');
 
@@ -38,6 +39,7 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
 
   const [index, setIndex] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
+  const { animatedStyle } = useFadeSlideInOnFocus();
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const x = e.nativeEvent.contentOffset.x;
@@ -56,7 +58,7 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, animatedStyle as any]}>
       <ScrollView
         ref={scrollRef}
         horizontal
@@ -92,7 +94,7 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
           )}
         </View>
       </View>
-    </View>
+    </Animated.View>
   );
 };
 

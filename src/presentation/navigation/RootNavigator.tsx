@@ -26,7 +26,13 @@ const Tab = createBottomTabNavigator<AppTabParamList>();
 
 function AppTabs() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: true }}>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: true,
+        tabBarHideOnKeyboard: true,
+        // Mantém navegação fluida entre tabs; as telas já animam ao focar
+      }}
+    >
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: 'Home', headerTitle: 'Home' }} />
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ tabBarLabel: 'Dashboard', headerTitle: 'Dashboard' }} />
       <Tab.Screen name="Onboarding" component={OnboardingScreen} options={{ tabBarLabel: 'Onboarding', headerTitle: 'Onboarding' }} />
@@ -43,10 +49,40 @@ export function RootNavigator() {
 
   if (!user) {
     return (
-      <AuthStack.Navigator initialRouteName="Onboarding">
-        <AuthStack.Screen name="Onboarding" component={OnboardingScreen} options={{ headerShown: false }} />
-        <AuthStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-        <AuthStack.Screen name="Register" component={require('../screens/Auth/RegisterScreen').RegisterScreen} options={{ headerShown: false }} />
+      <AuthStack.Navigator
+        initialRouteName="Onboarding"
+        screenOptions={{
+          headerShown: false,
+          animation: 'slide_from_right',
+          animationTypeForReplace: 'push',
+          fullScreenGestureEnabled: true,
+          contentStyle: { backgroundColor: 'white' },
+        }}
+      >
+        <AuthStack.Screen
+          name="Onboarding"
+          component={OnboardingScreen}
+          options={{
+            // Onboarding entra com fade para dar sensação de leveza
+            animation: 'fade',
+          }}
+        />
+        <AuthStack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{
+            // Login mantém push padrão lateral
+            animation: 'slide_from_right',
+          }}
+        />
+        <AuthStack.Screen
+          name="Register"
+          component={require('../screens/Auth/RegisterScreen').RegisterScreen}
+          options={{
+            // Registro sobe de baixo para cima (modal-like)
+            animation: 'slide_from_bottom',
+          }}
+        />
       </AuthStack.Navigator>
     );
   }

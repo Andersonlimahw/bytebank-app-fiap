@@ -1,18 +1,23 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, FlatList, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, ScrollView, Animated } from 'react-native';
 import { useHomeViewModel } from '../../viewmodels/useHomeViewModel';
 import { TransactionItem } from '../../components/TransactionItem';
 import { useAuthViewModel } from '../../viewmodels/useAuthViewModel';
 import { formatCurrency } from '../../../utils/format';
 import { QuickAction } from '../../components/QuickAction';
 import { theme } from '../../theme/theme';
+import { useFadeSlideInOnFocus } from '../../hooks/animations';
 
 export const HomeScreen: React.FC = () => {
   const { loading, transactions, balance, refresh } = useHomeViewModel();
   const { user, signOut } = useAuthViewModel();
+  const { animatedStyle } = useFadeSlideInOnFocus();
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: theme.spacing.xl }}>
+    <Animated.ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: theme.spacing.xl }}
+      showsVerticalScrollIndicator={false}
+    >
+      <Animated.View style={animatedStyle as any}>
       <View style={styles.header}>
         <View>
           <Text style={styles.hello}>Olá,</Text>
@@ -48,7 +53,8 @@ export const HomeScreen: React.FC = () => {
         onRefresh={refresh}
         scrollEnabled={false}
       />
-    </ScrollView>
+      </Animated.View>
+    </Animated.ScrollView>
   );
 };
 

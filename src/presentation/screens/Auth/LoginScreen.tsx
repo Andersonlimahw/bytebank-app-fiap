@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Platform, Animated } from 'react-native';
 import { Button } from '../../components/Button';
 import { useAuthViewModel } from '../../viewmodels/useAuthViewModel';
+import { useFadeSlideInOnFocus } from '../../hooks/animations';
 
 export const LoginScreen: React.FC<any> = ({ navigation }) => {
   const { signIn } = useAuthViewModel();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const { animatedStyle } = useFadeSlideInOnFocus();
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, animatedStyle as any]}>
       <Image source={require('../../../../contents/figma/login/Ilustração-1.png')} style={styles.logo} />
       <Text style={styles.title}>Welcome to ByteBank</Text>
       <Text style={styles.subtitle}>Sign in to continue</Text>
@@ -94,7 +96,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
       </TouchableOpacity>
 
       <Text style={styles.hint}>Mock mode is enabled by default. Configure Firebase to use real providers.</Text>
-    </View>
+    </Animated.View>
   );
 };
 

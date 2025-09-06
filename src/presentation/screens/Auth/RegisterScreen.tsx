@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Animated } from 'react-native';
 import { Button } from '../../components/Button';
 import { useAuthViewModel } from '../../viewmodels/useAuthViewModel';
+import { useFadeSlideInOnFocus } from '../../hooks/animations';
 
 export const RegisterScreen: React.FC<any> = ({ navigation }) => {
   const { signUp } = useAuthViewModel();
@@ -10,6 +11,7 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { animatedStyle } = useFadeSlideInOnFocus();
 
   const handleRegister = async () => {
     setError(null);
@@ -37,7 +39,7 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, animatedStyle as any]}>
       <Image source={require('../../../../contents/figma/login/Ilustração cadastro-1.png')} style={styles.illustration} />
       <Text style={styles.title}>Crie sua conta</Text>
       <Text style={styles.subtitle}>É rápido e seguro</Text>
@@ -72,7 +74,7 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
       <TouchableOpacity onPress={() => navigation?.goBack?.()}>
         <Text style={styles.link}>Já tem conta? Entrar</Text>
       </TouchableOpacity>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -85,4 +87,3 @@ const styles = StyleSheet.create({
   error: { color: '#dc2626', alignSelf: 'flex-start', marginBottom: 8 },
   link: { marginTop: 16, color: '#2563eb' },
 });
-
