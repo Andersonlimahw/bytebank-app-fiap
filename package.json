@@ -8,7 +8,8 @@
     "android": "npx expo run:android",
     "ios": "npx expo run:ios",
     "web": "npx expo start --web",
-    "typecheck": "npx tsc --noEmit"
+    "typecheck": "npx tsc --noEmit",
+    "migrate:icons": "node scripts/migrate-icons.js"
   },
   "dependencies": {
     "expo": "^51.0.0",

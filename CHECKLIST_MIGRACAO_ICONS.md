@@ -13,6 +13,13 @@ Objetivo: migrar os ícones usados de `contents/figma/icons` para `public/assets
 - [ ] Remover ícones não usados de `contents/figma/icons` quando a migração estiver 100% concluída.
 - [ ] Documentar a convenção: novos ícones devem ir em `public/assets/images/icons`.
 
+### Ferramenta de Migração
+
+- [x] Adicionar script de migração incremental: `scripts/migrate-icons.js`.
+- [ ] Executar para copiar apenas ícones referenciados diretamente em `contents/figma/icons`:
+  - `npm run migrate:icons` (usa o padrão de busca no código)
+  - `npm run migrate:icons -- --dry` (mostra o que seria copiado)
+
 ## Status Atual (migrado)
 
 - [x] `Avatar.png`
@@ -38,7 +45,7 @@ Use esta lista para acompanhar os próximos itens a migrar conforme forem sendo 
 ## Como Migrar Incrementalmente
 
 - [ ] Escolher um módulo/tela (ex.: Login, Dashboard, Home).
-- [ ] Rodar `rg -n "contents/figma/icons" src/<modulo>` para listar arquivos usados.
+- [ ] Rodar `rg -n "contents/figma/icons" src/<modulo>` para listar arquivos usados (ou utilizar `npm run migrate:icons`).
 - [ ] Copiar somente os ícones citados para `public/assets/images/icons`.
 - [ ] Atualizar os `require(...)`/`import` no módulo selecionado.
 - [ ] Executar o app e validar a renderização dos ícones e tamanhos.
@@ -50,4 +57,3 @@ Use esta lista para acompanhar os próximos itens a migrar conforme forem sendo 
 - [ ] Manter nomes de arquivos consistentes e sem duplicatas.
 - [ ] Se possível, preferir SVGs em contextos suportados (no React Native, via libs específicas) para escalabilidade.
 - [ ] Centralizar a resolução de caminhos de ícones em um único arquivo (ex.: `src/assets/icons.ts`) caso o projeto cresça.
-
