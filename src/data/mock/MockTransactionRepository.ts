@@ -37,4 +37,27 @@ export class MockTransactionRepository implements TransactionRepository {
     const tx = this.ensure(userId);
     return tx.reduce((sum, t) => sum + (t.type === 'credit' ? t.amount : -t.amount), 0);
   }
+
+  async update(id: string, updates: Partial<Pick<Transaction, 'description' | 'amount' | 'type' | 'category'>>): Promise<void> {
+    for (const [userId, list] of this.byUser.entries()) {
+      const idx = list.findIndex((t) => t.id === id);
+      if (idx >= 0) {
+        const current = list[idx];
+        const updated = { ...current, ...updates } as Transaction;
+        list[idx] = updated;
+        this.byUser.set(userId, list);
+        return;
+      }
+    }
+  }
+
+  async remove(id: string): Promise<void> {
+    for (const [userId, list] of this.byUser.entries()) {
+      const next = list.filter((t) => t.id !== id);
+      if (next.length !== list.length) {
+        this.byUser.set(userId, next);
+        return;
+      }
+    }
+  }
 }

@@ -23,6 +23,18 @@ export function useExtractViewModel() {
     setLoading(false);
   }, [repo, user]);
 
+  const remove = useCallback(async (id: string) => {
+    setLoading(true);
+    await repo.remove(id);
+    await refresh();
+  }, [repo, refresh]);
+
+  const update = useCallback(async (id: string, updates: Partial<Pick<Transaction, 'description' | 'amount' | 'type' | 'category'>>) => {
+    setLoading(true);
+    await repo.update(id, updates);
+    await refresh();
+  }, [repo, refresh]);
+
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -48,6 +60,7 @@ export function useExtractViewModel() {
       return (
         t.type.toLowerCase().includes(term) ||
         t.description.toLowerCase().includes(term) ||
+        (t.category ? t.category.toLowerCase().includes(term) : false) ||
         amountStr.includes(term) ||
         dateStr.includes(term) ||
         monthStr.includes(term)
@@ -56,5 +69,5 @@ export function useExtractViewModel() {
     setFiltered(result);
   }, [all, search]);
 
-  return { loading, transactions: filtered, search, setSearch, refresh };
+  return { loading, transactions: filtered, search, setSearch, refresh, remove, update };
 }

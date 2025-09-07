@@ -14,7 +14,6 @@ export const ExtractScreen: React.FC = () => {
   const [desc, setDesc] = useState('');
   const [amountText, setAmountText] = useState('');
   const [type, setType] = useState<TransactionType>('debit');
-  const [category, setCategory] = useState('');
 
   const openOptions = (tx: Transaction) => {
     Alert.alert(
@@ -38,7 +37,6 @@ export const ExtractScreen: React.FC = () => {
     setDesc(tx.description);
     setAmountText((tx.amount / 100).toFixed(2).replace('.', ','));
     setType(tx.type);
-    setCategory(tx.category ?? '');
   };
 
   const confirmDelete = (tx: Transaction) => {
@@ -67,8 +65,7 @@ export const ExtractScreen: React.FC = () => {
       return;
     }
     const cents = Math.round(num * 100);
-    const payload = { description: desc.trim(), amount: cents, type, category: category.trim() || undefined };
-    await update(editing.id, payload);
+    await update(editing.id, { description: desc.trim(), amount: cents, type });
     setEditing(null);
   };
 
@@ -103,7 +100,6 @@ export const ExtractScreen: React.FC = () => {
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>Editar transação</Text>
             <Input label="Descrição" value={desc} onChangeText={setDesc} placeholder="Descrição" />
-            <Input label="Categoria (opcional)" value={category} onChangeText={setCategory} placeholder="Ex.: Alimentação, Transferência" />
             <Input
               label="Valor (R$)"
               value={amountText}

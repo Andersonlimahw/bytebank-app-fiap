@@ -1,7 +1,7 @@
 import type { TransactionRepository } from '../../domain/repositories/TransactionRepository';
 import type { Transaction } from '../../domain/entities/Transaction';
 import { FirebaseAPI } from '../../infrastructure/firebase/firebase';
-import { collection, query, where, orderBy, limit as qlimit, addDoc, getDocs, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit as qlimit, addDoc, getDocs, serverTimestamp, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 export class FirebaseTransactionRepository implements TransactionRepository {
   async listRecent(userId: string, limit = 10): Promise<Transaction[]> {
@@ -36,5 +36,17 @@ export class FirebaseTransactionRepository implements TransactionRepository {
     // For demo simplicity, compute from last 100 txs
     const txs = await this.listRecent(userId, 100);
     return txs.reduce((acc, t) => acc + (t.type === 'credit' ? t.amount : -t.amount), 0);
+  }
+
+  async update(id: string, updates: Partial<Pick<Transaction, 'description' | 'amount' | 'type' | 'category'>>): Promise<void> {
+    const db = FirebaseAPI.db;
+    const ref = doc(db, 'transactions', id);
+    await updateDoc(ref, { ...updates });
+  }
+
+  async remove(id: string): Promise<void> {
+    const db = FirebaseAPI.db;
+    const ref = doc(db, 'transactions', id);
+    await deleteDoc(ref);
   }
 }
