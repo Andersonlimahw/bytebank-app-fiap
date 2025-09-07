@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDI } from '../providers/AppProviders';
+import { useDI } from '@app/store/diStore';
 import { TOKENS } from '../../core/di/container';
 import type { Transaction } from '../../domain/entities/Transaction';
 import type { TransactionRepository } from '../../domain/repositories/TransactionRepository';
-import { useAuthViewModel } from './useAuthViewModel';
+import { useAuth } from '@app/store/authStore';
 import { GetRecentTransactions } from '../../application/usecases/GetRecentTransactions';
 import { GetBalance } from '../../application/usecases/GetBalance';
 
 export function useHomeViewModel() {
   const di = useDI();
   const txRepo = useMemo(() => di.resolve<TransactionRepository>(TOKENS.TransactionRepository), [di]);
-  const { user } = useAuthViewModel();
+  const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [balance, setBalance] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);

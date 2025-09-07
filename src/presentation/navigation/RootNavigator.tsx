@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useAuth } from '../providers/AuthProvider';
+import { useAuth } from '@app/store/authStore';
 import { LoginScreen } from '../screens/Auth/LoginScreen';
 import { OnboardingScreen } from '../screens/Onboarding/OnboardingScreen';
 import { HomeScreen } from '../screens/Home/HomeScreen';

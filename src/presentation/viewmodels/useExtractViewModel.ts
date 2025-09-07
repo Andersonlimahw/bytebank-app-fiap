@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDI } from '../providers/AppProviders';
+import { useDI } from '@app/store/diStore';
 import { TOKENS } from '../../core/di/container';
 import type { Transaction } from '../../domain/entities/Transaction';
 import type { TransactionRepository } from '../../domain/repositories/TransactionRepository';
-import { useAuthViewModel } from './useAuthViewModel';
+import { useAuth } from '@app/store/authStore';
 
 export function useExtractViewModel() {
   const di = useDI();
   const repo = useMemo(() => di.resolve<TransactionRepository>(TOKENS.TransactionRepository), [di]);
-  const { user } = useAuthViewModel();
+  const { user } = useAuth();
 
   const [all, setAll] = useState<Transaction[]>([]);
   const [filtered, setFiltered] = useState<Transaction[]>([]);
@@ -58,4 +58,3 @@ export function useExtractViewModel() {
 
   return { loading, transactions: filtered, search, setSearch, refresh };
 }
-

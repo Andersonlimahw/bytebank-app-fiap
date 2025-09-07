@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDI } from '../providers/AppProviders';
+import { useDI } from '@app/store/diStore';
 import { TOKENS } from '../../core/di/container';
 import type { Investment } from '../../domain/entities/Investment';
 import type { InvestmentRepository } from '../../domain/repositories/InvestmentRepository';
-import { useAuthViewModel } from './useAuthViewModel';
+import { useAuth } from '@app/store/authStore';
 import { GetInvestments } from '../../application/usecases/GetInvestments';
 
 export function useInvestmentsViewModel() {
   const di = useDI();
   const repo = useMemo(() => di.resolve<InvestmentRepository>(TOKENS.InvestmentRepository), [di]);
-  const { user } = useAuthViewModel();
+  const { user } = useAuth();
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -49,4 +49,3 @@ export function useInvestmentsViewModel() {
 
   return { loading, investments, total, rendaFixa, rendaVariavel, donutData, refresh };
 }
-

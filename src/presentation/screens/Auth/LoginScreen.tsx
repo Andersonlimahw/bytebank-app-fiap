@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Platform, Animated } from 'react-native';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
-import { useAuthViewModel } from '../../viewmodels/useAuthViewModel';
+import { useAuth } from '@app/store/authStore';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
 import { theme } from '../../theme/theme';
 
 export const LoginScreen: React.FC<any> = ({ navigation }) => {
-  const { signIn } = useAuthViewModel();
+  const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);

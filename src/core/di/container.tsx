@@ -1,4 +1,3 @@
-import React, { createContext, useContext, useMemo } from 'react';
 import type { AuthRepository } from '../../domain/repositories/AuthRepository';
 import type { TransactionRepository } from '../../domain/repositories/TransactionRepository';
 import type { InvestmentRepository } from '../../domain/repositories/InvestmentRepository';
@@ -18,19 +17,6 @@ export class Container {
     }
     return this.registry.get(token) as T;
   }
-}
-
-const ContainerContext = createContext<Container | null>(null);
-
-export function useContainer(): Container {
-  const c = useContext(ContainerContext);
-  if (!c) throw new Error('DI: Container not available');
-  return c;
-}
-
-export function ContainerProvider({ container, children }: { container: Container; children: React.ReactNode }) {
-  const memo = useMemo(() => container, [container]);
-  return <ContainerContext.Provider value={memo}>{children}</ContainerContext.Provider>;
 }
 
 // Simple DI facade used by viewmodels

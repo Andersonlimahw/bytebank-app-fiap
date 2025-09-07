@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, FlatList, ScrollView, Animated } from 'react-native';
 import { useHomeViewModel } from '../../viewmodels/useHomeViewModel';
 import { TransactionItem } from '../../components/TransactionItem';
-import { useAuthViewModel } from '../../viewmodels/useAuthViewModel';
+import { useAuth } from '@app/store/authStore';
 import { formatCurrency } from '../../../utils/format';
 import { QuickAction } from '../../components/QuickAction';
 import { theme } from '../../theme/theme';
@@ -10,7 +10,7 @@ import { useFadeSlideInOnFocus } from '../../hooks/animations';
 
 export const HomeScreen: React.FC = () => {
   const { loading, transactions, balance, refresh } = useHomeViewModel();
-  const { user, signOut } = useAuthViewModel();
+  const { user, signOut } = useAuth();
   const { animatedStyle } = useFadeSlideInOnFocus();
 
   return (
