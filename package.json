@@ -4,12 +4,18 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "npx expo start",
+    "start": "EXPO_PUBLIC_USE_MOCK=false npx expo start",
+    "start:mocks": "EXPO_PUBLIC_USE_MOCK=true npx expo start",
     "android": "npx expo run:android",
     "ios": "npx expo run:ios",
     "web": "npx expo start --web",
     "typecheck": "npx tsc --noEmit",
-    "migrate:icons": "node scripts/migrate-icons.js"
+    "migrate:icons": "node scripts/migrate-icons.js",
+    "clear-cache": "expo start --clear",
+    "build:android:dev": "eas build --platform android --profile development",
+    "build:android:release": "eas build --platform android --profile production",
+    "build:ios:dev": "eas build --platform ios --profile development",
+    "build:ios:release": "eas build --platform ios --profile production"
   },
   "dependencies": {
     "expo": "^51.0.0",

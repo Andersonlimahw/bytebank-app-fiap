@@ -19,7 +19,7 @@ let initialized = false;
 let unsubscribe: (() => void) | undefined;
 
 export const useAuthStore = create<AuthState>()(
-  devtools((set: any, get: any) => ({
+  devtools((set) => ({
   user: undefined,
   loading: true,
   async signIn(provider: AuthProvider, options?: { email?: string; password?: string }) {
