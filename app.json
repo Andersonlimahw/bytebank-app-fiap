@@ -19,10 +19,12 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.bytebank.app"
+      "bundleIdentifier": "com.bytebank.app",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
-      "package": "com.bytebank.app"
+      "package": "com.bytebank.app",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",

@@ -38,7 +38,20 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
           try {
             await signIn("google");
           } catch (e: any) {
-            setError(e?.message ?? "Falha no login Google");
+            // Provide more specific error messages for Google authentication
+            let errorMessage = "Falha no login Google";
+            if (e?.message?.includes("Client ID não configurado")) {
+              errorMessage = "Google authentication não está configurado. Verifique as configurações.";
+            } else if (e?.message?.includes("cancelado")) {
+              errorMessage = "Login cancelado pelo usuário.";
+            } else if (e?.message?.includes("hasPlayServices")) {
+              errorMessage = "Google Play Services não disponível. Tente outro método de login.";
+            } else if (e?.message?.includes("Token inválido")) {
+              errorMessage = "Erro de autenticação. Tente novamente.";
+            } else if (e?.message) {
+              errorMessage = e.message;
+            }
+            setError(errorMessage);
           }
         }}
       />

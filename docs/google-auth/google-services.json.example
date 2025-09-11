@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "102802199932",
+    "project_id": "projeto-bytebank",
+    "storage_bucket": "projeto-bytebank.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:102802199932:android:your-android-app-id",
+        "android_client_info": {
+          "package_name": "com.bytebank.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "102802199932-your-android-client-id.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bytebank.app",
+            "certificate_hash": "your-sha1-certificate-hash"
+          }
+        },
+        {
+          "client_id": "102802199932-your-web-client-id.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "your-android-api-key"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "102802199932-your-web-client-id.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

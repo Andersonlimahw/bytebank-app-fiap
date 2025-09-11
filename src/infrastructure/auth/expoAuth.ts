@@ -2,6 +2,7 @@ import { Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { getAuth, GoogleAuthProvider, OAuthProvider, signInWithCredential, User } from 'firebase/auth';
 import { FirebaseAPI } from '../firebase/firebase';
 
@@ -18,7 +19,53 @@ function getGoogleClientId(): string {
   return env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || env.EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID || '';
 }
 
+// Initialize Google Sign-In
+function initializeGoogleSignIn() {
+  const webClientId = (process.env as any)?.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+  if (webClientId) {
+    GoogleSignin.configure({
+      webClientId,
+      offlineAccess: true,
+    });
+  }
+}
+
+// Enhanced Google Sign-In with multiple approaches for better compatibility
 export async function signInWithGoogleNative(): Promise<User> {
+  // Try native Google Sign-In first (better UX on devices)
+  try {
+    return await signInWithGoogleNativeSDK();
+  } catch (error) {
+    console.log('Native Google Sign-In failed, falling back to AuthSession:', error);
+    // Fallback to AuthSession approach
+    return await signInWithGoogleAuthSession();
+  }
+}
+
+// Native Google Sign-In using @react-native-google-signin/google-signin
+async function signInWithGoogleNativeSDK(): Promise<User> {
+  initializeGoogleSignIn();
+  
+  // Check if device supports Google Play Services (Android)
+  await GoogleSignin.hasPlayServices();
+  
+  // Sign in with Google
+  const userInfo = await GoogleSignin.signIn();
+  
+  if (!userInfo.idToken) {
+    throw new Error('No ID token received from Google');
+  }
+
+  // Create Firebase credential and sign in
+  FirebaseAPI.ensureFirebase();
+  const credential = GoogleAuthProvider.credential(userInfo.idToken);
+  const auth = getAuth();
+  const res = await signInWithCredential(auth, credential);
+  return res.user;
+}
+
+// Fallback Google Sign-In using Expo AuthSession
+async function signInWithGoogleAuthSession(): Promise<User> {
   const clientId = getGoogleClientId();
   if (!clientId) throw new Error('Google Client ID não configurado (EXPO_PUBLIC_GOOGLE_* envs)');
 
