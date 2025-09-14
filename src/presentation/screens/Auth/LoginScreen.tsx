@@ -45,10 +45,14 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
               errorMessage = "Google authentication não está configurado. Verifique as configurações.";
             } else if (e?.message?.includes("cancelado")) {
               errorMessage = "Login cancelado pelo usuário.";
+            } else if (e?.message?.toLowerCase?.().includes("network") || e?.message?.includes("Failed to fetch")) {
+              errorMessage = "Sem conexão. Verifique sua internet e tente novamente.";
             } else if (e?.message?.includes("hasPlayServices")) {
               errorMessage = "Google Play Services não disponível. Tente outro método de login.";
             } else if (e?.message?.includes("Token inválido")) {
               errorMessage = "Erro de autenticação. Tente novamente.";
+            } else if (e?.message?.includes?.('Firebase config is missing')) {
+              errorMessage = "Firebase não configurado. Defina EXPO_PUBLIC_FIREBASE_* e reinicie o app.";
             } else if (e?.message) {
               errorMessage = e.message;
             }

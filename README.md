@@ -59,6 +59,7 @@ Switching to Firebase
    - Google Sign-In uses expo-auth-session. Set one of:
      - EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID (works on Expo Go), or
      - Platform-specific: EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID / ANDROID / WEB.
+   - Redirect handling: app.json includes `"scheme": "bytebank"` and the code uses `makeRedirectUri({ scheme: 'bytebank', useProxy: true })` on native for easy dev. For production builds, AuthSession will use your app scheme.
    - Apple Sign-In works only on iOS. Ensure your Apple capabilities are configured for your Bundle ID.
 
 4) Install required packages if not present
@@ -75,6 +76,13 @@ Switching to Firebase
   - npm run start
   - Ensure .env is loaded (Expo reads EXPO_PUBLIC_* automatically)
   - In `app.json`, update iOS bundle identifier and Android package if needed.
+
+Auth Persistence on Native
+- The app attempts to use React Native persistence for Firebase Auth when running on iOS/Android via `initializeAuth(..., getReactNativePersistence(AsyncStorage))`.
+- If `@react-native-async-storage/async-storage` isn’t installed, it falls back to in-memory persistence (sign-in still works during the session but won’t persist across restarts).
+- To enable full persistence, install AsyncStorage:
+  - npx expo install @react-native-async-storage/async-storage
+  - Then rebuild if using prebuild/EAS.
 
 Transactions (Firestore)
 - Collection: `transactions` with fields: `userId` (string), `type` ('credit'|'debit'), `amount` (number, cents), `description` (string), `category` (optional string), `createdAt` (serverTimestamp)

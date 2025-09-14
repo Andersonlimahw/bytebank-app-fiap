@@ -35,7 +35,10 @@ async function signInWithGoogleAuthSession(): Promise<User> {
     revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
   };
 
-  const redirectUri = AuthSession.makeRedirectUri();
+  const redirectUri = AuthSession.makeRedirectUri({
+    // Match app.json `scheme` for native
+    scheme: 'bytebank',
+  });
   const request = new AuthSession.AuthRequest({
     clientId,
     redirectUri,
@@ -45,7 +48,11 @@ async function signInWithGoogleAuthSession(): Promise<User> {
   });
 
   await request.makeAuthUrlAsync(discovery);
-  const result = await request.promptAsync(discovery);
+  const promptOpts: any = {
+    // Use Expo proxy in dev for native; web does not use proxy
+    useProxy: Platform.select({ web: false, default: true }),
+  };
+  const result = await request.promptAsync(discovery, promptOpts);
   if (result.type !== 'success') {
     throw new Error('Login Google cancelado');
   }
