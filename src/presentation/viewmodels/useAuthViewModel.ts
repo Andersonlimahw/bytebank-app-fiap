@@ -1,4 +1,4 @@
-import { useAuth } from '@app/store/authStore';
+import { useAuth } from '../../store/authStore';
 import type { AuthProvider } from '../../domain/entities/AuthProvider';
 
 // Backwards-compatible viewmodel wrapper over Zustand store

@@ -21,11 +21,22 @@ function buildContainer(): Container {
     c.set(TOKENS.AuthRepository, new MockAuthRepository());
     c.set(TOKENS.TransactionRepository, new MockTransactionRepository());
     c.set(TOKENS.InvestmentRepository, new MockInvestmentRepository());
-  } else {
+    return c;
+  }
+
+  // In real mode, try to init Firebase; if it fails, gracefully fallback to mocks
+  try {
     FirebaseAPI.ensureFirebase();
     c.set(TOKENS.AuthRepository, new FirebaseAuthRepository());
     c.set(TOKENS.TransactionRepository, new FirebaseTransactionRepository());
     c.set(TOKENS.InvestmentRepository, new FirebaseInvestmentRepository());
+  } catch (e: any) {
+    // Keep the app usable in development if Firebase env is missing/misconfigured
+    // eslint-disable-next-line no-console
+    console.warn('[DI] Firebase init failed, using mocks instead:', e?.message ?? e);
+    c.set(TOKENS.AuthRepository, new MockAuthRepository());
+    c.set(TOKENS.TransactionRepository, new MockTransactionRepository());
+    c.set(TOKENS.InvestmentRepository, new MockInvestmentRepository());
   }
   return c;
 }

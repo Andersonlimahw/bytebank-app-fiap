@@ -4,7 +4,7 @@ Overview
 - Expo + React Native + TypeScript
 - MVVM + Clean Architecture + SOLID-oriented boundaries (lightweight DI)
 - Auth repository with anonymous login (mock by default)
-- Mock mode enabled by default so the app runs without Firebase
+- Mock mode is available; default mode follows your scripts/env
 - Features: Login, Home (balance + transactions), Dashboard (summary)
  - Shared theme tokens for consistent colors, spacing, and typography
 
@@ -14,10 +14,10 @@ Project Structure
 - src/config: Env config (Firebase + flags)
 - src/core/di: Minimal DI container + tokens
 - src/domain: Entities and repository interfaces
-- src/application: Use cases (business rules) [TBD]
-- src/data/firebase: Firebase repository implementations [TBD]
+- src/application: Use cases (business rules)
+- src/data/firebase: Firebase repository implementations
 - src/data/mock: Mock repository implementations (default)
-- src/infrastructure/firebase: Firebase initialization + providers [TBD]
+- src/infrastructure/firebase: Firebase initialization + providers
 - src/presentation: Screens, navigation, providers, components
   - presentation/theme: App theme (colors, spacing, radius)
 - src/utils: Format helpers
@@ -31,15 +31,17 @@ Getting Started
    - npm install
    - or: pnpm i / yarn
 
-3) Run in mock mode (default)
-   - npm run start
-   - Press i for iOS simulator or a for Android when Metro starts
+3) Run the app
+   - Real (Firebase) mode: `npm run start` (uses `.env` and sets `EXPO_PUBLIC_USE_MOCK=false`).
+   - Mock mode (no Firebase needed): `npm run start:mocks`.
+   - In Metro, press `i` for iOS simulator or `a` for Android.
 
 Current Status
-- Mock repositories wired via DI
-- Auth flow (anonymous) + guarded navigation
-- Home shows balance and seeded transactions
-- Dashboard shows simple income/expense summary + sign out
+- Mock repositories wired via DI, with automatic fallback if Firebase is misconfigured
+- Auth flow (Google/Apple/Email/Anonymous) + guarded navigation
+- Home shows balance and recent transactions
+- Dashboard shows income/expense summary and allows adding demo credits/debits
+- Extract supports search, edit, delete, and now adding new transactions (modal)
 
 Switching to Firebase
 1) Create a Firebase project and a web app to obtain config.
@@ -63,14 +65,23 @@ Switching to Firebase
   - npx expo install expo-auth-session expo-apple-authentication expo-web-browser expo-constants
   - npm i firebase @react-navigation/native @react-navigation/native-stack @react-navigation/bottom-tabs react-native-screens react-native-safe-area-context
   - npx expo install react-native-screens react-native-safe-area-context
+  - Note: `app.json` includes the `expo-apple-authentication` plugin required for native iOS builds.
 
 5) Providers (native)
    - Google/Apple/Facebook on native require Expo AuthSession flows and native config.
    - This starter includes a Firebase popup flow for Web; on native, wire sign-in via expo-auth-session and pass credentials to Firebase (see comments in FirebaseAuthRepository and Expo docs).
 
 6) Run with Firebase
-   - npm run start
-   - Ensure .env is loaded (Expo reads EXPO_PUBLIC_* automatically)
+  - npm run start
+  - Ensure .env is loaded (Expo reads EXPO_PUBLIC_* automatically)
+  - In `app.json`, update iOS bundle identifier and Android package if needed.
+
+Transactions (Firestore)
+- Collection: `transactions` with fields: `userId` (string), `type` ('credit'|'debit'), `amount` (number, cents), `description` (string), `category` (optional string), `createdAt` (serverTimestamp)
+- Queries order by `createdAt desc` filtered by `userId` (you may be prompted by Firebase to create a composite index)
+
+Investments (Firestore)
+- Collection: `investments` with fields: `userId` (string), `type` (category), `amount` (number, cents)
 
 Data Standardization Notes
 - Firestore transactions use `createdAt` stored as `serverTimestamp()`; readers map Firestore `Timestamp` to epoch milliseconds to match domain model.
@@ -78,7 +89,7 @@ Data Standardization Notes
  - UI uses centralized theme tokens in `src/presentation/theme/theme.ts` to standardize colors (primary, success, danger, text, muted, border), spacing, and radius.
 
 Firebase Initialization (Real Mode)
-- When `EXPO_PUBLIC_USE_MOCK=false`, Firebase is initialized early inside `AppProviders` via `FirebaseAPI.ensureFirebase()`. This fails fast if any required Firebase env vars are missing, helping catch config issues on startup.
+- When `EXPO_PUBLIC_USE_MOCK=false`, Firebase is initialized early during DI container setup via `FirebaseAPI.ensureFirebase()`. This fails fast if any required Firebase env vars are missing, helping catch config issues on startup.
 
 Notes
 - Assets are referenced from the repo’s contents/figma folder to reflect designs without duplicating files.

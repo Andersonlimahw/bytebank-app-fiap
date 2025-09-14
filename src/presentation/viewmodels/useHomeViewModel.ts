@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDI } from '@app/store/diStore';
+import { useDI } from '../../store/diStore';
 import { TOKENS } from '../../core/di/container';
 import type { Transaction } from '../../domain/entities/Transaction';
 import type { TransactionRepository } from '../../domain/repositories/TransactionRepository';
-import { useAuth } from '@app/store/authStore';
+import { useAuth } from '../../store/authStore';
 import { GetRecentTransactions } from '../../application/usecases/GetRecentTransactions';
 import { GetBalance } from '../../application/usecases/GetBalance';
 

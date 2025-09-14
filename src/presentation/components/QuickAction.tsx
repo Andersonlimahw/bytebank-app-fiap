@@ -1,10 +1,10 @@
 import React from 'react';
-import { TouchableOpacity, Image, Text, StyleSheet, ViewStyle } from 'react-native';
+import { TouchableOpacity, Image, Text, StyleSheet, ViewStyle, ImageSourcePropType } from 'react-native';
 import { theme } from '../theme/theme';
 
 type Props = {
   label: string;
-  icon: any;
+  icon: ImageSourcePropType;
   onPress?: () => void;
   style?: ViewStyle;
 };

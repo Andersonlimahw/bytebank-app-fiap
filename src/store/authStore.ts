@@ -49,6 +49,8 @@ export const useAuthStore = create<AuthState>()(
     set({ loading: true });
     try {
       await repo.signIn('anonymous');
+      const u = await repo.getCurrentUser();
+      set({ user: u });
     } finally {
       set({ loading: false });
     }

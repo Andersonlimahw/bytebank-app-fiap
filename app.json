@@ -5,9 +5,9 @@
     "scheme": "bytebank",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./contents/figma/bytebank-figma/Logo.png",
+    "icon": "./contents/figma/icons/Logo.png",
     "splash": {
-      "image": "./contents/figma/bytebank-figma/Logo.png",
+      "image": "./contents/figma/icons/Logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#0A0A0A"
     },
@@ -28,8 +28,11 @@
     },
     "web": {
       "bundler": "metro",
-      "favicon": "./contents/figma/bytebank-figma/Favicon 64px.png"
+      "favicon": "./contents/figma/icons/Favicon 64px.png"
     },
+    "plugins": [
+      "expo-apple-authentication"
+    ],
     "extra": {
       "eas": {
         "projectId": "00000000-0000-0000-0000-000000000000"
@@ -37,4 +40,3 @@
     }
   }
 }
-

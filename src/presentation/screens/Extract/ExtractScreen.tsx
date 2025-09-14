@@ -7,7 +7,7 @@ import { useExtractViewModel } from '../../viewmodels/useExtractViewModel';
 import type { Transaction, TransactionType } from '../../../domain/entities/Transaction';
 import { Button } from '../../components/Button';
 
-export const ExtractScreen: React.FC = () => {
+export const ExtractScreen: React.FC<any> = ({ navigation }) => {
   const { loading, transactions, search, setSearch, refresh, remove, update } = useExtractViewModel();
 
   const [editing, setEditing] = useState<Transaction | null>(null);
@@ -98,6 +98,15 @@ export const ExtractScreen: React.FC = () => {
         />
       )}
 
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation?.navigate?.('AddTransaction')}
+        accessibilityRole="button"
+        accessibilityLabel="Adicionar transação"
+      >
+        <Text style={styles.fabText}>+</Text>
+      </TouchableOpacity>
+
       <Modal visible={!!editing} transparent animationType="fade" onRequestClose={() => setEditing(null)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
@@ -153,4 +162,6 @@ const styles = StyleSheet.create({
   typeText: { fontWeight: '600', color: theme.colors.muted },
   typeTextActive: { color: theme.colors.primary },
   modalActions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: theme.spacing.md },
+  fab: { position: 'absolute', right: 16, bottom: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: theme.colors.primary, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 4 },
+  fabText: { color: theme.colors.cardText, fontSize: 28, lineHeight: 30 },
 });

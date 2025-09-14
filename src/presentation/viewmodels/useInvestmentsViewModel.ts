@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useDI } from '@app/store/diStore';
+import { useDI } from '../../store/diStore';
 import { TOKENS } from '../../core/di/container';
 import type { Investment } from '../../domain/entities/Investment';
 import type { InvestmentRepository } from '../../domain/repositories/InvestmentRepository';
-import { useAuth } from '@app/store/authStore';
+import { useAuth } from '../../store/authStore';
 import { GetInvestments } from '../../application/usecases/GetInvestments';
 
 export function useInvestmentsViewModel() {

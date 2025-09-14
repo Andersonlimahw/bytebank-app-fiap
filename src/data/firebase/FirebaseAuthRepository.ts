@@ -4,8 +4,9 @@ import type { AuthProvider } from '../../domain/entities/AuthProvider';
 import { FirebaseAPI } from '../../infrastructure/firebase/firebase';
 import { Platform } from 'react-native';
 import { signInWithGoogleNative, signInWithAppleNative } from '../../infrastructure/auth/expoAuth';
+import type { User as FirebaseUser } from 'firebase/auth';
 
-function mapUser(u: any): User {
+function mapUser(u: FirebaseUser): User {
   return {
     id: u.uid,
     name: u.displayName || 'User',

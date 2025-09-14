@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
-import { useAuth } from '@app/store/authStore';
+import { useAuth } from '../../../store/authStore';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
 import { theme } from '../../theme/theme';
 

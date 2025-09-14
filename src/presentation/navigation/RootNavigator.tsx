@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useAuth } from '@app/store/authStore';
+import { useAuth } from '../../store/authStore';
 import { LoginScreen } from '../screens/Auth/LoginScreen';
 import { OnboardingScreen } from '../screens/Onboarding/OnboardingScreen';
 import { HomeScreen } from '../screens/Home/HomeScreen';
@@ -21,12 +21,11 @@ type AppTabParamList = {
   Dashboard: undefined;
   Investments: undefined;
   Extract: undefined;
-  Onboarding: undefined;
-  Login: undefined;
 };
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const Tab = createBottomTabNavigator<AppTabParamList>();
+const AppStack = createNativeStackNavigator();
 
 function AppTabs() {
   return (
@@ -41,8 +40,6 @@ function AppTabs() {
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ tabBarLabel: 'Dashboard', headerTitle: 'Dashboard' }} />
       <Tab.Screen name="Investments" component={InvestmentsScreen} options={{ tabBarLabel: 'Investimentos', headerTitle: 'Investimentos' }} />
       <Tab.Screen name="Extract" component={ExtractScreen} options={{ tabBarLabel: 'Extrato', headerTitle: 'Extrato' }} />
-      <Tab.Screen name="Onboarding" component={OnboardingScreen} options={{ tabBarLabel: 'Onboarding', headerTitle: 'Onboarding' }} />
-      <Tab.Screen name="Login" component={LoginScreen} options={{ tabBarLabel: 'Login', headerTitle: 'Login' }} />
     </Tab.Navigator>
   );
 }
@@ -94,5 +91,21 @@ export function RootNavigator() {
     );
   }
 
-  return <AppTabs />;
+  return (
+    <AppStack.Navigator>
+      <AppStack.Screen
+        name="MainTabs"
+        component={AppTabs}
+        options={{ headerShown: false }}
+      />
+      <AppStack.Screen
+        name="AddTransaction"
+        component={require('../screens/Transactions/AddTransactionScreen').AddTransactionScreen}
+        options={{
+          presentation: 'modal',
+          title: 'Nova transação',
+        }}
+      />
+    </AppStack.Navigator>
+  );
 }
