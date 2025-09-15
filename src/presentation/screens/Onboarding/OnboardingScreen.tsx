@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions, Image, NativeSyntheticEvent, NativeScrollEvent, Animated } from 'react-native';
 import { Button } from '../../components/Button';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
@@ -41,6 +41,18 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
   const [index, setIndex] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
   const { animatedStyle } = useFadeSlideInOnFocus();
+  const dotScales = useRef(slides.map(() => new Animated.Value(0))).current; // 0: inactive, 1: active
+
+  useEffect(() => {
+    dotScales.forEach((v, i) => {
+      Animated.spring(v, {
+        toValue: i === index ? 1 : 0,
+        useNativeDriver: true,
+        speed: 16,
+        bounciness: 6,
+      }).start();
+    });
+  }, [index, dotScales]);
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const x = e.nativeEvent.contentOffset.x;
@@ -80,8 +92,15 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
       <View style={styles.footer}>
         <View style={styles.dots}>
           {slides.map((_, i) => (
-            <View key={i} style={[styles.dot, i === index && styles.dotActive]} />)
-          )}
+            <Animated.View
+              key={i}
+              style={[
+                styles.dot,
+                i === index ? styles.dotActive : null,
+                { transform: [{ scale: dotScales[i].interpolate({ inputRange: [0, 1], outputRange: [1, 1.25] }) }] },
+              ]}
+            />
+          ))}
         </View>
         <View style={styles.actions}>
           {index < slides.length - 1 ? (

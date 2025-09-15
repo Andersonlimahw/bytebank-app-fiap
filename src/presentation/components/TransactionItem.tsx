@@ -1,16 +1,29 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
 import type { Transaction } from '../../domain/entities/Transaction';
 import { formatCurrency, formatDateShort } from '../../utils/format';
 import { theme } from '../theme/theme';
+import { SwipeableRow } from './SwipeableRow';
 
-type Props = { tx: Transaction; onPress?: () => void };
+type Props = { tx: Transaction; onPress?: () => void; onEdit?: () => void; onDelete?: () => void };
 
-export const TransactionItem: React.FC<Props> = ({ tx, onPress }) => {
+export const TransactionItem: React.FC<Props> = ({ tx, onPress, onEdit, onDelete }) => {
   const sign = tx.type === 'credit' ? '+' : '-';
   const color = tx.type === 'credit' ? theme.colors.success : theme.colors.danger;
-  return (
-    <TouchableOpacity onPress={onPress} activeOpacity={onPress ? 0.7 : 1} style={styles.row}
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(6)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 0, duration: 200, useNativeDriver: true }),
+    ]).start();
+  }, [opacity, translateY]);
+
+  const content = (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
       accessibilityRole={onPress ? 'button' : undefined}
       accessibilityLabel={onPress ? `Abrir opções para ${tx.description}` : undefined}
     >
@@ -22,12 +35,23 @@ export const TransactionItem: React.FC<Props> = ({ tx, onPress }) => {
       <Text style={[styles.amount, { color }]}>
         {sign} {formatCurrency(tx.amount)}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
+  );
+
+  return (
+    <Animated.View style={{ opacity, transform: [{ translateY }] }}>
+      {onEdit || onDelete ? (
+        <SwipeableRow onEdit={onEdit} onDelete={onDelete}>{content}</SwipeableRow>
+      ) : (
+        content
+      )}
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: theme.colors.border },
+  rowPressed: { backgroundColor: theme.colors.surface },
   title: { fontWeight: '600', fontSize: 16 },
   date: { color: theme.colors.muted, marginTop: 2 },
   category: { color: theme.colors.accent, marginTop: 2, fontSize: 12 },

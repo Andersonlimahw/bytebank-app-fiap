@@ -74,7 +74,7 @@ export const AddTransactionScreen: React.FC<any> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <Button title={loading ? 'Salvando...' : 'Salvar'} onPress={save} />
+      <Button title={'Salvar'} loading={loading} disabled={loading} onPress={save} />
     </View>
   );
 };
@@ -88,4 +88,3 @@ const styles = StyleSheet.create({
   typeText: { fontWeight: '600', color: theme.colors.muted },
   typeTextActive: { color: theme.colors.primary },
 });
-

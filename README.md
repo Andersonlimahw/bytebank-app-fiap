@@ -32,9 +32,19 @@ Getting Started
    - or: pnpm i / yarn
 
 3) Run the app
-   - Real (Firebase) mode: `npm run start` (uses `.env` and sets `EXPO_PUBLIC_USE_MOCK=false`).
+   - Real (Firebase) mode: `npm run start:firebase` (reads `.env` with `EXPO_PUBLIC_USE_MOCK=false`).
    - Mock mode (no Firebase needed): `npm run start:mocks`.
+   - Default: `npm run start` (no prebuild, uses current env).
    - In Metro, press `i` for iOS simulator or `a` for Android.
+
+Troubleshooting
+- PlatformConstants not found: This usually means a native/JS version mismatch or duplicate native modules.
+  - Remove explicit duplicates from dependencies: avoid pinning `react-native` and `expo-constants` directly in `package.json` for managed apps. Use `expo install` to get compatible versions.
+  - Reinstall deps and clear caches:
+    - `rm -rf node_modules package-lock.json` then `npm i`
+    - `npm run clear-cache` (runs `expo start --clear`)
+  - If you prebuilt native projects before, run `npx expo prebuild --clean` and rebuild the app.
+  - Ensure your Expo SDK and Expo Go app are up-to-date (this project targets SDK 54 / RN 0.75).
 
 Current Status
 - Mock repositories wired via DI, with automatic fallback if Firebase is misconfigured
@@ -63,7 +73,7 @@ Switching to Firebase
    - Apple Sign-In works only on iOS. Ensure your Apple capabilities are configured for your Bundle ID.
 
 4) Install required packages if not present
-  - npx expo install expo-auth-session expo-apple-authentication expo-web-browser expo-constants
+  - npx expo install expo-auth-session expo-apple-authentication expo-web-browser
   - npm i firebase @react-navigation/native @react-navigation/native-stack @react-navigation/bottom-tabs react-native-screens react-native-safe-area-context
   - npx expo install react-native-screens react-native-safe-area-context
   - Note: `app.json` includes the `expo-apple-authentication` plugin required for native iOS builds.

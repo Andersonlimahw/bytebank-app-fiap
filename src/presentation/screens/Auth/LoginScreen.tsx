@@ -20,6 +20,8 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [providerLoading, setProviderLoading] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(false);
   const { animatedStyle } = useFadeSlideInOnFocus();
 
   return (
@@ -34,9 +36,12 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
       <View style={{ height: theme.spacing.md }} />
       <Button
         title="Continue with Google"
+        loading={providerLoading}
+        disabled={providerLoading || emailLoading}
         onPress={async () => {
           setError(null);
           try {
+            setProviderLoading(true);
             await signIn("google");
           } catch (e: any) {
             // Provide more specific error messages for Google authentication
@@ -58,32 +63,39 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
             }
             setError(errorMessage);
           }
+          finally { setProviderLoading(false); }
         }}
       />
       <View style={{ height: theme.spacing.sm }} />
       {Platform.OS === "ios" && (
         <Button
           title="Continue with Apple"
+          loading={providerLoading}
+          disabled={providerLoading || emailLoading}
           onPress={async () => {
             setError(null);
             try {
+              setProviderLoading(true);
               await signIn("apple");
             } catch (e: any) {
               setError(e?.message ?? "Falha no login Apple");
-            }
+            } finally { setProviderLoading(false); }
           }}
         />
       )}
       <View style={{ height: theme.spacing.sm }} />
       <Button
         title="Continue Anonymously"
+        loading={providerLoading}
+        disabled={providerLoading || emailLoading}
         onPress={async () => {
           setError(null);
           try {
+            setProviderLoading(true);
             await signIn("anonymous");
           } catch (e: any) {
             setError(e?.message ?? "Falha no login anônimo");
-          }
+          } finally { setProviderLoading(false); }
         }}
       />
 
@@ -100,6 +112,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
       <Input
         placeholder="Password"
         secureTextEntry
+        showPasswordToggle
         value={password}
         onChangeText={setPassword}
         accessibilityLabel="Password"
@@ -107,6 +120,8 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
       />
       <Button
         title="Sign in with Email"
+        loading={emailLoading}
+        disabled={providerLoading || emailLoading}
         onPress={async () => {
           setError(null);
           const trimmedEmail = email.trim();
@@ -116,12 +131,15 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
             return;
           }
           try {
+            setEmailLoading(true);
             await signIn("password", {
               email: trimmedEmail,
               password: trimmedPassword,
             });
           } catch (e: any) {
             setError(e?.message ?? "Sign-in failed");
+          } finally {
+            setEmailLoading(false);
           }
         }}
       />

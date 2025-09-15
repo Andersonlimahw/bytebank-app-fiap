@@ -1,11 +1,12 @@
-import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, Modal, TouchableOpacity } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, Alert, Modal, Pressable, Animated, TouchableOpacity } from 'react-native';
 import { Input } from '../../components/Input';
 import { TransactionItem } from '../../components/TransactionItem';
 import { theme } from '../../theme/theme';
 import { useExtractViewModel } from '../../viewmodels/useExtractViewModel';
 import type { Transaction, TransactionType } from '../../../domain/entities/Transaction';
 import { Button } from '../../components/Button';
+import { Skeleton } from '../../components/Skeleton';
 
 export const ExtractScreen: React.FC<any> = ({ navigation }) => {
   const { loading, transactions, search, setSearch, refresh, remove, update } = useExtractViewModel();
@@ -72,6 +73,13 @@ export const ExtractScreen: React.FC<any> = ({ navigation }) => {
     setEditing(null);
   };
 
+  const fabScale = React.useRef(new Animated.Value(1)).current;
+  const fabIn = () => Animated.spring(fabScale, { toValue: 0.94, useNativeDriver: true, speed: 24, bounciness: 0 }).start();
+  const fabOut = () => Animated.spring(fabScale, { toValue: 1, useNativeDriver: true, speed: 16, bounciness: 6 }).start();
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const clamped = Animated.diffClamp(scrollY, 0, 80);
+  const fabTranslateY = clamped.interpolate({ inputRange: [0, 80], outputRange: [0, 100] });
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Extrato</Text>
@@ -81,31 +89,50 @@ export const ExtractScreen: React.FC<any> = ({ navigation }) => {
         onChangeText={setSearch}
         accessibilityLabel="Buscar no extrato"
       />
-
       {loading ? (
-        <ActivityIndicator style={{ marginTop: theme.spacing.lg }} />
+        <View style={{ marginTop: theme.spacing.md }}>
+          <Skeleton height={44} style={{ marginBottom: theme.spacing.sm }} />
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} height={52} style={{ marginBottom: theme.spacing.xs }} />
+          ))}
+        </View>
+      ) : transactions.length === 0 ? (
+        <View style={{ alignItems: 'center', marginTop: theme.spacing.lg }}>
+          <Text style={{ color: theme.colors.muted, marginBottom: theme.spacing.md }}>Nenhuma transação encontrada</Text>
+          <Button title="Adicionar transação" onPress={() => navigation?.navigate?.('AddTransaction')} />
+        </View>
       ) : (
-        <FlatList
+        <Animated.FlatList
           data={transactions}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <TransactionItem tx={item} onPress={() => openOptions(item)} />
+            <TransactionItem
+              tx={item}
+              onPress={() => openOptions(item)}
+              onEdit={() => startEdit(item)}
+              onDelete={() => confirmDelete(item)}
+            />
           )}
           refreshing={loading}
           onRefresh={refresh}
           contentContainerStyle={{ paddingBottom: theme.spacing.xl }}
           showsVerticalScrollIndicator={false}
+          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
         />
       )}
 
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => navigation?.navigate?.('AddTransaction')}
-        accessibilityRole="button"
-        accessibilityLabel="Adicionar transação"
-      >
-        <Text style={styles.fabText}>+</Text>
-      </TouchableOpacity>
+      <Animated.View style={[styles.fab, { transform: [{ scale: fabScale }, { translateY: fabTranslateY }] }]}> 
+        <Pressable
+          onPressIn={fabIn}
+          onPressOut={fabOut}
+          onPress={() => navigation?.navigate?.('AddTransaction')}
+          accessibilityRole="button"
+          accessibilityLabel="Adicionar transação"
+          style={{ alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
+        >
+          <Text style={styles.fabText}>+</Text>
+        </Pressable>
+      </Animated.View>
 
       <Modal visible={!!editing} transparent animationType="fade" onRequestClose={() => setEditing(null)}>
         <View style={styles.modalOverlay}>
@@ -162,6 +189,6 @@ const styles = StyleSheet.create({
   typeText: { fontWeight: '600', color: theme.colors.muted },
   typeTextActive: { color: theme.colors.primary },
   modalActions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: theme.spacing.md },
-  fab: { position: 'absolute', right: 16, bottom: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: theme.colors.primary, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 4 },
+  fab: { position: 'absolute', right: 16, bottom: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: theme.colors.primary, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 4, overflow: 'hidden' },
   fabText: { color: theme.colors.cardText, fontSize: 28, lineHeight: 30 },
 });

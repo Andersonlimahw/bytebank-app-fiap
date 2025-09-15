@@ -1,20 +1,35 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, Animated } from 'react-native';
 import { useInvestmentsViewModel } from '../../viewmodels/useInvestmentsViewModel';
 import { theme } from '../../theme/theme';
 import { formatCurrency } from '../../../utils/format';
+import { Skeleton } from '../../components/Skeleton';
+import { useFadeSlideInOnFocus, useChartEntranceAndPulse } from '../../hooks/animations';
 
 export const InvestmentsScreen: React.FC = () => {
   const { loading, total, rendaFixa, rendaVariavel } = useInvestmentsViewModel();
+  const { animatedStyle } = useFadeSlideInOnFocus();
+  const { animatedStyle: chartStyle } = useChartEntranceAndPulse(total);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: theme.spacing.xl }}>
-      <Text style={styles.title}>Investimentos</Text>
+    <Animated.ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: theme.spacing.xl }}>
+      <Animated.Text style={[styles.title, animatedStyle as any]}>Investimentos</Animated.Text>
 
       {loading ? (
-        <ActivityIndicator style={{ marginTop: theme.spacing.lg }} />
+        <View style={{ gap: theme.spacing.md }}>
+          <Skeleton height={24} width={160} />
+          <View style={styles.wrapper}>
+            <Skeleton height={24} width={200} style={{ marginBottom: theme.spacing.lg }} />
+            <View style={styles.cardsRow as any}>
+              <Skeleton height={72} style={{ flex: 1 }} />
+              <Skeleton height={72} style={{ flex: 1 }} />
+            </View>
+            <Skeleton height={20} width={120} style={{ marginTop: theme.spacing.lg }} />
+            <Skeleton height={180} />
+          </View>
+        </View>
       ) : (
-        <View style={styles.wrapper}>
+        <Animated.View style={[styles.wrapper, animatedStyle as any]}>
           <Text style={styles.total}>Total: {formatCurrency(total)}</Text>
 
           <View style={styles.cardsRow}>
@@ -31,11 +46,11 @@ export const InvestmentsScreen: React.FC = () => {
           <Text style={styles.statsTitle}>Estatísticas</Text>
           {/* Placeholder chart image (similar pattern used in Dashboard) */}
           <View style={styles.statsRow}>
-            <Image source={require('../../../../public/assets/images/icons/Gráfico pizza.png')} style={styles.chart} />
+            <Animated.Image source={require('../../../../public/assets/images/icons/Gráfico pizza.png')} style={[styles.chart, chartStyle as any]} />
           </View>
-        </View>
+        </Animated.View>
       )}
-    </ScrollView>
+    </Animated.ScrollView>
   );
 };
 

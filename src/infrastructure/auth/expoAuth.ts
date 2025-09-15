@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { getAuth, GoogleAuthProvider, OAuthProvider, signInWithCredential, User } from 'firebase/auth';
+import { GoogleAuthProvider, OAuthProvider, signInWithCredential, User } from 'firebase/auth';
 import { FirebaseAPI } from '../firebase/firebase';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -62,8 +62,7 @@ async function signInWithGoogleAuthSession(): Promise<User> {
 
   FirebaseAPI.ensureFirebase();
   const credential = GoogleAuthProvider.credential(idToken);
-  const auth = getAuth();
-  const res = await signInWithCredential(auth, credential);
+  const res = await signInWithCredential(FirebaseAPI.auth, credential);
   return res.user;
 }
 
@@ -83,7 +82,6 @@ export async function signInWithAppleNative(): Promise<User> {
   FirebaseAPI.ensureFirebase();
   const provider = new OAuthProvider('apple.com');
   const credential = provider.credential({ idToken });
-  const auth = getAuth();
-  const res = await signInWithCredential(auth, credential);
+  const res = await signInWithCredential(FirebaseAPI.auth, credential);
   return res.user;
 }
