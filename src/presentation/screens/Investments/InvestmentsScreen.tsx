@@ -6,16 +6,25 @@ import { investmentsStyles as styles } from './InvestmentsScreen.styles';
 import { formatCurrency } from '../../../utils/format';
 import { Skeleton } from '../../components/Skeleton';
 import { useFadeSlideInOnFocus, useChartEntranceAndPulse } from '../../hooks/animations';
+import { Avatar } from '../../components/Avatar';
+import { useAuth } from '../../../store/authStore';
 
-export const InvestmentsScreen: React.FC = () => {
+export const InvestmentsScreen: React.FC<any> = ({ navigation }) => {
   const { loading, total, rendaFixa, rendaVariavel } = useInvestmentsViewModel();
   const { animatedStyle } = useFadeSlideInOnFocus();
   const { animatedStyle: chartStyle } = useChartEntranceAndPulse(total);
+  const { user } = useAuth();
 
   return (
     <Animated.ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}
     >
-      <Animated.Text style={[styles.title, animatedStyle as any]}>Investimentos</Animated.Text>
+      <Animated.View style={[styles.header, animatedStyle as any]}>
+        <View>
+          <Text style={styles.hello}>Olá,</Text>
+          <Text style={styles.username}>{user?.name || 'Usuário'}</Text>
+        </View>
+        <Avatar username={user?.name} size={40} onPress={() => (navigation as any)?.navigate?.('User')} />
+      </Animated.View>
 
       {loading ? (
         <View style={styles.loadingGroup as any}>

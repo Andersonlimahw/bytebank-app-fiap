@@ -4,7 +4,9 @@ import { theme } from '../../theme/theme';
 export const investmentsStyles = StyleSheet.create({
   container: { flex: 1, padding: theme.spacing.lg, backgroundColor: theme.colors.background },
   contentContainer: { paddingBottom: theme.spacing.xl },
-  title: { fontSize: theme.text.h2, fontWeight: '700', color: theme.colors.text, marginBottom: theme.spacing.lg },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.spacing.lg },
+  hello: { color: theme.colors.muted },
+  username: { fontSize: theme.text.h2, fontWeight: '700', color: theme.colors.text },
   wrapper: {
     backgroundColor: theme.colors.card,
     borderRadius: theme.radius.md,

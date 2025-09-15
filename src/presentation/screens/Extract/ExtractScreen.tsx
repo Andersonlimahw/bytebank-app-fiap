@@ -8,9 +8,12 @@ import { useExtractViewModel } from '../../viewmodels/useExtractViewModel';
 import type { Transaction, TransactionType } from '../../../domain/entities/Transaction';
 import { Button } from '../../components/Button';
 import { Skeleton } from '../../components/Skeleton';
+import { Avatar } from '../../components/Avatar';
+import { useAuth } from '../../../store/authStore';
 
 export const ExtractScreen: React.FC<any> = ({ navigation }) => {
   const { loading, transactions, search, setSearch, refresh, remove, update } = useExtractViewModel();
+  const { user } = useAuth();
 
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [desc, setDesc] = useState('');
@@ -83,7 +86,13 @@ export const ExtractScreen: React.FC<any> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Extrato</Text>
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.hello}>Olá,</Text>
+          <Text style={styles.username}>{user?.name || 'Usuário'}</Text>
+        </View>
+        <Avatar username={user?.name} size={40} onPress={() => (navigation as any)?.navigate?.('User')} />
+      </View>
       <Input
         placeholder="Buscar"
         value={search}

@@ -8,6 +8,7 @@ import { QuickAction } from '../../components/QuickAction';
 import { theme } from '../../theme/theme';
 import { homeStyles as styles } from './HomeScreen.styles';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
+import { Avatar } from '../../components/Avatar';
 
 export const HomeScreen: React.FC<any> = ({ navigation }) => {
   const { loading, transactions, balance, refresh } = useHomeViewModel();
@@ -24,7 +25,7 @@ export const HomeScreen: React.FC<any> = ({ navigation }) => {
           <Text style={styles.hello}>Olá,</Text>
           <Text style={styles.username}>{user?.name || 'Usuário'}</Text>
         </View>
-        <Image source={require('../../../../public/assets/images/icons/Avatar.png')} style={styles.avatar} />
+        <Avatar username={user?.name} size={40} onPress={() => (navigation as any)?.navigate?.('User')} />
       </View>
 
       <Image source={require('../../../../contents/figma/home/Banner1-4.png')} style={styles.banner} />

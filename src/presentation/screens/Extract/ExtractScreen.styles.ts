@@ -3,7 +3,9 @@ import { theme } from '../../theme/theme';
 
 export const extractStyles = StyleSheet.create({
   container: { flex: 1, padding: theme.spacing.lg, backgroundColor: theme.colors.background },
-  title: { fontSize: theme.text.h2, fontWeight: '700', color: theme.colors.text, marginBottom: theme.spacing.sm },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.spacing.sm },
+  hello: { color: theme.colors.muted },
+  username: { fontSize: theme.text.h2, fontWeight: '700', color: theme.colors.text },
   loadingContainer: { marginTop: theme.spacing.md },
   loadingSkeletonTop: { marginBottom: theme.spacing.sm },
   loadingSkeletonItem: { marginBottom: theme.spacing.xs },

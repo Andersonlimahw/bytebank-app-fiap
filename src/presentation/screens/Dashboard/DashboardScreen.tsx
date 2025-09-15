@@ -7,6 +7,7 @@ import { useDashboardViewModel } from '../../viewmodels/useDashboardViewModel';
 import { theme } from '../../theme/theme';
 import { dashboardStyles as styles } from './DashboardScreen.styles';
 import { useFadeSlideInOnFocus, useChartEntranceAndPulse } from '../../hooks/animations';
+import { Avatar } from '../../components/Avatar';
 
 export const DashboardScreen: React.FC<any> = ({ navigation }) => {
   const { user, balance, transactions, loading, refresh, addDemoCredit, addDemoDebit } = useDashboardViewModel();
@@ -23,7 +24,7 @@ export const DashboardScreen: React.FC<any> = ({ navigation }) => {
           <Text style={styles.hello}>Olá,</Text>
           <Text style={styles.username}>{user?.name || 'Usuário'}</Text>
         </View>
-        <Image source={require('../../../../public/assets/images/icons/Avatar.png')} style={styles.avatar} />
+        <Avatar username={user?.name} size={40} onPress={() => (navigation as any)?.navigate?.('User')} />
       </View>
 
       <Image source={require('../../../../contents/figma/dashboard/Mobile _ Inicial.png')} style={styles.banner} />

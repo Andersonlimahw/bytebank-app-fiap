@@ -10,6 +10,7 @@ import { InvestmentsScreen } from "../screens/Investments/InvestmentsScreen";
 import { ExtractScreen } from "../screens/Extract/ExtractScreen";
 import { Text } from "react-native";
 import { rootNavigatorStyles as styles } from "./RootNavigator.styles";
+import { UserScreen } from "../screens/User/UserScreen";
 
 type AuthStackParamList = {
   Onboarding: undefined;
@@ -131,6 +132,11 @@ export function RootNavigator() {
         name="MainTabs"
         component={AppTabs}
         options={{ headerShown: false }}
+      />
+      <AppStack.Screen
+        name="User"
+        component={UserScreen}
+        options={{ title: "Minha Conta" }}
       />
       <AppStack.Screen
         name="Pix"
