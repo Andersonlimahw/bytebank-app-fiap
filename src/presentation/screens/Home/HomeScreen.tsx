@@ -9,7 +9,7 @@ import { theme } from '../../theme/theme';
 import { homeStyles as styles } from './HomeScreen.styles';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
 
-export const HomeScreen: React.FC = () => {
+export const HomeScreen: React.FC<any> = ({ navigation }) => {
   const { loading, transactions, balance, refresh } = useHomeViewModel();
   const { user, signOut } = useAuth();
   const { animatedStyle } = useFadeSlideInOnFocus();
@@ -37,7 +37,7 @@ export const HomeScreen: React.FC = () => {
 
       <Text style={styles.sectionTitle}>Atalhos</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.actionsRow}>
-        <QuickAction label="Pix" icon={require('../../../../public/assets/images/icons/Ícone Pix.png')} />
+        <QuickAction label="Pix" icon={require('../../../../public/assets/images/icons/Ícone Pix.png')} onPress={() => (navigation as any)?.navigate?.('Pix')} />
         <QuickAction label="Cartões" icon={require('../../../../public/assets/images/icons/Ícone cartões.png')} style={styles.actionGap} />
         <QuickAction label="Empréstimo" icon={require('../../../../public/assets/images/icons/Ícone empréstimo.png')} style={styles.actionGap} />
         <QuickAction label="Saque" icon={require('../../../../public/assets/images/icons/Ícone Saque.png')} style={styles.actionGap} />

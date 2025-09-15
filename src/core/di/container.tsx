@@ -1,6 +1,7 @@
 import type { AuthRepository } from '../../domain/repositories/AuthRepository';
 import type { TransactionRepository } from '../../domain/repositories/TransactionRepository';
 import type { InvestmentRepository } from '../../domain/repositories/InvestmentRepository';
+import type { PixRepository } from '../../domain/repositories/PixRepository';
 
 export type Token<T> = symbol & { __type?: T };
 
@@ -26,6 +27,7 @@ export const TOKENS = {
   AuthRepository: Symbol('AuthRepository') as Token<AuthRepository>,
   TransactionRepository: Symbol('TransactionRepository') as Token<TransactionRepository>,
   InvestmentRepository: Symbol('InvestmentRepository') as Token<InvestmentRepository>,
+  PixRepository: Symbol('PixRepository') as Token<PixRepository>,
 };
 
 export function createDI(container: Container): DI {

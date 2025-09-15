@@ -8,7 +8,7 @@ import { theme } from '../../theme/theme';
 import { dashboardStyles as styles } from './DashboardScreen.styles';
 import { useFadeSlideInOnFocus, useChartEntranceAndPulse } from '../../hooks/animations';
 
-export const DashboardScreen: React.FC = () => {
+export const DashboardScreen: React.FC<any> = ({ navigation }) => {
   const { user, balance, transactions, loading, refresh, addDemoCredit, addDemoDebit } = useDashboardViewModel();
   const { animatedStyle } = useFadeSlideInOnFocus();
   const { animatedStyle: chartStyle } = useChartEntranceAndPulse(transactions?.length ?? 0);
@@ -45,7 +45,7 @@ export const DashboardScreen: React.FC = () => {
 
       <Text style={styles.sectionTitle}>Atalhos</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.actionsRow}>
-        <QuickAction label="Pix" icon={require('../../../../public/assets/images/icons/Ícone Pix.png')} />
+        <QuickAction label="Pix" icon={require('../../../../public/assets/images/icons/Ícone Pix.png')} onPress={() => (navigation as any)?.navigate?.('Pix')} />
         <QuickAction label="Cartões" icon={require('../../../../public/assets/images/icons/Ícone cartões.png')} style={styles.actionGap} />
         <QuickAction label="Empréstimo" icon={require('../../../../public/assets/images/icons/Ícone empréstimo.png')} style={styles.actionGap} />
         <QuickAction label="Saque" icon={require('../../../../public/assets/images/icons/Ícone Saque.png')} style={styles.actionGap} />
