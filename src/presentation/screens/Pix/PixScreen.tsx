@@ -170,11 +170,39 @@ export const PixScreen: React.FC<any> = () => {
           <Text style={{ fontWeight: '600', marginTop: 12 }}>Adicionar chave</Text>
           <View style={[styles.row, { marginTop: 8, flexWrap: 'wrap' }]}> 
             {(['email','phone','cpf','random'] as const).map((t) => (
-              <TouchableOpacity key={t} style={[styles.smallBtn, { marginRight: 8, marginBottom: 8 }]} onPress={async () => { try { await addKey(t); } catch (e: any) { Alert.alert('Erro ao adicionar chave', e?.message || 'Não foi possível adicionar a chave'); } }}>
-                <Text style={styles.smallBtnText}>+ {t.toUpperCase()}</Text>
+              <TouchableOpacity
+                key={t}
+                style={[styles.smallBtn, { marginRight: 8, marginBottom: 8 }]}
+                onPress={() => setNewKey({ type: t })}
+              >
+                <Text style={styles.smallBtnText}>{newKey.type === t ? '• ' : ''}{t.toUpperCase()}</Text>
               </TouchableOpacity>
             ))}
           </View>
+          {newKey.type !== 'random' && (
+            <TextInput
+              placeholder={newKey.type === 'email' ? 'seu-email@exemplo.com' : newKey.type === 'phone' ? '+55 (DDD) 9....' : 'CPF somente números'}
+              value={newKey.value}
+              onChangeText={(t) => setNewKey((s) => ({ ...s, value: t }))}
+              style={styles.input}
+              autoCapitalize={newKey.type === 'email' ? 'none' : 'none'}
+              keyboardType={newKey.type === 'phone' || newKey.type === 'cpf' ? 'number-pad' : 'email-address'}
+            />
+          )}
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={async () => {
+              try {
+                await addKey(newKey.type, newKey.value);
+                setNewKey({ type: 'random', value: undefined });
+              } catch (e: any) {
+                Alert.alert('Erro ao adicionar chave', e?.message || 'Não foi possível adicionar a chave');
+              }
+            }}
+            accessibilityRole="button"
+          >
+            <Text style={styles.btnText}>Adicionar chave {newKey.type.toUpperCase()}</Text>
+          </TouchableOpacity>
         </View>
       )}
 

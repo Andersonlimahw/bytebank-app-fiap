@@ -52,6 +52,7 @@ Current Status
 - Home shows balance and recent transactions
 - Dashboard shows income/expense summary and allows adding demo credits/debits
 - Extract supports search, edit, delete, and now adding new transactions (modal)
+ - PIX screen with send, QR pay/receive, keys, favorites, history, and limits
 
 Switching to Firebase
 1) Create a Firebase project and a web app to obtain config.
@@ -118,3 +119,26 @@ Scripts
 - start: Launch Metro bundler
 - android / ios: Build and run a dev prebuild (requires native toolchains)
 - typecheck: TypeScript validation without emitting
+PIX (Firestore)
+- Collections and fields:
+  - `pixKeys`: `userId` (string), `type` ('email'|'phone'|'cpf'|'random'), `value` (string), `active` (bool), `createdAt` (serverTimestamp)
+  - `pixFavorites`: `userId` (string), `alias` (string), `keyValue` (string), `name` (optional string), `createdAt` (serverTimestamp)
+  - `pixTransfers`: `userId` (payer id, string), `toKey` (string), `toName` (optional string), `amount` (number, cents), `description` (optional), `status` ('completed'|'pending'|'failed'), `method` ('key'|'qr'), `createdAt` (serverTimestamp)
+  - `pixQrCharges`: `userId` (merchant id), `amount` (number|null, cents), `description` (string|null), `status` ('pending'|'paid'), `payload` (string), `createdAt` (serverTimestamp), `paidAt` (serverTimestamp|null), `payerId` (string|null)
+
+PIX Features
+- Send by key: validates limits (daily, nightly, per-transfer) and records a debit in `transactions`. If the destination key exists, credits the recipient’s `transactions`.
+- Pay QR: parses a simplified `PIXQR:` payload or `key|amount|desc` string, debits the payer, and updates any matching `pixQrCharges` to `paid` (credits merchant).
+- Receive via QR: creates a `pixQrCharges` doc and returns a shareable payload string.
+- Keys: list/add/remove. You can add email/phone/CPF with a custom value (or generate random keys).
+- Favorites: list/add/remove. Used as quick references for frequent keys.
+- History: lists last PIX transfers for the current user.
+- Limits: per user document in `pixLimits` with defaults that you can update in-app.
+
+Indexes
+- Firestore may prompt you to create indexes for queries combining `where('userId','==',...)` and `orderBy('createdAt','desc')` on collections above. Create the suggested index in the Firebase console if requested.
+
+Enabling Real PIX Mode
+- Set `EXPO_PUBLIC_USE_MOCK=false` and Firebase envs in `.env`.
+- Install required deps (see Switching to Firebase above) and run the app.
+- Sign in (email/password, anonymous, or a provider). PIX data is scoped to the signed-in `userId`.
