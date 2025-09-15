@@ -13,7 +13,7 @@ import {
   OAuthProvider,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-} from "@firebase/auth";
+} from "firebase/auth";
 // RN-specific persistence helper (tree-shaken on web)
 // Types are declared in src/types/firebase-react-native.d.ts
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -39,7 +39,7 @@ export function ensureFirebase() {
     // Use RN persistence on native to avoid web storage and ensure session persistence
     if (Platform.OS === "ios" || Platform.OS === "android") {
       try {
-        auth = getAuth(app);
+        auth = initializeAuth(app);
       } catch (e) {
         // If already initialized (hot reload), fallback to getAuth
         auth = getAuth(app);
