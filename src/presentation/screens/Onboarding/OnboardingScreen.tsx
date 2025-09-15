@@ -1,8 +1,9 @@
 import React, { useMemo, useRef, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, Image, NativeSyntheticEvent, NativeScrollEvent, Animated } from 'react-native';
+import { View, Text, ScrollView, Dimensions, Image, NativeSyntheticEvent, NativeScrollEvent, Animated } from 'react-native';
 import { Button } from '../../components/Button';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
 import { goToLogin } from '../../navigation/navigationUtils';
+import { onboardingStyles as styles } from './OnboardingScreen.styles';
 
 const { width } = Dimensions.get('window');
 
@@ -106,7 +107,7 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
           {index < slides.length - 1 ? (
             <>
               <Button title="Skip" onPress={finish} />
-              <View style={{ width: 12 }} />
+              <View style={styles.spacer} />
               <Button title="Next" onPress={goNext} />
             </>
           ) : (
@@ -118,15 +119,4 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  slide: { flex: 1, paddingHorizontal: 24, alignItems: 'center', justifyContent: 'center' },
-  image: { width: width * 0.8, height: width * 0.8, resizeMode: 'contain', marginBottom: 16 },
-  title: { fontSize: 24, fontWeight: '800', textAlign: 'center' },
-  subtitle: { fontSize: 14, color: '#6b7280', textAlign: 'center', marginTop: 8 },
-  footer: { padding: 16 },
-  dots: { flexDirection: 'row', alignSelf: 'center', marginBottom: 12 },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#e5e7eb', marginHorizontal: 4 },
-  dotActive: { backgroundColor: '#111827' },
-  actions: { flexDirection: 'row', justifyContent: 'center' },
-});
+// styles moved to OnboardingScreen.styles.ts

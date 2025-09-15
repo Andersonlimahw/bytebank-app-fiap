@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
-import { Image, Text, StyleSheet, ViewStyle, ImageSourcePropType, Animated, Pressable, Vibration } from 'react-native';
+import { Image, Text, ViewStyle, ImageSourcePropType, Animated, Pressable, Vibration } from 'react-native';
 import { theme } from '../theme/theme';
+import { quickActionStyles as styles } from './QuickAction.styles';
 
 type Props = {
   label: string;
@@ -32,17 +33,4 @@ export const QuickAction: React.FC<Props> = ({ label, icon, onPress, style }) =>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    width: 88,
-    height: 88,
-    borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: theme.spacing.sm,
-  },
-  containerPressed: { opacity: 0.95 },
-  icon: { width: 28, height: 28, resizeMode: 'contain', marginBottom: 6 },
-  label: { fontSize: 12, fontWeight: '600', textAlign: 'center', color: theme.colors.text },
-});
+/** styles moved to QuickAction.styles.ts */

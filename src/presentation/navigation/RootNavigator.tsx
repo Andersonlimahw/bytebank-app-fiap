@@ -9,6 +9,7 @@ import { DashboardScreen } from '../screens/Dashboard/DashboardScreen';
 import { InvestmentsScreen } from '../screens/Investments/InvestmentsScreen';
 import { ExtractScreen } from '../screens/Extract/ExtractScreen';
 import { Text } from 'react-native';
+import { rootNavigatorStyles as styles } from './RootNavigator.styles';
 
 type AuthStackParamList = {
   Onboarding: undefined;
@@ -48,7 +49,7 @@ export function RootNavigator() {
   const { user, loading } = useAuth();
 
   if (loading || user === undefined) {
-    return <Text style={{ marginTop: 64, textAlign: 'center' }}>Loading...</Text>;
+    return <Text style={styles.loading}>Loading...</Text>;
   }
 
   if (!user) {

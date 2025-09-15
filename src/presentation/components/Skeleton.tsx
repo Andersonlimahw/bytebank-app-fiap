@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleProp, ViewStyle } from 'react-native';
 import { theme } from '../theme/theme';
+import { skeletonStyles as styles } from './Skeleton.styles';
 
 type Props = {
   width?: number | `${number}%` | 'auto';
@@ -26,12 +27,12 @@ export const Skeleton: React.FC<Props> = ({ width = '100%' as `${number}%`, heig
   return (
     <Animated.View
       style={[
+        styles.base,
         {
           // casting to any to satisfy Animated style width typing for percentage values
           width: width as any,
           height,
           borderRadius: radius,
-          backgroundColor: theme.colors.surface,
           opacity,
         } as any,
         style,

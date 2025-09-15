@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Animated, PanResponder, StyleSheet, View, Text, Pressable } from 'react-native';
+import { Animated, PanResponder, View, Text, Pressable } from 'react-native';
 import { theme } from '../theme/theme';
+import { swipeableRowStyles as styles } from './SwipeableRow.styles';
 
 type Props = {
   children: React.ReactNode;
@@ -64,10 +65,4 @@ export const SwipeableRow: React.FC<Props> = ({ children, onEdit, onDelete, righ
   );
 };
 
-const styles = StyleSheet.create({
-  wrapper: { width: '100%', overflow: 'hidden' },
-  actions: { position: 'absolute', right: 0, top: 0, bottom: 0, flexDirection: 'row' },
-  actionBtn: { width: 80, alignItems: 'center', justifyContent: 'center' },
-  actionText: { color: '#fff', fontWeight: '700' },
-});
-
+/** styles moved to SwipeableRow.styles.ts */

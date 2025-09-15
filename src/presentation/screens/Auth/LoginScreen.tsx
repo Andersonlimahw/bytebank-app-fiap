@@ -1,19 +1,12 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  Platform,
-  Animated,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity, Platform, Animated } from "react-native";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { useAuth } from "../../../store/authStore";
 import { useFadeSlideInOnFocus } from "../../hooks/animations";
 import { AppConfig } from "../../../config/appConfig";
 import { theme } from "../../theme/theme";
+import { loginStyles as styles } from "./LoginScreen.styles";
 
 export const LoginScreen: React.FC<any> = ({ navigation }) => {
   const { signIn } = useAuth();
@@ -33,7 +26,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
       <Text style={styles.title}>Welcome to ByteBank</Text>
       <Text style={styles.subtitle}>Sign in to continue</Text>
 
-      <View style={{ height: theme.spacing.md }} />
+      <View style={styles.spacerMd} />
       <Button
         title="Continue with Google"
         loading={providerLoading}
@@ -66,7 +59,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
           finally { setProviderLoading(false); }
         }}
       />
-      <View style={{ height: theme.spacing.sm }} />
+      <View style={styles.spacerSm} />
       {Platform.OS === "ios" && (
         <Button
           title="Continue with Apple"
@@ -83,7 +76,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
           }}
         />
       )}
-      <View style={{ height: theme.spacing.sm }} />
+      <View style={styles.spacerSm} />
       <Button
         title="Continue Anonymously"
         loading={providerLoading}
@@ -99,7 +92,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
         }}
       />
 
-      <View style={{ height: theme.spacing.lg }} />
+      <View style={styles.spacerLg} />
       <Text style={styles.altTitle}>Or use email</Text>
       <Input
         placeholder="Email"
@@ -158,39 +151,4 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: theme.spacing.xl,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: theme.colors.background,
-  },
-  logo: {
-    width: 96,
-    height: 96,
-    resizeMode: "contain",
-    marginBottom: theme.spacing.md,
-  },
-  title: {
-    fontSize: theme.text.h1,
-    fontWeight: "700",
-    color: theme.colors.text,
-  },
-  subtitle: {
-    color: theme.colors.muted,
-    marginTop: 4,
-    marginBottom: theme.spacing.md,
-  },
-  altTitle: {
-    alignSelf: "flex-start",
-    marginBottom: theme.spacing.sm,
-    color: theme.colors.muted,
-  },
-  hint: {
-    marginTop: theme.spacing.md,
-    color: theme.colors.muted,
-    textAlign: "center",
-  },
-  link: { marginTop: theme.spacing.sm, color: theme.colors.primary },
-});
+/** styles moved to LoginScreen.styles.ts */

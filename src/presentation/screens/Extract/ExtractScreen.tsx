@@ -1,8 +1,9 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Alert, Modal, Pressable, Animated, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Alert, Modal, Pressable, Animated, TouchableOpacity } from 'react-native';
 import { Input } from '../../components/Input';
 import { TransactionItem } from '../../components/TransactionItem';
 import { theme } from '../../theme/theme';
+import { extractStyles as styles } from './ExtractScreen.styles';
 import { useExtractViewModel } from '../../viewmodels/useExtractViewModel';
 import type { Transaction, TransactionType } from '../../../domain/entities/Transaction';
 import { Button } from '../../components/Button';
@@ -90,15 +91,15 @@ export const ExtractScreen: React.FC<any> = ({ navigation }) => {
         accessibilityLabel="Buscar no extrato"
       />
       {loading ? (
-        <View style={{ marginTop: theme.spacing.md }}>
-          <Skeleton height={44} style={{ marginBottom: theme.spacing.sm }} />
+        <View style={styles.loadingContainer}>
+          <Skeleton height={44} style={styles.loadingSkeletonTop} />
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} height={52} style={{ marginBottom: theme.spacing.xs }} />
+            <Skeleton key={i} height={52} style={styles.loadingSkeletonItem} />
           ))}
         </View>
       ) : transactions.length === 0 ? (
-        <View style={{ alignItems: 'center', marginTop: theme.spacing.lg }}>
-          <Text style={{ color: theme.colors.muted, marginBottom: theme.spacing.md }}>Nenhuma transação encontrada</Text>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>Nenhuma transação encontrada</Text>
           <Button title="Adicionar transação" onPress={() => navigation?.navigate?.('AddTransaction')} />
         </View>
       ) : (
@@ -115,7 +116,7 @@ export const ExtractScreen: React.FC<any> = ({ navigation }) => {
           )}
           refreshing={loading}
           onRefresh={refresh}
-          contentContainerStyle={{ paddingBottom: theme.spacing.xl }}
+          contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
         />
@@ -128,7 +129,7 @@ export const ExtractScreen: React.FC<any> = ({ navigation }) => {
           onPress={() => navigation?.navigate?.('AddTransaction')}
           accessibilityRole="button"
           accessibilityLabel="Adicionar transação"
-          style={{ alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
+          style={styles.fabPressable}
         >
           <Text style={styles.fabText}>+</Text>
         </Pressable>
@@ -167,8 +168,8 @@ export const ExtractScreen: React.FC<any> = ({ navigation }) => {
             </View>
 
             <View style={styles.modalActions}>
-              <Button title="Cancelar" onPress={() => setEditing(null)} style={{ backgroundColor: theme.colors.surface }} textStyle={{ color: theme.colors.text }} />
-              <Button title="Salvar" onPress={saveEdit} style={{ marginLeft: theme.spacing.sm }} />
+              <Button title="Cancelar" onPress={() => setEditing(null)} style={styles.modalCancelBtn} textStyle={{ color: theme.colors.text }} />
+              <Button title="Salvar" onPress={saveEdit} style={styles.modalSaveBtn} />
             </View>
           </View>
         </View>
@@ -177,18 +178,4 @@ export const ExtractScreen: React.FC<any> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: theme.spacing.lg, backgroundColor: theme.colors.background },
-  title: { fontSize: theme.text.h2, fontWeight: '700', color: theme.colors.text, marginBottom: theme.spacing.sm },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', alignItems: 'center', justifyContent: 'center', padding: theme.spacing.lg },
-  modalCard: { width: '100%', borderRadius: theme.radius.md, backgroundColor: theme.colors.background, padding: theme.spacing.lg },
-  modalTitle: { fontSize: theme.text.h2, fontWeight: '700', marginBottom: theme.spacing.sm, color: theme.colors.text },
-  typeRow: { flexDirection: 'row', marginTop: theme.spacing.sm, marginBottom: theme.spacing.md },
-  typeBtn: { flex: 1, paddingVertical: 10, borderRadius: theme.radius.sm, borderWidth: StyleSheet.hairlineWidth, borderColor: theme.colors.border, alignItems: 'center' },
-  typeBtnActive: { backgroundColor: theme.colors.surface, borderColor: theme.colors.primary },
-  typeText: { fontWeight: '600', color: theme.colors.muted },
-  typeTextActive: { color: theme.colors.primary },
-  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: theme.spacing.md },
-  fab: { position: 'absolute', right: 16, bottom: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: theme.colors.primary, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 4, overflow: 'hidden' },
-  fabText: { color: theme.colors.cardText, fontSize: 28, lineHeight: 30 },
-});
+/** styles moved to ExtractScreen.styles.ts */

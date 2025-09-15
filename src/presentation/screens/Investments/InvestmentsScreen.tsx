@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, Animated } from 'react-native';
+import { View, Text, Image, ScrollView, Animated } from 'react-native';
 import { useInvestmentsViewModel } from '../../viewmodels/useInvestmentsViewModel';
 import { theme } from '../../theme/theme';
+import { investmentsStyles as styles } from './InvestmentsScreen.styles';
 import { formatCurrency } from '../../../utils/format';
 import { Skeleton } from '../../components/Skeleton';
 import { useFadeSlideInOnFocus, useChartEntranceAndPulse } from '../../hooks/animations';
@@ -12,19 +13,20 @@ export const InvestmentsScreen: React.FC = () => {
   const { animatedStyle: chartStyle } = useChartEntranceAndPulse(total);
 
   return (
-    <Animated.ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: theme.spacing.xl }}>
+    <Animated.ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}
+    >
       <Animated.Text style={[styles.title, animatedStyle as any]}>Investimentos</Animated.Text>
 
       {loading ? (
-        <View style={{ gap: theme.spacing.md }}>
+        <View style={styles.loadingGroup as any}>
           <Skeleton height={24} width={160} />
           <View style={styles.wrapper}>
-            <Skeleton height={24} width={200} style={{ marginBottom: theme.spacing.lg }} />
+            <Skeleton height={24} width={200} style={styles.skeletonHeader} />
             <View style={styles.cardsRow as any}>
-              <Skeleton height={72} style={{ flex: 1 }} />
-              <Skeleton height={72} style={{ flex: 1 }} />
+              <Skeleton height={72} style={styles.skeletonCard} />
+              <Skeleton height={72} style={styles.skeletonCard} />
             </View>
-            <Skeleton height={20} width={120} style={{ marginTop: theme.spacing.lg }} />
+            <Skeleton height={20} width={120} style={styles.skeletonFooter} />
             <Skeleton height={180} />
           </View>
         </View>
@@ -54,16 +56,4 @@ export const InvestmentsScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: theme.spacing.lg, backgroundColor: theme.colors.background },
-  title: { fontSize: theme.text.h2, fontWeight: '700', color: theme.colors.text, marginBottom: theme.spacing.lg },
-  wrapper: { backgroundColor: theme.colors.card, borderRadius: theme.radius.md, padding: theme.spacing.lg },
-  total: { fontSize: theme.text.h2, fontWeight: '700', color: theme.colors.text, marginBottom: theme.spacing.lg },
-  cardsRow: { flexDirection: 'row', gap: theme.spacing.md } as any,
-  card: { flex: 1, backgroundColor: theme.colors.primary, borderRadius: theme.radius.md, paddingVertical: theme.spacing.md, alignItems: 'center' },
-  cardTitle: { color: '#fff', marginBottom: theme.spacing.xs },
-  cardValue: { color: '#fff', fontWeight: '700' },
-  statsTitle: { marginTop: theme.spacing.lg, marginBottom: theme.spacing.sm, fontWeight: '700', color: theme.colors.text, fontSize: 16 },
-  statsRow: { backgroundColor: theme.colors.primary, borderRadius: theme.radius.md, padding: theme.spacing.md, alignItems: 'center' },
-  chart: { width: '100%', height: 220, resizeMode: 'contain' },
-});
+/** styles moved to InvestmentsScreen.styles.ts */

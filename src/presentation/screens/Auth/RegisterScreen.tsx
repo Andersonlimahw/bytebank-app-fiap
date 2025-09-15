@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { useAuth } from '../../../store/authStore';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
 import { theme } from '../../theme/theme';
+import { registerStyles as styles } from './RegisterScreen.styles';
 
 export const RegisterScreen: React.FC<any> = ({ navigation }) => {
   const { signUp } = useAuth();
@@ -79,10 +80,4 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: theme.spacing.xl, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.background },
-  illustration: { width: 160, height: 160, resizeMode: 'contain', marginBottom: theme.spacing.md },
-  title: { fontSize: theme.text.h1, fontWeight: '700', color: theme.colors.text },
-  subtitle: { color: theme.colors.muted, marginTop: 4, marginBottom: theme.spacing.md },
-  link: { marginTop: theme.spacing.md, color: theme.colors.primary },
-});
+// styles moved to RegisterScreen.styles.ts

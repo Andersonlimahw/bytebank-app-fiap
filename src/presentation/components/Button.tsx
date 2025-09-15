@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
-import { Text, StyleSheet, GestureResponderEvent, ViewStyle, TextStyle, Animated, Pressable, ActivityIndicator, View } from 'react-native';
+import { Text, GestureResponderEvent, ViewStyle, TextStyle, Animated, Pressable, ActivityIndicator, View } from 'react-native';
 import { theme } from '../theme/theme';
+import { buttonStyles as styles } from './Button.styles';
 
 type Props = {
   title: string;
@@ -34,27 +35,10 @@ export const Button: React.FC<Props> = ({ title, onPress, style, textStyle, disa
         hitSlop={8}
       >
         <View style={styles.innerRow}>
-          {loading ? <ActivityIndicator color={theme.colors.cardText} style={{ marginRight: 8 }} /> : null}
+          {loading ? <ActivityIndicator color={theme.colors.cardText} style={styles.activityIndicator} /> : null}
           <Text style={[styles.text, textStyle]}>{title}</Text>
         </View>
       </Pressable>
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  btn: {
-    backgroundColor: theme.colors.primary,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: theme.radius.md,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 2,
-  },
-  btnPressed: { transform: [{ scale: 0.98 }] as any },
-  innerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  text: { color: theme.colors.cardText, fontWeight: '600', textAlign: 'center' }
-});

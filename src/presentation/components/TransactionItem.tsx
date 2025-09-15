@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
+import { View, Text, Pressable, Animated } from 'react-native';
 import type { Transaction } from '../../domain/entities/Transaction';
 import { formatCurrency, formatDateShort } from '../../utils/format';
 import { theme } from '../theme/theme';
+import { transactionItemStyles as styles } from './TransactionItem.styles';
 import { SwipeableRow } from './SwipeableRow';
 
 type Props = { tx: Transaction; onPress?: () => void; onEdit?: () => void; onDelete?: () => void };
@@ -27,7 +28,7 @@ export const TransactionItem: React.FC<Props> = ({ tx, onPress, onEdit, onDelete
       accessibilityRole={onPress ? 'button' : undefined}
       accessibilityLabel={onPress ? `Abrir opções para ${tx.description}` : undefined}
     >
-      <View style={{ flex: 1 }}>
+      <View style={styles.content}>
         <Text style={styles.title}>{tx.description}</Text>
         <Text style={styles.date}>{formatDateShort(new Date(tx.createdAt))}</Text>
         {!!tx.category && <Text style={styles.category}>{tx.category}</Text>}
@@ -49,11 +50,4 @@ export const TransactionItem: React.FC<Props> = ({ tx, onPress, onEdit, onDelete
   );
 };
 
-const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: theme.colors.border },
-  rowPressed: { backgroundColor: theme.colors.surface },
-  title: { fontWeight: '600', fontSize: 16 },
-  date: { color: theme.colors.muted, marginTop: 2 },
-  category: { color: theme.colors.accent, marginTop: 2, fontSize: 12 },
-  amount: { fontWeight: '700' }
-});
+/** styles moved to TransactionItem.styles.ts */

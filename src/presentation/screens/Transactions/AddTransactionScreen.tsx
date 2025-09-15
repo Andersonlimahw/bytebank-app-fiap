@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { theme } from '../../theme/theme';
+import { addTransactionStyles as styles } from './AddTransactionScreen.styles';
 import type { TransactionType } from '../../../domain/entities/Transaction';
 import type { TransactionRepository } from '../../../domain/repositories/TransactionRepository';
 import { TOKENS } from '../../../core/di/container';
@@ -66,7 +67,7 @@ export const AddTransactionScreen: React.FC<any> = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setType('debit')}
-          style={[styles.typeBtn, { marginLeft: theme.spacing.sm }, type === 'debit' ? styles.typeBtnActive : undefined]}
+          style={[styles.typeBtn, styles.typeBtnSpacer, type === 'debit' ? styles.typeBtnActive : undefined]}
           accessibilityRole="button"
           accessibilityLabel="Selecionar débito"
         >
@@ -79,12 +80,4 @@ export const AddTransactionScreen: React.FC<any> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: theme.spacing.lg, backgroundColor: theme.colors.background },
-  title: { fontSize: theme.text.h2, fontWeight: '700', color: theme.colors.text, marginBottom: theme.spacing.sm },
-  typeRow: { flexDirection: 'row', marginTop: theme.spacing.sm, marginBottom: theme.spacing.md },
-  typeBtn: { flex: 1, paddingVertical: 10, borderRadius: theme.radius.sm, borderWidth: StyleSheet.hairlineWidth, borderColor: theme.colors.border, alignItems: 'center' },
-  typeBtnActive: { backgroundColor: theme.colors.surface, borderColor: theme.colors.primary },
-  typeText: { fontWeight: '600', color: theme.colors.muted },
-  typeTextActive: { color: theme.colors.primary },
-});
+// styles moved to AddTransactionScreen.styles.ts

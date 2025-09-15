@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { TextInput, StyleSheet, TextInputProps, View, Text, StyleProp, TextStyle, Animated, Pressable } from 'react-native';
+import { TextInput, TextInputProps, View, Text, StyleProp, TextStyle, Animated, Pressable } from 'react-native';
 import { theme } from '../theme/theme';
+import { inputStyles as styles } from './Input.styles';
 
 type Props = TextInputProps & {
   label?: string;
@@ -76,27 +77,3 @@ export const Input: React.FC<Props> = ({ label, errorText, style, onFocus, onBlu
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  wrapper: { width: '100%', marginBottom: theme.spacing.sm },
-  label: { color: theme.colors.muted, marginBottom: theme.spacing.xs },
-  input: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.sm,
-    paddingHorizontal: 12,
-    paddingVertical: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  inputInner: {
-    paddingVertical: 8,
-    color: theme.colors.text,
-    flex: 1,
-  },
-  inputError: { borderColor: theme.colors.danger },
-  error: { color: theme.colors.danger, marginTop: theme.spacing.xs },
-  labelFocused: { color: theme.colors.primary },
-  toggle: { color: theme.colors.primary, fontWeight: '600', paddingHorizontal: 4, paddingVertical: 6 },
-});
