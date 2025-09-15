@@ -19,6 +19,9 @@ import {
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import AsyncStorage from "@react-native-async-storage/async-storage";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - shimmed in src/types/firebase-react-native.d.ts for RN envs
+import { getReactNativePersistence } from "firebase/auth/react-native";
 
 import { getFirestore, Firestore } from "firebase/firestore";
 import { AppConfig } from "../../config/appConfig";
@@ -39,7 +42,10 @@ export function ensureFirebase() {
     // Use RN persistence on native to avoid web storage and ensure session persistence
     if (Platform.OS === "ios" || Platform.OS === "android") {
       try {
-        auth = initializeAuth(app);
+        auth = initializeAuth(app, {
+          // Persist sessions on native using AsyncStorage
+          persistence: getReactNativePersistence(AsyncStorage),
+        } as any);
       } catch (e) {
         // If already initialized (hot reload), fallback to getAuth
         auth = getAuth(app);
