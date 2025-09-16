@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Image, Text, View, TouchableOpacity, StyleSheet, ImageSourcePropType } from 'react-native';
-import { theme } from '../theme/theme';
+import { useTheme } from '../theme/theme';
 
 type AvatarProps = {
   username?: string;
@@ -19,6 +19,16 @@ export const Avatar: React.FC<AvatarProps> = ({
   onPress,
   style,
 }) => {
+  const theme = useTheme();
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: { flexDirection: 'row', alignItems: 'center' },
+        avatar: { backgroundColor: theme.colors.muted, borderWidth: StyleSheet.hairlineWidth, borderColor: theme.colors.border },
+        username: { marginLeft: 8, fontSize: 16, fontWeight: '600', color: theme.colors.text, fontFamily: theme.fonts.medium },
+      }),
+    [theme]
+  );
   const Container = onPress ? TouchableOpacity : View;
   return (
     <Container onPress={onPress} accessibilityRole={onPress ? 'button' : undefined} style={[styles.container, style]}>
@@ -31,10 +41,3 @@ export const Avatar: React.FC<AvatarProps> = ({
     </Container>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flexDirection: 'row', alignItems: 'center' },
-  avatar: { backgroundColor: theme.colors.muted, borderWidth: StyleSheet.hairlineWidth, borderColor: '#00000010' },
-  username: { marginLeft: 8, fontSize: 16, fontWeight: '600', color: theme.colors.text },
-});
-

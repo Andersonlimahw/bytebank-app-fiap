@@ -1,7 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Image, Text, ViewStyle, ImageSourcePropType, Animated, Pressable, Vibration } from 'react-native';
-import { theme } from '../theme/theme';
-import { quickActionStyles as styles } from './QuickAction.styles';
+import { useTheme } from '../theme/theme';
+import { makeQuickActionStyles } from './QuickAction.styles';
 
 type Props = {
   label: string;
@@ -11,6 +11,8 @@ type Props = {
 };
 
 export const QuickAction: React.FC<Props> = ({ label, icon, onPress, style }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => makeQuickActionStyles(theme), [theme]);
   const scale = useRef(new Animated.Value(1)).current;
   const pressIn = () => Animated.spring(scale, { toValue: 0.96, useNativeDriver: true, speed: 24, bounciness: 0 }).start();
   const pressOut = () => Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 16, bounciness: 6 }).start();

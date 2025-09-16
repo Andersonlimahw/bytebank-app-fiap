@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { useAuth } from '../../../store/authStore';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
-import { theme } from '../../theme/theme';
-import { registerStyles as styles } from './RegisterScreen.styles';
+import { useTheme } from '../../theme/theme';
+import { makeRegisterStyles } from './RegisterScreen.styles';
 
 export const RegisterScreen: React.FC<any> = ({ navigation }) => {
   const { signUp } = useAuth();
@@ -15,6 +15,8 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { animatedStyle } = useFadeSlideInOnFocus();
+  const theme = useTheme();
+  const styles = useMemo(() => makeRegisterStyles(theme), [theme]);
 
   const handleRegister = async () => {
     setError(null);

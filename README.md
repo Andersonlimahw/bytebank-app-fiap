@@ -6,7 +6,8 @@ Overview
 - Auth repository with anonymous login (mock by default)
 - Mock mode is available; default mode follows your scripts/env
 - Features: Login, Home (balance + transactions), Dashboard (summary)
- - Shared theme tokens for consistent colors, spacing, and typography
+- Shared theme tokens for consistent colors, spacing, and typography
+ - Whitelabel themes: runtime brand + theme switch (logo, colors, fonts)
 
 Project Structure
 - app.json: Expo app configuration
@@ -38,6 +39,22 @@ Getting Started
    - Force real (Firebase) mode: set `EXPO_PUBLIC_USE_MOCK=false` in `.env` and run `npm start`.
    - Force mock mode: set `EXPO_PUBLIC_USE_MOCK=true` in `.env` and run `npm start`.
    - In Metro, press `i` for iOS simulator or `a` for Android.
+
+Whitelabel Themes
+- Runtime switching:
+  - Go to `Minha Conta` (User) screen → Aparência.
+  - Toggle `Tema` (Claro/Escuro) or select `Marca` (ByteBank/HelioBank).
+  - Changes update app-wide instantly (navigation, components, screens).
+- Persisted preferences:
+  - Selected `brand` and `mode` persist via AsyncStorage (`bb_theme`).
+- Default via env (optional):
+  - `EXPO_PUBLIC_BRAND=bytebank|heliobank`
+  - `EXPO_PUBLIC_THEME_MODE=light|dark` (alias: `THEME_MODE`)
+  - Set in `.env` — see `.env.example` — and start the app.
+- Brand assets:
+  - Static logos are mapped in `src/presentation/theme/brandAssets.ts`.
+  - If a brand has no image, the UI falls back to the text logo defined by the brand (`theme.logoText`).
+  - Add your assets and map `{ light, dark }` entries per brand.
 
 Troubleshooting
 - PlatformConstants not found: This usually means a native/JS version mismatch or duplicate native modules.

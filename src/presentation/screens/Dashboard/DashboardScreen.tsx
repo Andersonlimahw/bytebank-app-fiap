@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Image, ScrollView, FlatList, TouchableOpacity, Animated } from 'react-native';
 import { formatCurrency } from '../../../utils/format';
 import { QuickAction } from '../../components/QuickAction';
 import { TransactionItem } from '../../components/TransactionItem';
 import { useDashboardViewModel } from '../../viewmodels/useDashboardViewModel';
-import { theme } from '../../theme/theme';
-import { dashboardStyles as styles } from './DashboardScreen.styles';
+import { useTheme } from '../../theme/theme';
+import { makeDashboardStyles } from './DashboardScreen.styles';
 import { useFadeSlideInOnFocus, useChartEntranceAndPulse } from '../../hooks/animations';
 import { Avatar } from '../../components/Avatar';
 
@@ -13,6 +13,8 @@ export const DashboardScreen: React.FC<any> = ({ navigation }) => {
   const { user, balance, transactions, loading, refresh, addDemoCredit, addDemoDebit } = useDashboardViewModel();
   const { animatedStyle } = useFadeSlideInOnFocus();
   const { animatedStyle: chartStyle } = useChartEntranceAndPulse(transactions?.length ?? 0);
+  const theme = useTheme();
+  const styles = useMemo(() => makeDashboardStyles(theme), [theme]);
 
   return (
     <Animated.ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: theme.spacing.xl }}

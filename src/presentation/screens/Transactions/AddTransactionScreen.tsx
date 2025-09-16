@@ -2,8 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
-import { theme } from '../../theme/theme';
-import { addTransactionStyles as styles } from './AddTransactionScreen.styles';
+import { useTheme } from '../../theme/theme';
+import { makeAddTransactionStyles } from './AddTransactionScreen.styles';
 import type { TransactionType } from '../../../domain/entities/Transaction';
 import type { TransactionRepository } from '../../../domain/repositories/TransactionRepository';
 import { TOKENS } from '../../../core/di/container';
@@ -14,6 +14,8 @@ export const AddTransactionScreen: React.FC<any> = ({ navigation }) => {
   const di = useDI();
   const repo = useMemo(() => di.resolve<TransactionRepository>(TOKENS.TransactionRepository), [di]);
   const { user } = useAuth();
+  const theme = useTheme();
+  const styles = useMemo(() => makeAddTransactionStyles(theme), [theme]);
 
   const [desc, setDesc] = useState('');
   const [amountText, setAmountText] = useState('');

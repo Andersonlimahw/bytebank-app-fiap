@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, Text, Pressable, Animated } from 'react-native';
 import type { Transaction } from '../../domain/entities/Transaction';
 import { formatCurrency, formatDateShort } from '../../utils/format';
-import { theme } from '../theme/theme';
-import { transactionItemStyles as styles } from './TransactionItem.styles';
+import { useTheme } from '../theme/theme';
+import { makeTransactionItemStyles } from './TransactionItem.styles';
 import { SwipeableRow } from './SwipeableRow';
 
 type Props = {
@@ -22,6 +22,8 @@ const TransactionItemBase: React.FC<Props> = ({
   onDeleteTx,
   onFullSwipeDeleteTx,
 }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => makeTransactionItemStyles(theme), [theme]);
   const sign = tx.type === 'credit' ? '+' : '-';
   const color = tx.type === 'credit' ? theme.colors.success : theme.colors.danger;
   const opacity = useRef(new Animated.Value(0)).current;

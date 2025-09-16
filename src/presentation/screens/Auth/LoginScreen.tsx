@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { View, Text, Image, TouchableOpacity, Platform, Animated } from "react-native";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { useAuth } from "../../../store/authStore";
 import { useFadeSlideInOnFocus } from "../../hooks/animations";
 import { AppConfig } from "../../../config/appConfig";
-import { theme } from "../../theme/theme";
-import { loginStyles as styles } from "./LoginScreen.styles";
+import { useTheme } from "../../theme/theme";
+import { makeLoginStyles } from "./LoginScreen.styles";
 import { useI18n } from "../../i18n/I18nProvider";
+import { BrandLogo } from "../../components/BrandLogo";
 
 export const LoginScreen: React.FC<any> = ({ navigation }) => {
   const { signIn } = useAuth();
@@ -18,13 +19,12 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
   const [emailLoading, setEmailLoading] = useState(false);
   const { animatedStyle } = useFadeSlideInOnFocus();
   const { t } = useI18n();
+  const theme = useTheme();
+  const styles = useMemo(() => makeLoginStyles(theme), [theme]);
 
   return (
     <Animated.View style={[styles.container, animatedStyle as any]}>
-      <Image
-        source={require("../../../../contents/figma/login/Ilustração-1.png")}
-        style={styles.logo}
-      />
+      <BrandLogo />
       <Text style={styles.title}>{t('auth.welcome')}</Text>
       <Text style={styles.subtitle}>{t('auth.continue')}</Text>
 

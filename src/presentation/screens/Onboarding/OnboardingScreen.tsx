@@ -3,7 +3,8 @@ import { View, Text, ScrollView, Dimensions, Image, NativeSyntheticEvent, Native
 import { Button } from '../../components/Button';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
 import { goToLogin } from '../../navigation/navigationUtils';
-import { onboardingStyles as styles } from './OnboardingScreen.styles';
+import { useTheme } from '../../theme/theme';
+import { makeOnboardingStyles } from './OnboardingScreen.styles';
 
 const { width } = Dimensions.get('window');
 
@@ -15,6 +16,8 @@ type Slide = {
 };
 
 export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => makeOnboardingStyles(theme), [theme]);
   const slides: Slide[] = useMemo(
     () => [
       {

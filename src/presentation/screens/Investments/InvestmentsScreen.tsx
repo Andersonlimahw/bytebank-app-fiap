@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Image, ScrollView, Animated } from 'react-native';
 import { useInvestmentsViewModel } from '../../viewmodels/useInvestmentsViewModel';
-import { theme } from '../../theme/theme';
-import { investmentsStyles as styles } from './InvestmentsScreen.styles';
+import { useTheme } from '../../theme/theme';
+import { makeInvestmentsStyles } from './InvestmentsScreen.styles';
 import { formatCurrency } from '../../../utils/format';
 import { Skeleton } from '../../components/Skeleton';
 import { useFadeSlideInOnFocus, useChartEntranceAndPulse } from '../../hooks/animations';
@@ -14,6 +14,8 @@ export const InvestmentsScreen: React.FC<any> = ({ navigation }) => {
   const { animatedStyle } = useFadeSlideInOnFocus();
   const { animatedStyle: chartStyle } = useChartEntranceAndPulse(total);
   const { user } = useAuth();
+  const theme = useTheme();
+  const styles = useMemo(() => makeInvestmentsStyles(theme), [theme]);
 
   return (
     <Animated.ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}

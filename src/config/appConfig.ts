@@ -28,6 +28,10 @@ function detectUseMock(): boolean {
 
 export const AppConfig = {
   useMock: detectUseMock(),
+  appearance: {
+    brand: getEnv('BRAND', 'bytebank'),
+    mode: (getEnv('THEME_MODE', 'light') === 'dark' ? 'dark' : 'light'),
+  },
   firebase: {
     apiKey: getEnv('FIREBASE_API_KEY', ''),
     authDomain: getEnv('FIREBASE_AUTH_DOMAIN'),

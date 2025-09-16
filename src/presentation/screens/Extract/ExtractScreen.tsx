@@ -2,8 +2,8 @@ import React, { useMemo, useRef, useState, useCallback, useEffect } from 'react'
 import { View, Text, FlatList, Alert, Modal, Pressable, Animated, TouchableOpacity, ListRenderItem } from 'react-native';
 import { Input } from '../../components/Input';
 import { TransactionItem } from '../../components/TransactionItem';
-import { theme } from '../../theme/theme';
-import { extractStyles as styles } from './ExtractScreen.styles';
+import { useTheme } from '../../theme/theme';
+import { makeExtractStyles } from './ExtractScreen.styles';
 import { useExtractViewModel } from '../../viewmodels/useExtractViewModel';
 import type { Transaction, TransactionType } from '../../../domain/entities/Transaction';
 import { Button } from '../../components/Button';
@@ -16,6 +16,8 @@ export const ExtractScreen: React.FC = () => {
   const navigation = useNavigation();
   const { loading, transactions, search, setSearch, refresh, remove, update, supportsRealtime } = useExtractViewModel();
   const { user } = useAuth();
+  const theme = useTheme();
+  const styles = useMemo(() => makeExtractStyles(theme), [theme]);
   // navigation object from hook is stable; avoid recreating callbacks per render
   const goUser = useCallback(() => (navigation as any)?.navigate?.('User'), [navigation]);
   const goAddTx = useCallback(() => (navigation as any)?.navigate?.('AddTransaction'), [navigation]);

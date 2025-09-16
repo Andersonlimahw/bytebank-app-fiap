@@ -1,12 +1,15 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, FlatList, Alert, Share } from 'react-native';
-import { pixStyles as styles } from './PixScreen.styles';
+import { useTheme } from '../../theme/theme';
+import { makePixStyles } from './PixScreen.styles';
 import { usePixViewModel } from '../../viewmodels/usePixViewModel';
 import { formatCurrency } from '../../../utils/format';
 
 type Section = 'send' | 'payqr' | 'receive' | 'keys' | 'favorites' | 'history' | 'limits';
 
 export const PixScreen: React.FC<any> = () => {
+  const theme = useTheme();
+  const styles = useMemo(() => makePixStyles(theme), [theme]);
   const {
     loading,
     error,
@@ -99,7 +102,7 @@ export const PixScreen: React.FC<any> = () => {
             ['limits', 'Limites'],
           ] as [Section, string][]
         ).map(([id, label], idx) => (
-          <TouchableOpacity key={id} style={[styles.action, idx > 0 && styles.actionGap, section === id && { borderWidth: 2, borderColor: '#4F46E5' }]}
+          <TouchableOpacity key={id} style={[styles.action, idx > 0 && styles.actionGap, section === id && { borderWidth: 2, borderColor: theme.colors.primary }]}
             onPress={() => setSection(id)} accessibilityRole="button" accessibilityLabel={label}>
             <Text style={styles.actionLabel}>{label}</Text>
           </TouchableOpacity>
@@ -107,8 +110,8 @@ export const PixScreen: React.FC<any> = () => {
       </ScrollView>
 
       {!!error && (
-        <View style={[styles.card, { borderColor: '#FCA5A5', backgroundColor: '#FEF2F2' }]}>
-          <Text style={{ color: '#991B1B' }}>{error}</Text>
+        <View style={[styles.card, { borderColor: theme.colors.danger, backgroundColor: theme.colors.surface }]}>
+          <Text style={{ color: theme.colors.danger }}>{error}</Text>
         </View>
       )}
 

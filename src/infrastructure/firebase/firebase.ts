@@ -19,9 +19,6 @@ import {
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - shimmed in src/types/firebase-react-native.d.ts for RN envs
-// import { getReactNativePersistence } from "firebase/auth/react-native";
 
 import { getFirestore, Firestore } from "firebase/firestore";
 import { AppConfig } from "../../config/appConfig";

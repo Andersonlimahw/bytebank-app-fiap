@@ -1,7 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Text, GestureResponderEvent, ViewStyle, TextStyle, Animated, Pressable, ActivityIndicator, View } from 'react-native';
-import { theme } from '../theme/theme';
-import { buttonStyles as styles } from './Button.styles';
+import { useTheme } from '../theme/theme';
+import { makeButtonStyles } from './Button.styles';
 
 type Props = {
   title: string;
@@ -13,6 +13,8 @@ type Props = {
 };
 
 export const Button: React.FC<Props> = ({ title, onPress, style, textStyle, disabled, loading }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => makeButtonStyles(theme), [theme]);
   const scale = useRef(new Animated.Value(1)).current;
 
   const pressIn = () => {

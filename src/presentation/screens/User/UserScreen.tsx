@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import Constants from 'expo-constants';
-import { userStyles as styles } from './UserScreen.styles';
+import { useTheme, useThemeActions } from '../../theme/theme';
+import { BrandSelector } from '../../components/BrandSelector';
+import { makeUserStyles } from './UserScreen.styles';
 import { Avatar } from '../../components/Avatar';
 import { useAuth } from '../../../store/authStore';
 import { useI18n } from '../../i18n/I18nProvider';
@@ -10,6 +12,9 @@ export const UserScreen: React.FC<any> = () => {
   const { user } = useAuth();
   const { t, lang, setLang } = useI18n();
   const version = Constants?.expoConfig?.version || Constants?.manifest?.version || '1.0.0';
+  const theme = useTheme();
+  const { toggleMode } = useThemeActions();
+  const styles = useMemo(() => makeUserStyles(theme), [theme]);
 
   const accountNumber = useMemo(() => {
     const id = user?.id || '000000';
@@ -76,6 +81,23 @@ export const UserScreen: React.FC<any> = () => {
       </View>
 
       <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Aparência</Text>
+        <View style={styles.card}>
+          <View style={styles.row}>
+            <Text style={styles.label}>Tema</Text>
+            <TouchableOpacity onPress={toggleMode}>
+              <Text style={styles.link}>{theme.mode === 'light' ? 'Claro' : 'Escuro'}</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.row}>
+            <Text style={styles.label}>Marca</Text>
+            <BrandSelector />
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('user.language')}</Text>
         <View style={styles.card}>
           <View style={styles.row}>
@@ -90,7 +112,7 @@ export const UserScreen: React.FC<any> = () => {
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.version}>ByteBank • v{version}</Text>
+        <Text style={styles.version}>{theme.logoText} • v{version}</Text>
       </View>
     </ScrollView>
   );

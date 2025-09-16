@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, PanResponder, View, Pressable, LayoutChangeEvent, Vibration } from 'react-native';
-import { theme } from '../theme/theme';
-import { swipeableRowStyles as styles } from './SwipeableRow.styles';
+import { useTheme } from '../theme/theme';
+import { makeSwipeableRowStyles } from './SwipeableRow.styles';
 import { Ionicons } from '@expo/vector-icons';
 
 type Props = {
@@ -13,6 +13,8 @@ type Props = {
 };
 
 export const SwipeableRow: React.FC<Props> = ({ children, onEdit, onDelete, onFullSwipeDelete, rightWidth }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => makeSwipeableRowStyles(theme), [theme]);
   const translateX = useRef(new Animated.Value(0)).current;
   const [open, setOpen] = useState(false);
   const [rowWidth, setRowWidth] = useState(0);

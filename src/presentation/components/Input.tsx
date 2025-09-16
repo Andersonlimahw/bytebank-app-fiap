@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { TextInput, TextInputProps, View, Text, StyleProp, TextStyle, Animated, Pressable } from 'react-native';
-import { theme } from '../theme/theme';
-import { inputStyles as styles } from './Input.styles';
+import { useTheme } from '../theme/theme';
+import { makeInputStyles } from './Input.styles';
 
 type Props = TextInputProps & {
   label?: string;
@@ -10,6 +10,8 @@ type Props = TextInputProps & {
 };
 
 export const Input: React.FC<Props> = ({ label, errorText, style, onFocus, onBlur, showPasswordToggle, secureTextEntry, ...rest }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => makeInputStyles(theme), [theme]);
   const [focused, setFocused] = useState(false);
   const focusAnim = useRef(new Animated.Value(0)).current; // 0: blur, 1: focus
   const shake = useRef(new Animated.Value(0)).current;

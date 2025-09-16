@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Image, FlatList, ScrollView, Animated } from 'react-native';
 import { useHomeViewModel } from '../../viewmodels/useHomeViewModel';
 import { TransactionItem } from '../../components/TransactionItem';
 import { useAuth } from '../../../store/authStore';
 import { formatCurrency } from '../../../utils/format';
 import { QuickAction } from '../../components/QuickAction';
-import { theme } from '../../theme/theme';
-import { homeStyles as styles } from './HomeScreen.styles';
+import { useTheme } from '../../theme/theme';
+import { makeHomeStyles } from './HomeScreen.styles';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
 import { Avatar } from '../../components/Avatar';
 import { useI18n } from '../../i18n/I18nProvider';
@@ -16,6 +16,8 @@ export const HomeScreen: React.FC<any> = ({ navigation }) => {
   const { user, signOut } = useAuth();
   const { animatedStyle } = useFadeSlideInOnFocus();
   const { t } = useI18n();
+  const theme = useTheme();
+  const styles = useMemo(() => makeHomeStyles(theme), [theme]);
 
   return (
     <Animated.ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: theme.spacing.xl }}

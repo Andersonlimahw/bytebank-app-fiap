@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, StyleProp, ViewStyle } from 'react-native';
-import { theme } from '../theme/theme';
-import { skeletonStyles as styles } from './Skeleton.styles';
+import { useTheme } from '../theme/theme';
+import { makeSkeletonStyles } from './Skeleton.styles';
 
 type Props = {
   width?: number | `${number}%` | 'auto';
@@ -11,6 +11,8 @@ type Props = {
 };
 
 export const Skeleton: React.FC<Props> = ({ width = '100%' as `${number}%`, height = 16, radius = 8, style }) => {
+  const theme = useTheme();
+  const styles = useMemo(() => makeSkeletonStyles(theme), [theme]);
   const opacity = useRef(new Animated.Value(0.6)).current;
 
   useEffect(() => {

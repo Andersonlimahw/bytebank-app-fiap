@@ -12,17 +12,10 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "@app/*": [
-        "src/*"
-      ]
+      "@app/*": ["src/*"]
     }
   },
-  "include": [
-    "src",
-    "App.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
+  "include": ["src", "App.tsx"],
+  "exclude": ["node_modules"],
   "extends": "expo/tsconfig.base"
 }

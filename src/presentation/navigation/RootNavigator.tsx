@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAuth } from "../../store/authStore";
@@ -12,6 +12,7 @@ import { Text } from "react-native";
 import { rootNavigatorStyles as styles } from "./RootNavigator.styles";
 import { UserScreen } from "../screens/User/UserScreen";
 import { useI18n } from "../i18n/I18nProvider";
+import { useTheme } from "../theme/theme";
 
 type AuthStackParamList = {
   Onboarding: undefined;
@@ -33,25 +34,28 @@ const AppStack = createNativeStackNavigator();
 import { MaterialIcons } from "@expo/vector-icons";
 
 function AppTabs() {
+  const theme = useTheme();
+  const commonTabOptions = useMemo(
+    () => ({
+      headerStyle: { backgroundColor: theme.colors.surface },
+      headerTintColor: theme.colors.text,
+      tabBarActiveTintColor: theme.colors.primary,
+      tabBarInactiveTintColor: theme.colors.muted,
+      tabBarStyle: { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border },
+      tabBarHideOnKeyboard: true,
+    }),
+    [theme]
+  );
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerShown: true,
-        tabBarHideOnKeyboard: true,
-        tabBarIcon: ({ focused, color, size }) => {
+        ...commonTabOptions,
+        tabBarIcon: ({ color, size }) => {
           let iconName: React.ComponentProps<typeof MaterialIcons>['name'] = 'help';
-
-          if (route.name === "Home") {
-            iconName = "home";
-          } else if (route.name === "Dashboard") {
-            iconName = "dashboard";
-          } else if (route.name === "Investments") {
-            iconName = "trending-up";
-          } else if (route.name === "Extract") {
-            iconName = "receipt";
-          }
-
-          // You can return any component that you like here!
+          if (route.name === "Home") iconName = "home";
+          else if (route.name === "Dashboard") iconName = "dashboard";
+          else if (route.name === "Investments") iconName = "trending-up";
+          else if (route.name === "Extract") iconName = "receipt";
           return <MaterialIcons name={iconName} size={size} color={color} />;
         },
       })}
@@ -83,9 +87,10 @@ function AppTabs() {
 export function RootNavigator() {
   const { user, loading } = useAuth();
   const { t } = useI18n();
+  const theme = useTheme();
 
   if (loading || user === undefined) {
-    return <Text style={styles.loading}>{t('common.loading')}</Text>;
+    return <Text style={[styles.loading, { color: theme.colors.text }]}>{t('common.loading')}</Text>;
   }
 
   if (!user) {
@@ -97,7 +102,7 @@ export function RootNavigator() {
           animation: "slide_from_right",
           animationTypeForReplace: "push",
           fullScreenGestureEnabled: true,
-          contentStyle: { backgroundColor: "white" },
+          contentStyle: { backgroundColor: theme.colors.background },
         }}
       >
         <AuthStack.Screen
@@ -129,7 +134,13 @@ export function RootNavigator() {
   }
 
   return (
-    <AppStack.Navigator>
+    <AppStack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        contentStyle: { backgroundColor: theme.colors.background },
+      }}
+    >
       <AppStack.Screen
         name="MainTabs"
         component={AppTabs}
