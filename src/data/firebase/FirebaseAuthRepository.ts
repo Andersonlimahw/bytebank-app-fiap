@@ -24,7 +24,7 @@ export class FirebaseAuthRepository implements AuthRepository {
 
   onAuthStateChanged(cb: (user: User | null) => void): () => void {
     const auth = FirebaseAPI.auth;
-    return FirebaseAPI.fbOnAuthStateChanged(auth, (u) => cb(u ? mapUser(u) : null));
+    return FirebaseAPI.fbOnAuthStateChanged(auth, (u: FirebaseUser | null) => cb(u ? mapUser(u) : null));
   }
 
   async signIn(provider: AuthProvider, options?: { email?: string; password?: string }): Promise<User> {

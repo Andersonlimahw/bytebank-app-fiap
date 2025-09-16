@@ -233,5 +233,6 @@ export const en = {
     dashboard: 'Dashboard',
     investments: 'Investments',
     extract: 'Extract',
+    digitalCards: 'Digital cards',
   },
 };

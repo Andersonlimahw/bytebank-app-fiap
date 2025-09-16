@@ -43,7 +43,7 @@ export const HomeScreen: React.FC<any> = ({ navigation }) => {
       <Text style={styles.sectionTitle}>{t('home.shortcuts')}</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.actionsRow}>
         <QuickAction label={t('home.pix')} icon={require('../../../../public/assets/images/icons/Ícone Pix.png')} onPress={() => (navigation as any)?.navigate?.('Pix')} />
-        <QuickAction label={t('home.cards')} icon={require('../../../../public/assets/images/icons/Ícone cartões.png')} style={styles.actionGap} />
+        <QuickAction label={t('home.cards')} icon={require('../../../../public/assets/images/icons/Ícone cartões.png')} style={styles.actionGap} onPress={() => (navigation as any)?.navigate?.('DigitalCards')} />
         <QuickAction label={t('home.loan')} icon={require('../../../../public/assets/images/icons/Ícone empréstimo.png')} style={styles.actionGap} />
         <QuickAction label={t('home.withdraw')} icon={require('../../../../public/assets/images/icons/Ícone Saque.png')} style={styles.actionGap} />
         <QuickAction label={t('home.insurance')} icon={require('../../../../public/assets/images/icons/Ícone seguros.png')} style={styles.actionGap} />

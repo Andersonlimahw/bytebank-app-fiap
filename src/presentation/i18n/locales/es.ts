@@ -233,5 +233,6 @@ export const es = {
     dashboard: 'Panel',
     investments: 'Inversiones',
     extract: 'Extracto',
+    digitalCards: 'Tarjetas digitales',
   },
 };

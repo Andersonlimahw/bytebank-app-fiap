@@ -158,6 +158,11 @@ export function RootNavigator() {
         options={{ title: t('titles.pix') }}
       />
       <AppStack.Screen
+        name="DigitalCards"
+        component={require("../screens/Cards/DigitalCardsScreen").DigitalCardsScreen}
+        options={{ title: t('titles.digitalCards') }}
+      />
+      <AppStack.Screen
         name="AddTransaction"
         component={
           require("../screens/Transactions/AddTransactionScreen")

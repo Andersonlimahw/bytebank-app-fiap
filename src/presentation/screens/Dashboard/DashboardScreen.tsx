@@ -9,6 +9,8 @@ import { useI18n } from '../../i18n/I18nProvider';
 import { makeDashboardStyles } from './DashboardScreen.styles';
 import { useFadeSlideInOnFocus, useChartEntranceAndPulse } from '../../hooks/animations';
 import { Avatar } from '../../components/Avatar';
+import { useDigitalCardsViewModel } from '../../viewmodels/useDigitalCardsViewModel';
+import { CardVisual } from '../../components/DigitalCard';
 
 export const DashboardScreen: React.FC<any> = ({ navigation }) => {
   const { user, balance, transactions, loading, refresh, addDemoCredit, addDemoDebit } = useDashboardViewModel();
@@ -17,6 +19,7 @@ export const DashboardScreen: React.FC<any> = ({ navigation }) => {
   const theme = useTheme();
   const { t } = useI18n();
   const styles = useMemo(() => makeDashboardStyles(theme), [theme]);
+  const { cards } = useDigitalCardsViewModel();
 
   return (
     <Animated.ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: theme.spacing.xl }}
@@ -51,7 +54,7 @@ export const DashboardScreen: React.FC<any> = ({ navigation }) => {
       <Text style={styles.sectionTitle}>{t('dashboard.shortcuts')}</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.actionsRow}>
         <QuickAction label={t('home.pix')} icon={require('../../../../public/assets/images/icons/Ícone Pix.png')} onPress={() => (navigation as any)?.navigate?.('Pix')} />
-        <QuickAction label={t('home.cards')} icon={require('../../../../public/assets/images/icons/Ícone cartões.png')} style={styles.actionGap} />
+        <QuickAction label={t('home.cards')} icon={require('../../../../public/assets/images/icons/Ícone cartões.png')} style={styles.actionGap} onPress={() => (navigation as any)?.navigate?.('DigitalCards')} />
         <QuickAction label={t('home.loan')} icon={require('../../../../public/assets/images/icons/Ícone empréstimo.png')} style={styles.actionGap} />
         <QuickAction label={t('home.withdraw')} icon={require('../../../../public/assets/images/icons/Ícone Saque.png')} style={styles.actionGap} />
         <QuickAction label={t('home.insurance')} icon={require('../../../../public/assets/images/icons/Ícone seguros.png')} style={styles.actionGap} />
@@ -60,8 +63,25 @@ export const DashboardScreen: React.FC<any> = ({ navigation }) => {
 
       <Text style={styles.sectionTitle}>{t('dashboard.myCards')}</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 4 }}>
-        <Image source={require('../../../../contents/figma/dashboard/cards/Cartão Byte digital.png')} style={styles.cardImage} />
-        <Image source={require('../../../../contents/figma/dashboard/cards/Cartão Byte Físico.png')} style={[styles.cardImage, { marginLeft: 12 }]} />
+        {cards && cards.length > 0 ? (
+          cards.map((c, idx) => (
+            <TouchableOpacity
+              key={c.id}
+              onPress={() => (navigation as any)?.navigate?.('DigitalCards')}
+              accessibilityRole="button"
+              accessibilityLabel={t('titles.digitalCards')}
+            >
+              <CardVisual card={c} style={{ marginRight: idx < cards.length - 1 ? 12 : 0 }} />
+            </TouchableOpacity>
+          ))
+        ) : (
+          <Image
+            source={require('../../../../contents/figma/dashboard/cards/Cartão Byte digital.png')}
+            style={styles.cardImage}
+            accessibilityRole="image"
+            accessibilityLabel={t('dashboard.myCards')}
+          />
+        )}
       </ScrollView>
 
       <Text style={styles.sectionTitle}>{t('dashboard.spendingSummary')}</Text>
