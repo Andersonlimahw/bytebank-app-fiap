@@ -26,12 +26,21 @@ export function useExtractViewModel() {
   const remove = useCallback(async (id: string) => {
     setLoading(true);
     await repo.remove(id);
+    // If realtime is available, rely on it to refresh the list
+    if (typeof repo.subscribeRecent === 'function') {
+      setLoading(false);
+      return;
+    }
     await refresh();
   }, [repo, refresh]);
 
   const update = useCallback(async (id: string, updates: Partial<Pick<Transaction, 'description' | 'amount' | 'type' | 'category'>>) => {
     setLoading(true);
     await repo.update(id, updates);
+    if (typeof repo.subscribeRecent === 'function') {
+      setLoading(false);
+      return;
+    }
     await refresh();
   }, [repo, refresh]);
 
@@ -46,16 +55,20 @@ export function useExtractViewModel() {
       });
       return () => unsub();
     }
-    // Fallback to one-shot load
+    // Fallback to one-shot load without depending on refresh identity
     let mounted = true;
     (async () => {
       if (!mounted) return;
-      await refresh();
+      setLoading(true);
+      const list = await repo.listRecent(user.id, 100);
+      if (!mounted) return;
+      setAll(list);
+      setLoading(false);
     })();
     return () => {
       mounted = false;
     };
-  }, [repo, user, refresh]);
+  }, [repo, user]);
 
   useEffect(() => {
     const term = search.trim().toLowerCase();
@@ -80,5 +93,6 @@ export function useExtractViewModel() {
     setFiltered(result);
   }, [all, search]);
 
-  return { loading, transactions: filtered, search, setSearch, refresh, remove, update };
+  const supportsRealtime = useMemo(() => typeof repo.subscribeRecent === 'function', [repo]);
+  return { loading, transactions: filtered, search, setSearch, refresh, remove, update, supportsRealtime };
 }

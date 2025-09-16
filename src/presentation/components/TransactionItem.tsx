@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { View, Text, Pressable, Animated } from 'react-native';
 import type { Transaction } from '../../domain/entities/Transaction';
 import { formatCurrency, formatDateShort } from '../../utils/format';
@@ -6,9 +6,22 @@ import { theme } from '../theme/theme';
 import { transactionItemStyles as styles } from './TransactionItem.styles';
 import { SwipeableRow } from './SwipeableRow';
 
-type Props = { tx: Transaction; onPress?: () => void; onEdit?: () => void; onDelete?: () => void };
+type Props = {
+  tx: Transaction;
+  // Tx-aware callbacks avoid creating per-item closures upstream
+  onPressTx?: (tx: Transaction) => void;
+  onEditTx?: (tx: Transaction) => void;
+  onDeleteTx?: (tx: Transaction) => void;
+  onFullSwipeDeleteTx?: (tx: Transaction) => void;
+};
 
-export const TransactionItem: React.FC<Props> = ({ tx, onPress, onEdit, onDelete }) => {
+const TransactionItemBase: React.FC<Props> = ({
+  tx,
+  onPressTx,
+  onEditTx,
+  onDeleteTx,
+  onFullSwipeDeleteTx,
+}) => {
   const sign = tx.type === 'credit' ? '+' : '-';
   const color = tx.type === 'credit' ? theme.colors.success : theme.colors.danger;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -21,33 +34,68 @@ export const TransactionItem: React.FC<Props> = ({ tx, onPress, onEdit, onDelete
     ]).start();
   }, [opacity, translateY]);
 
+  // Bind tx-aware callbacks lazily and stably
+  const handlePress = useCallback(() => {
+    return onPressTx?.(tx);
+  }, [onPressTx, tx]);
+  const handleEdit = useCallback(() => {
+    return onEditTx?.(tx);
+  }, [onEditTx, tx]);
+  const handleDelete = useCallback(() => {
+    return onDeleteTx?.(tx);
+  }, [onDeleteTx, tx]);
+  const handleFullSwipeDelete = useCallback(() => {
+    return onFullSwipeDeleteTx?.(tx);
+  }, [onFullSwipeDeleteTx, tx]);
+
   const content = (
     <Pressable
-      onPress={onPress}
+      onPress={handlePress}
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
-      accessibilityRole={onPress ? 'button' : undefined}
-      accessibilityLabel={onPress ? `Abrir opções para ${tx.description}` : undefined}
+      accessibilityRole={onPressTx ? 'button' : undefined}
+      accessibilityLabel={onPressTx ? `Abrir opções para ${tx.description}` : undefined}
     >
       <View style={styles.content}>
         <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{tx.description}</Text>
         <Text style={styles.date}>{formatDateShort(new Date(tx.createdAt))}</Text>
         {!!tx.category && <Text style={styles.category}>{tx.category}</Text>}
       </View>
-      <Text style={[styles.amount, { color }]}>
-        {sign} {formatCurrency(tx.amount)}
-      </Text>
+      <View style={styles.amountWrap}>
+        <Text style={[styles.amount, { color }]} numberOfLines={1}>
+          {sign} {formatCurrency(tx.amount)}
+        </Text>
+      </View>
     </Pressable>
   );
 
   return (
     <Animated.View style={{ opacity, transform: [{ translateY }] }}>
-      {onEdit || onDelete ? (
-        <SwipeableRow onEdit={onEdit} onDelete={onDelete}>{content}</SwipeableRow>
+      {onEditTx || onDeleteTx || onFullSwipeDeleteTx ? (
+        <SwipeableRow onEdit={handleEdit} onDelete={handleDelete} onFullSwipeDelete={handleFullSwipeDelete}>
+          {content}
+        </SwipeableRow>
       ) : (
         content
       )}
     </Animated.View>
   );
 };
+
+export const TransactionItem = React.memo(TransactionItemBase, (a, b) => {
+  const atx = a.tx;
+  const btx = b.tx;
+  return (
+    atx.id === btx.id &&
+    atx.amount === btx.amount &&
+    atx.description === btx.description &&
+    atx.type === btx.type &&
+    atx.category === btx.category &&
+    atx.createdAt === btx.createdAt &&
+    a.onPressTx === b.onPressTx &&
+    a.onEditTx === b.onEditTx &&
+    a.onDeleteTx === b.onDeleteTx &&
+    a.onFullSwipeDeleteTx === b.onFullSwipeDeleteTx
+  );
+});
 
 /** styles moved to TransactionItem.styles.ts */

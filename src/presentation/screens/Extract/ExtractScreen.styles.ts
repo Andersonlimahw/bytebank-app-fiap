@@ -11,7 +11,8 @@ export const extractStyles = StyleSheet.create({
   loadingSkeletonItem: { marginBottom: theme.spacing.xs },
   emptyContainer: { alignItems: 'center', marginTop: theme.spacing.lg },
   emptyText: { color: theme.colors.muted, marginBottom: theme.spacing.md },
-  listContent: { paddingBottom: theme.spacing.xl },
+  // extra bottom padding to avoid last item being hidden under FAB
+  listContent: { paddingBottom: theme.spacing.xl * 2 },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', alignItems: 'center', justifyContent: 'center', padding: theme.spacing.lg },
   modalCard: {
     width: '100%',
