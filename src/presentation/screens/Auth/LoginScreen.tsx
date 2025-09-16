@@ -40,19 +40,19 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
             await signIn("google");
           } catch (e: any) {
             // Provide more specific error messages for Google authentication
-            let errorMessage = "Falha no login Google";
+            let errorMessage = t('auth.googleLoginFailed');
             if (e?.message?.includes("Client ID não configurado")) {
-              errorMessage = "Google authentication não está configurado. Verifique as configurações.";
+              errorMessage = t('auth.notConfiguredFirebase');
             } else if (e?.message?.includes("cancelado")) {
-              errorMessage = "Login cancelado pelo usuário.";
+              errorMessage = t('auth.loginCancelled');
             } else if (e?.message?.toLowerCase?.().includes("network") || e?.message?.includes("Failed to fetch")) {
-              errorMessage = "Sem conexão. Verifique sua internet e tente novamente.";
+              errorMessage = t('common.networkError');
             } else if (e?.message?.includes("hasPlayServices")) {
-              errorMessage = "Google Play Services não disponível. Tente outro método de login.";
+              errorMessage = t('auth.playServicesMissing');
             } else if (e?.message?.includes("Token inválido")) {
-              errorMessage = "Erro de autenticação. Tente novamente.";
+              errorMessage = t('auth.invalidToken');
             } else if (e?.message?.includes?.('Firebase config is missing')) {
-              errorMessage = "Firebase não configurado. Defina EXPO_PUBLIC_FIREBASE_* e reinicie o app.";
+              errorMessage = t('auth.firebaseNotConfigured');
             } else if (e?.message) {
               errorMessage = e.message;
             }
@@ -73,10 +73,10 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
               setProviderLoading(true);
               await signIn("apple");
             } catch (e: any) {
-              setError(e?.message ?? "Falha no login Apple");
-            } finally { setProviderLoading(false); }
-          }}
-        />
+            setError(e?.message ?? t('auth.appleLoginFailed'));
+          } finally { setProviderLoading(false); }
+        }}
+      />
       )}
       <View style={styles.spacerSm} />
       <Button
@@ -89,20 +89,20 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
             setProviderLoading(true);
             await signIn("anonymous");
           } catch (e: any) {
-            setError(e?.message ?? "Falha no login anônimo");
+            setError(e?.message ?? t('auth.anonymousLoginFailed'));
           } finally { setProviderLoading(false); }
         }}
       />
 
       <View style={styles.spacerLg} />
-      <Text style={styles.altTitle}>Or use email</Text>
+      <Text style={styles.altTitle}>{t('auth.orUseEmail')}</Text>
       <Input
         placeholder={t('auth.email')}
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
-        accessibilityLabel="Email"
+        accessibilityLabel={t('auth.email')}
       />
       <Input
         placeholder={t('auth.password')}
@@ -110,7 +110,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
         showPasswordToggle
         value={password}
         onChangeText={setPassword}
-        accessibilityLabel="Password"
+        accessibilityLabel={t('auth.password')}
         errorText={error}
       />
       <Button
@@ -122,7 +122,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
           const trimmedEmail = email.trim();
           const trimmedPassword = password.trim();
           if (!trimmedEmail || !trimmedPassword) {
-            setError("Informe email e senha");
+            setError(t('auth.fillEmailPassword'));
             return;
           }
           try {
@@ -132,7 +132,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
               password: trimmedPassword,
             });
           } catch (e: any) {
-            setError(e?.message ?? "Sign-in failed");
+            setError(e?.message ?? t('auth.googleLoginFailed'));
           } finally {
             setEmailLoading(false);
           }

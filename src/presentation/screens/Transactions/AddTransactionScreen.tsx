@@ -9,6 +9,7 @@ import type { TransactionRepository } from '../../../domain/repositories/Transac
 import { TOKENS } from '../../../core/di/container';
 import { useDI } from '../../../store/diStore';
 import { useAuth } from '../../../store/authStore';
+import { useI18n } from '../../i18n/I18nProvider';
 
 export const AddTransactionScreen: React.FC<any> = ({ navigation }) => {
   const di = useDI();
@@ -16,6 +17,7 @@ export const AddTransactionScreen: React.FC<any> = ({ navigation }) => {
   const { user } = useAuth();
   const theme = useTheme();
   const styles = useMemo(() => makeAddTransactionStyles(theme), [theme]);
+  const { t } = useI18n();
 
   const [desc, setDesc] = useState('');
   const [amountText, setAmountText] = useState('');
@@ -30,7 +32,7 @@ export const AddTransactionScreen: React.FC<any> = ({ navigation }) => {
     const normalized = amountText.replace(/\./g, '').replace(',', '.');
     const num = Number(normalized);
     if (!desc.trim() || isNaN(num)) {
-      setError('Preencha descrição e um valor válido');
+      setError(t('transactions.errorFillDescAndValidValue'));
       return;
     }
     const cents = Math.round(num * 100);
@@ -45,7 +47,7 @@ export const AddTransactionScreen: React.FC<any> = ({ navigation }) => {
       } as any);
       navigation?.goBack?.();
     } catch (e: any) {
-      Alert.alert('Erro', e?.message ?? 'Falha ao salvar transação');
+      Alert.alert(t('common.errorTitle') || 'Erro', e?.message ?? t('common.update') );
     } finally {
       setLoading(false);
     }
@@ -53,31 +55,31 @@ export const AddTransactionScreen: React.FC<any> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Adicionar transação</Text>
-      <Input label="Descrição" value={desc} onChangeText={setDesc} placeholder="Ex.: Mercado, Transferência" />
-      <Input label="Categoria (opcional)" value={category} onChangeText={setCategory} placeholder="Ex.: Alimentação" />
-      <Input label="Valor (R$)" value={amountText} onChangeText={setAmountText} placeholder="0,00" keyboardType="decimal-pad" errorText={error} />
+      <Text style={styles.title}>{t('transactions.title')}</Text>
+      <Input label={t('transactions.description')} value={desc} onChangeText={setDesc} placeholder={t('transactions.description')} />
+      <Input label={t('transactions.categoryOptional')} value={category} onChangeText={setCategory} placeholder={t('transactions.categoryOptional')} />
+      <Input label={t('transactions.valueBRL')} value={amountText} onChangeText={setAmountText} placeholder="0,00" keyboardType="decimal-pad" errorText={error} />
 
       <View style={styles.typeRow}>
         <TouchableOpacity
           onPress={() => setType('credit')}
           style={[styles.typeBtn, type === 'credit' ? styles.typeBtnActive : undefined]}
           accessibilityRole="button"
-          accessibilityLabel="Selecionar crédito"
+          accessibilityLabel={t('transactions.credit')}
         >
-          <Text style={[styles.typeText, type === 'credit' ? styles.typeTextActive : undefined]}>Crédito</Text>
+          <Text style={[styles.typeText, type === 'credit' ? styles.typeTextActive : undefined]}>{t('transactions.credit')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setType('debit')}
           style={[styles.typeBtn, styles.typeBtnSpacer, type === 'debit' ? styles.typeBtnActive : undefined]}
           accessibilityRole="button"
-          accessibilityLabel="Selecionar débito"
+          accessibilityLabel={t('transactions.debit')}
         >
-          <Text style={[styles.typeText, type === 'debit' ? styles.typeTextActive : undefined]}>Débito</Text>
+          <Text style={[styles.typeText, type === 'debit' ? styles.typeTextActive : undefined]}>{t('transactions.debit')}</Text>
         </TouchableOpacity>
       </View>
 
-      <Button title={'Salvar'} loading={loading} disabled={loading} onPress={save} />
+      <Button title={t('transactions.save')} loading={loading} disabled={loading} onPress={save} />
     </View>
   );
 };

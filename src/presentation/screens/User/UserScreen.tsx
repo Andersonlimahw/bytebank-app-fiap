@@ -33,8 +33,8 @@ export const UserScreen: React.FC<any> = () => {
           <View style={styles.avatarRow}>
             <Avatar username={user?.name} size={56} />
             <View style={styles.nameBlock}>
-              <Text style={styles.name}>{user?.name || 'Usuário'}</Text>
-              <Text style={styles.sub}>{user?.email || 'Sem e-mail'}</Text>
+              <Text style={styles.name}>{user?.name || t('user.userFallback')}</Text>
+              <Text style={styles.sub}>{user?.email || t('user.noEmail')}</Text>
             </View>
           </View>
         </View>
@@ -81,17 +81,17 @@ export const UserScreen: React.FC<any> = () => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Aparência</Text>
+        <Text style={styles.sectionTitle}>{t('user.appearance')}</Text>
         <View style={styles.card}>
           <View style={styles.row}>
-            <Text style={styles.label}>Tema</Text>
+            <Text style={styles.label}>{t('user.theme')}</Text>
             <TouchableOpacity onPress={toggleMode}>
-              <Text style={styles.link}>{theme.mode === 'light' ? 'Claro' : 'Escuro'}</Text>
+              <Text style={styles.link}>{theme.mode === 'light' ? t('user.light') : t('user.dark')}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.divider} />
           <View style={styles.row}>
-            <Text style={styles.label}>Marca</Text>
+            <Text style={styles.label}>{t('user.brand')}</Text>
             <BrandSelector />
           </View>
         </View>
@@ -102,10 +102,13 @@ export const UserScreen: React.FC<any> = () => {
         <View style={styles.card}>
           <View style={styles.row}>
             <TouchableOpacity onPress={() => setLang('pt')}>
-              <Text style={[styles.link, { fontWeight: lang === 'pt' ? '700' : '400' }]}>Português (BR)</Text>
+              <Text style={[styles.link, { fontWeight: lang === 'pt' ? '700' : '400' }]}>{t('user.portugueseBR')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={{ marginLeft: 16 }} onPress={() => setLang('en')}>
-              <Text style={[styles.link, { fontWeight: lang === 'en' ? '700' : '400' }]}>English</Text>
+              <Text style={[styles.link, { fontWeight: lang === 'en' ? '700' : '400' }]}>{t('user.english')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{ marginLeft: 16 }} onPress={() => setLang('es')}>
+              <Text style={[styles.link, { fontWeight: lang === 'es' ? '700' : '400' }]}>{t('user.spanish')}</Text>
             </TouchableOpacity>
           </View>
         </View>

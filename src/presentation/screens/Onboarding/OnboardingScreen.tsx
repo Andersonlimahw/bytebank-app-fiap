@@ -5,6 +5,7 @@ import { useFadeSlideInOnFocus } from '../../hooks/animations';
 import { goToLogin } from '../../navigation/navigationUtils';
 import { useTheme } from '../../theme/theme';
 import { makeOnboardingStyles } from './OnboardingScreen.styles';
+import { useI18n } from '../../i18n/I18nProvider';
 
 const { width } = Dimensions.get('window');
 
@@ -18,28 +19,29 @@ type Slide = {
 export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
   const theme = useTheme();
   const styles = useMemo(() => makeOnboardingStyles(theme), [theme]);
+  const { t } = useI18n();
   const slides: Slide[] = useMemo(
     () => [
       {
         key: 'secure-banking',
-        title: 'All-in-one digital banking',
-        subtitle: 'Track balance, send money, and manage cards in one place.',
+        title: t('onboarding.slides.secureBanking.title'),
+        subtitle: t('onboarding.slides.secureBanking.subtitle'),
         image: require('../../../../contents/figma/home/Banner1-7.png'),
       },
       {
         key: 'insights',
-        title: 'Clear insights at a glance',
-        subtitle: 'Understand your spending with beautiful, easy charts.',
+        title: t('onboarding.slides.insights.title'),
+        subtitle: t('onboarding.slides.insights.subtitle'),
         image: require('../../../../public/assets/images/icons/Gráfico pizza.png'),
       },
       {
         key: 'login',
-        title: 'Sign in your way',
-        subtitle: 'Google, Apple, email, or just try it anonymously.',
+        title: t('onboarding.slides.login.title'),
+        subtitle: t('onboarding.slides.login.subtitle'),
         image: require('../../../../contents/figma/login/Ilustração-1.png'),
       },
     ],
-    []
+    [t]
   );
 
   const [index, setIndex] = useState(0);
@@ -109,12 +111,12 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
         <View style={styles.actions}>
           {index < slides.length - 1 ? (
             <>
-              <Button title="Skip" onPress={finish} />
+              <Button title={t('onboarding.skip')} onPress={finish} />
               <View style={styles.spacer} />
-              <Button title="Next" onPress={goNext} />
+              <Button title={t('onboarding.next')} onPress={goNext} />
             </>
           ) : (
-            <Button title="Get Started" onPress={finish} />
+            <Button title={t('onboarding.getStarted')} onPress={finish} />
           )}
         </View>
       </View>

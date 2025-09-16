@@ -4,6 +4,7 @@ import type { Transaction } from '../../domain/entities/Transaction';
 import { formatCurrency, formatDateShort } from '../../utils/format';
 import { useTheme } from '../theme/theme';
 import { makeTransactionItemStyles } from './TransactionItem.styles';
+import { useI18n } from '../i18n/I18nProvider';
 import { SwipeableRow } from './SwipeableRow';
 
 type Props = {
@@ -23,6 +24,7 @@ const TransactionItemBase: React.FC<Props> = ({
   onFullSwipeDeleteTx,
 }) => {
   const theme = useTheme();
+  const { t } = useI18n();
   const styles = useMemo(() => makeTransactionItemStyles(theme), [theme]);
   const sign = tx.type === 'credit' ? '+' : '-';
   const color = tx.type === 'credit' ? theme.colors.success : theme.colors.danger;
@@ -55,7 +57,7 @@ const TransactionItemBase: React.FC<Props> = ({
       onPress={handlePress}
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
       accessibilityRole={onPressTx ? 'button' : undefined}
-      accessibilityLabel={onPressTx ? `Abrir opções para ${tx.description}` : undefined}
+      accessibilityLabel={onPressTx ? `${t('extract.optionsTitle')}: ${tx.description}` : undefined}
     >
       <View style={styles.content}>
         <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{tx.description}</Text>

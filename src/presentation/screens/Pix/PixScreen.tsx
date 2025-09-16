@@ -4,12 +4,14 @@ import { useTheme } from '../../theme/theme';
 import { makePixStyles } from './PixScreen.styles';
 import { usePixViewModel } from '../../viewmodels/usePixViewModel';
 import { formatCurrency } from '../../../utils/format';
+import { useI18n } from '../../i18n/I18nProvider';
 
 type Section = 'send' | 'payqr' | 'receive' | 'keys' | 'favorites' | 'history' | 'limits';
 
 export const PixScreen: React.FC<any> = () => {
   const theme = useTheme();
   const styles = useMemo(() => makePixStyles(theme), [theme]);
+  const { t } = useI18n();
   const {
     loading,
     error,
@@ -36,28 +38,28 @@ export const PixScreen: React.FC<any> = () => {
   const [newKey, setNewKey] = useState<{ type: 'email' | 'phone' | 'cpf' | 'random'; value?: string }>({ type: 'random' });
   const [limitsEdit, setLimitsEdit] = useState<{ daily?: string; nightly?: string; per?: string }>({});
 
-  const loadingText = useMemo(() => (loading ? 'Carregando...' : ''), [loading]);
+  const loadingText = useMemo(() => (loading ? t('pix.loading') : ''), [loading, t]);
 
   const handleSend = async () => {
     const amountCents = Math.round(parseFloat((send.amount || '0').replace(',', '.')) * 100);
-    if (!send.key || !amountCents) return Alert.alert('Dados inválidos', 'Informe chave e valor.');
+    if (!send.key || !amountCents) return Alert.alert(t('pix.alert.invalidDataTitle'), t('pix.alert.enterKeyAndAmount'));
     try {
       await sendByKey(send.key.trim(), amountCents, send.desc || undefined);
       setSend({ key: '', amount: '', desc: '' });
-      Alert.alert('PIX enviado', 'Transferência realizada com sucesso.');
+      Alert.alert(t('pix.alert.pixSentTitle'), t('pix.alert.pixSentMessage'));
     } catch (e: any) {
-      Alert.alert('Erro no PIX', e?.message || 'Não foi possível enviar o PIX.');
+      Alert.alert(t('pix.alert.pixErrorTitle'), e?.message || t('pix.alert.pixErrorMessage'));
     }
   };
 
   const handlePayQr = async () => {
-    if (!qrInput) return Alert.alert('Informe o QR', 'Cole o conteúdo do QR.');
+    if (!qrInput) return Alert.alert(t('pix.alert.enterQrTitle'), t('pix.alert.enterQrMessage'));
     try {
       await payQr(qrInput.trim());
       setQrInput('');
-      Alert.alert('PIX pago', 'Pagamento do QR realizado.');
+      Alert.alert(t('pix.alert.pixPaidTitle'), t('pix.alert.pixPaidMessage'));
     } catch (e: any) {
-      Alert.alert('Erro no pagamento', e?.message || 'Não foi possível pagar o QR.');
+      Alert.alert(t('pix.alert.pixPayErrorTitle'), e?.message || t('pix.alert.pixPayErrorMessage'));
     }
   };
 
@@ -78,28 +80,28 @@ export const PixScreen: React.FC<any> = () => {
         perTransferLimitCents: per,
       });
       setLimitsEdit({});
-      Alert.alert('Limites atualizados');
+      Alert.alert(t('pix.alert.limitsUpdated'));
     } catch (e: any) {
-      Alert.alert('Erro', e?.message || 'Não foi possível atualizar os limites');
+      Alert.alert(t('pix.alert.errorTitle'), e?.message || t('pix.alert.limitsUpdateError'));
     }
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.sectionTitle}>Ações PIX</Text>
+      <Text style={styles.sectionTitle}>{t('pix.actionsTitle')}</Text>
       <TouchableOpacity onPress={refresh} style={{ alignSelf: 'flex-start', marginBottom: 8 }}>
-        <Text style={styles.meta}>Atualizar</Text>
+        <Text style={styles.meta}>{t('pix.refresh')}</Text>
       </TouchableOpacity>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.actionsRow}>
         {(
           [
-            ['send', 'Transferir'],
-            ['payqr', 'Pagar QR'],
-            ['receive', 'Receber'],
-            ['keys', 'Minhas chaves'],
-            ['favorites', 'Favoritos'],
-            ['history', 'Extrato PIX'],
-            ['limits', 'Limites'],
+            ['send', t('pix.tabs.send')],
+            ['payqr', t('pix.tabs.payqr')],
+            ['receive', t('pix.tabs.receive')],
+            ['keys', t('pix.tabs.keys')],
+            ['favorites', t('pix.tabs.favorites')],
+            ['history', t('pix.tabs.history')],
+            ['limits', t('pix.tabs.limits')],
           ] as [Section, string][]
         ).map(([id, label], idx) => (
           <TouchableOpacity key={id} style={[styles.action, idx > 0 && styles.actionGap, section === id && { borderWidth: 2, borderColor: theme.colors.primary }]}
@@ -117,39 +119,39 @@ export const PixScreen: React.FC<any> = () => {
 
       {section === 'send' && (
         <View style={styles.card}>
-          <Text style={{ fontWeight: '600' }}>Transferir via chave</Text>
-          <TextInput placeholder="Chave (e-mail, telefone, CPF/CNPJ ou aleatória)" value={send.key} onChangeText={(t) => setSend((s) => ({ ...s, key: t }))} style={styles.input} autoCapitalize="none" />
-          <TextInput placeholder="Valor (ex: 25,90)" value={send.amount} onChangeText={(t) => setSend((s) => ({ ...s, amount: t }))} style={styles.input} keyboardType="decimal-pad" />
-          <TextInput placeholder="Descrição (opcional)" value={send.desc} onChangeText={(t) => setSend((s) => ({ ...s, desc: t }))} style={styles.input} />
-          <TouchableOpacity style={styles.btn} onPress={handleSend} accessibilityRole="button"><Text style={styles.btnText}>Enviar PIX</Text></TouchableOpacity>
+          <Text style={{ fontWeight: '600' }}>{t('pix.sendByKey')}</Text>
+          <TextInput placeholder={t('pix.keyPlaceholder')} value={send.key} onChangeText={(t) => setSend((s) => ({ ...s, key: t }))} style={styles.input} autoCapitalize="none" />
+          <TextInput placeholder={t('pix.amountPlaceholder')} value={send.amount} onChangeText={(t) => setSend((s) => ({ ...s, amount: t }))} style={styles.input} keyboardType="decimal-pad" />
+          <TextInput placeholder={t('pix.descOptional')} value={send.desc} onChangeText={(t) => setSend((s) => ({ ...s, desc: t }))} style={styles.input} />
+          <TouchableOpacity style={styles.btn} onPress={handleSend} accessibilityRole="button"><Text style={styles.btnText}>{t('pix.sendPix')}</Text></TouchableOpacity>
           {!!loadingText && <Text style={styles.meta}>{loadingText}</Text>}
         </View>
       )}
 
       {section === 'payqr' && (
         <View style={styles.card}>
-          <Text style={{ fontWeight: '600' }}>Pagar QR</Text>
-          <Text style={styles.meta}>Cole aqui o conteúdo do QR (payload)</Text>
-          <TextInput placeholder="PIXQR:... ou chave|valor|descrição" value={qrInput} onChangeText={setQrInput} style={[styles.input, { height: 100 }]} multiline />
-          <TouchableOpacity style={styles.btn} onPress={handlePayQr} accessibilityRole="button"><Text style={styles.btnText}>Pagar</Text></TouchableOpacity>
+          <Text style={{ fontWeight: '600' }}>{t('pix.payQrTitle')}</Text>
+          <Text style={styles.meta}>{t('pix.pasteQrContent')}</Text>
+          <TextInput placeholder={t('pix.qrInputPlaceholder')} value={qrInput} onChangeText={setQrInput} style={[styles.input, { height: 100 }]} multiline />
+          <TouchableOpacity style={styles.btn} onPress={handlePayQr} accessibilityRole="button"><Text style={styles.btnText}>{t('pix.pay')}</Text></TouchableOpacity>
           {!!loadingText && <Text style={styles.meta}>{loadingText}</Text>}
         </View>
       )}
 
       {section === 'receive' && (
         <View style={styles.card}>
-          <Text style={{ fontWeight: '600' }}>Receber via QR</Text>
-          <TextInput placeholder="Valor (opcional)" value={receive.amount} onChangeText={(t) => setReceive((s) => ({ ...s, amount: t }))} style={styles.input} keyboardType="decimal-pad" />
-          <TextInput placeholder="Descrição (opcional)" value={receive.desc} onChangeText={(t) => setReceive((s) => ({ ...s, desc: t }))} style={styles.input} />
-          <TouchableOpacity style={styles.btn} onPress={handleGenerateQr} accessibilityRole="button"><Text style={styles.btnText}>Gerar QR</Text></TouchableOpacity>
+          <Text style={{ fontWeight: '600' }}>{t('pix.receiveByQr')}</Text>
+          <TextInput placeholder={t('pix.valueOptional')} value={receive.amount} onChangeText={(t) => setReceive((s) => ({ ...s, amount: t }))} style={styles.input} keyboardType="decimal-pad" />
+          <TextInput placeholder={t('pix.descOptional')} value={receive.desc} onChangeText={(t) => setReceive((s) => ({ ...s, desc: t }))} style={styles.input} />
+          <TouchableOpacity style={styles.btn} onPress={handleGenerateQr} accessibilityRole="button"><Text style={styles.btnText}>{t('pix.generateQr')}</Text></TouchableOpacity>
           {!!receive.generated && (
             <View style={styles.qrBox}>
-              <Text selectable>Payload gerado:</Text>
+              <Text selectable>{t('pix.generatedPayload')}</Text>
               <Text selectable>{receive.generated}</Text>
               <TouchableOpacity style={[styles.btn, { marginTop: 12 }]} onPress={async () => {
                 try { await Share.share({ message: receive.generated }); } catch {}
               }}>
-                <Text style={styles.btnText}>Compartilhar</Text>
+                <Text style={styles.btnText}>{t('pix.share')}</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -158,19 +160,19 @@ export const PixScreen: React.FC<any> = () => {
 
       {section === 'keys' && (
         <View style={styles.card}>
-          <Text style={{ fontWeight: '600', marginBottom: 8 }}>Minhas chaves</Text>
+          <Text style={{ fontWeight: '600', marginBottom: 8 }}>{t('pix.keysTitle')}</Text>
           <View>
             {(keys || []).map((k) => (
               <View key={k.id} style={styles.listItem}>
                 <Text>{k.type.toUpperCase()} • {k.value}</Text>
                 <View style={[styles.row, { marginTop: 6 }]}> 
-              <TouchableOpacity style={styles.smallBtn} onPress={async () => { try { await removeKey(k.id); } catch (e: any) { Alert.alert('Erro', e?.message || 'Falha ao remover chave'); } }}><Text style={styles.smallBtnText}>Remover</Text></TouchableOpacity>
+              <TouchableOpacity style={styles.smallBtn} onPress={async () => { try { await removeKey(k.id); } catch (e: any) { Alert.alert(t('pix.alert.errorTitle'), e?.message || t('pix.alert.errorRemovingKey')); } }}><Text style={styles.smallBtnText}>{t('pix.remove')}</Text></TouchableOpacity>
                 </View>
               </View>
             ))}
-            {(!keys || keys.length === 0) && <Text style={styles.meta}>Nenhuma chave ainda</Text>}
+            {(!keys || keys.length === 0) && <Text style={styles.meta}>{t('pix.noKeysYet')}</Text>}
           </View>
-          <Text style={{ fontWeight: '600', marginTop: 12 }}>Adicionar chave</Text>
+          <Text style={{ fontWeight: '600', marginTop: 12 }}>{t('pix.addKeyTitle')}</Text>
           <View style={[styles.row, { marginTop: 8, flexWrap: 'wrap' }]}> 
             {(['email','phone','cpf','random'] as const).map((t) => (
               <TouchableOpacity
@@ -184,7 +186,7 @@ export const PixScreen: React.FC<any> = () => {
           </View>
           {newKey.type !== 'random' && (
             <TextInput
-              placeholder={newKey.type === 'email' ? 'seu-email@exemplo.com' : newKey.type === 'phone' ? '+55 (DDD) 9....' : 'CPF somente números'}
+              placeholder={newKey.type === 'email' ? t('pix.placeholders.emailExample') : newKey.type === 'phone' ? t('pix.placeholders.phoneExample') : t('pix.placeholders.cpfExample')}
               value={newKey.value}
               onChangeText={(t) => setNewKey((s) => ({ ...s, value: t }))}
               style={styles.input}
@@ -199,36 +201,36 @@ export const PixScreen: React.FC<any> = () => {
                 await addKey(newKey.type, newKey.value);
                 setNewKey({ type: 'random', value: undefined });
               } catch (e: any) {
-                Alert.alert('Erro ao adicionar chave', e?.message || 'Não foi possível adicionar a chave');
+                Alert.alert(t('pix.alert.errorTitle'), e?.message || t('pix.alert.errorAddingKey'));
               }
             }}
             accessibilityRole="button"
           >
-            <Text style={styles.btnText}>Adicionar chave {newKey.type.toUpperCase()}</Text>
+            <Text style={styles.btnText}>{t('pix.addKeyButton')} {newKey.type.toUpperCase()}</Text>
           </TouchableOpacity>
         </View>
       )}
 
       {section === 'favorites' && (
         <View style={styles.card}>
-          <Text style={{ fontWeight: '600' }}>Favoritos</Text>
+          <Text style={{ fontWeight: '600' }}>{t('pix.favoritesTitle')}</Text>
           <View style={{ marginTop: 8 }}>
             {(favorites || []).map((f) => (
               <View key={f.id} style={styles.listItem}>
                 <Text>{f.alias} • {f.keyValue}</Text>
                 <View style={[styles.row, { marginTop: 6 }]}> 
-                  <TouchableOpacity style={styles.smallBtn} onPress={async () => { try { await removeFav(f.id); } catch (e: any) { Alert.alert('Erro', e?.message || 'Falha ao remover favorito'); } }}><Text style={styles.smallBtnText}>Remover</Text></TouchableOpacity>
+                  <TouchableOpacity style={styles.smallBtn} onPress={async () => { try { await removeFav(f.id); } catch (e: any) { Alert.alert(t('pix.alert.errorTitle'), e?.message || t('pix.alert.errorRemovingFavorite')); } }}><Text style={styles.smallBtnText}>{t('pix.remove')}</Text></TouchableOpacity>
                 </View>
               </View>
             ))}
-            {(!favorites || favorites.length === 0) && <Text style={styles.meta}>Nenhum favorito ainda</Text>}
+            {(!favorites || favorites.length === 0) && <Text style={styles.meta}>{t('pix.noFavoritesYet')}</Text>}
           </View>
-          <Text style={{ fontWeight: '600', marginTop: 12 }}>Adicionar favorito</Text>
-          <TextInput placeholder="Apelido" value={newFav.alias} onChangeText={(t) => setNewFav((s) => ({ ...s, alias: t }))} style={styles.input} />
-          <TextInput placeholder="Chave PIX" value={newFav.key} onChangeText={(t) => setNewFav((s) => ({ ...s, key: t }))} style={styles.input} autoCapitalize="none" />
-          <TextInput placeholder="Nome (opcional)" value={newFav.name} onChangeText={(t) => setNewFav((s) => ({ ...s, name: t }))} style={styles.input} />
-          <TouchableOpacity style={styles.btn} onPress={async () => { if (!newFav.alias || !newFav.key) return; try { await addFav(newFav.alias, newFav.key, newFav.name || undefined); setNewFav({ alias: '', key: '', name: '' }); } catch (e: any) { Alert.alert('Erro', e?.message || 'Falha ao adicionar favorito'); } }}>
-            <Text style={styles.btnText}>Adicionar</Text>
+          <Text style={{ fontWeight: '600', marginTop: 12 }}>{t('pix.addFavoriteTitle')}</Text>
+          <TextInput placeholder={t('pix.alias')} value={newFav.alias} onChangeText={(t) => setNewFav((s) => ({ ...s, alias: t }))} style={styles.input} />
+          <TextInput placeholder={t('pix.pixKey')} value={newFav.key} onChangeText={(t) => setNewFav((s) => ({ ...s, key: t }))} style={styles.input} autoCapitalize="none" />
+          <TextInput placeholder={t('pix.nameOptional')} value={newFav.name} onChangeText={(t) => setNewFav((s) => ({ ...s, name: t }))} style={styles.input} />
+          <TouchableOpacity style={styles.btn} onPress={async () => { if (!newFav.alias || !newFav.key) return; try { await addFav(newFav.alias, newFav.key, newFav.name || undefined); setNewFav({ alias: '', key: '', name: '' }); } catch (e: any) { Alert.alert(t('pix.alert.errorTitle'), e?.message || t('pix.alert.errorAddingFavorite')); } }}>
+            <Text style={styles.btnText}>{t('common.add')}</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -242,7 +244,7 @@ export const PixScreen: React.FC<any> = () => {
             scrollEnabled={false}
             renderItem={({ item }) => (
               <View style={styles.listItem}>
-                <Text>{item.method === 'qr' ? 'Via QR' : 'Via chave'} • {formatCurrency(item.amount)} • {item.status}</Text>
+                <Text>{item.method === 'qr' ? t('pix.viaQr') : t('pix.viaKey')} • {formatCurrency(item.amount)} • {item.status}</Text>
                 <Text style={styles.meta}>{item.description || item.toKey}</Text>
               </View>
             )}
@@ -253,14 +255,14 @@ export const PixScreen: React.FC<any> = () => {
 
       {section === 'limits' && (
         <View style={styles.card}>
-          <Text style={{ fontWeight: '600' }}>Limites PIX</Text>
-          <Text style={{ marginTop: 6 }}>Diário atual: {limits ? formatCurrency(limits.dailyLimitCents) : '-'}</Text>
-          <Text>Noite atual: {limits ? formatCurrency(limits.nightlyLimitCents) : '-'}</Text>
-          <Text>Por transferência: {limits ? formatCurrency(limits.perTransferLimitCents) : '-'}</Text>
-          <TextInput placeholder="Novo limite diário (R$)" value={limitsEdit.daily} onChangeText={(t) => setLimitsEdit((s) => ({ ...s, daily: t }))} style={styles.input} keyboardType="decimal-pad" />
-          <TextInput placeholder="Novo limite noturno (R$)" value={limitsEdit.nightly} onChangeText={(t) => setLimitsEdit((s) => ({ ...s, nightly: t }))} style={styles.input} keyboardType="decimal-pad" />
-          <TextInput placeholder="Novo limite por transferência (R$)" value={limitsEdit.per} onChangeText={(t) => setLimitsEdit((s) => ({ ...s, per: t }))} style={styles.input} keyboardType="decimal-pad" />
-          <TouchableOpacity style={styles.btn} onPress={applyLimits}><Text style={styles.btnText}>Atualizar limites</Text></TouchableOpacity>
+          <Text style={{ fontWeight: '600' }}>{t('pix.limitsTitle')}</Text>
+          <Text style={{ marginTop: 6 }}>{t('pix.currentDaily')}: {limits ? formatCurrency(limits.dailyLimitCents) : '-'}</Text>
+          <Text>{t('pix.currentNightly')}: {limits ? formatCurrency(limits.nightlyLimitCents) : '-'}</Text>
+          <Text>{t('pix.currentPerTransfer')}: {limits ? formatCurrency(limits.perTransferLimitCents) : '-'}</Text>
+          <TextInput placeholder={t('pix.newDailyLimit')} value={limitsEdit.daily} onChangeText={(t) => setLimitsEdit((s) => ({ ...s, daily: t }))} style={styles.input} keyboardType="decimal-pad" />
+          <TextInput placeholder={t('pix.newNightlyLimit')} value={limitsEdit.nightly} onChangeText={(t) => setLimitsEdit((s) => ({ ...s, nightly: t }))} style={styles.input} keyboardType="decimal-pad" />
+          <TextInput placeholder={t('pix.newPerTransferLimit')} value={limitsEdit.per} onChangeText={(t) => setLimitsEdit((s) => ({ ...s, per: t }))} style={styles.input} keyboardType="decimal-pad" />
+          <TouchableOpacity style={styles.btn} onPress={applyLimits}><Text style={styles.btnText}>{t('pix.updateLimits')}</Text></TouchableOpacity>
         </View>
       )}
 

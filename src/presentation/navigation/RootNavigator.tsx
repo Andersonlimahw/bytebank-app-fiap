@@ -35,6 +35,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 function AppTabs() {
   const theme = useTheme();
+  const { t } = useI18n();
   const commonTabOptions = useMemo(
     () => ({
       headerStyle: { backgroundColor: theme.colors.surface },
@@ -63,22 +64,22 @@ function AppTabs() {
       <Tab.Screen
         name="Home"
         component={HomeScreen}
-        options={{ tabBarLabel: "Home", headerTitle: "Home" }}
+        options={{ tabBarLabel: t('tabs.home'), headerTitle: t('titles.home') }}
       />
       <Tab.Screen
         name="Dashboard"
         component={DashboardScreen}
-        options={{ tabBarLabel: "Dashboard", headerTitle: "Dashboard" }}
+        options={{ tabBarLabel: t('tabs.dashboard'), headerTitle: t('titles.dashboard') }}
       />
       <Tab.Screen
         name="Investments"
         component={InvestmentsScreen}
-        options={{ tabBarLabel: "Investimentos", headerTitle: "Investimentos" }}
+        options={{ tabBarLabel: t('tabs.investments'), headerTitle: t('titles.investments') }}
       />
       <Tab.Screen
         name="Extract"
         component={ExtractScreen}
-        options={{ tabBarLabel: "Extrato", headerTitle: "Extrato" }}
+        options={{ tabBarLabel: t('tabs.extract'), headerTitle: t('titles.extract') }}
       />
     </Tab.Navigator>
   );
@@ -149,12 +150,12 @@ export function RootNavigator() {
       <AppStack.Screen
         name="User"
         component={UserScreen}
-        options={{ title: "Minha Conta" }}
+        options={{ title: t('titles.myAccount') }}
       />
       <AppStack.Screen
         name="Pix"
         component={require("../screens/Pix/PixScreen").PixScreen}
-        options={{ title: "PIX" }}
+        options={{ title: t('titles.pix') }}
       />
       <AppStack.Screen
         name="AddTransaction"
@@ -164,7 +165,7 @@ export function RootNavigator() {
         }
         options={{
           presentation: "modal",
-          title: "Nova transação",
+          title: t('titles.newTransaction'),
         }}
       />
     </AppStack.Navigator>

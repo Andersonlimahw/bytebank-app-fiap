@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Image, Text, View, TouchableOpacity, StyleSheet, ImageSourcePropType } from 'react-native';
 import { useTheme } from '../theme/theme';
+import { useI18n } from '../i18n/I18nProvider';
 
 type AvatarProps = {
   username?: string;
@@ -20,6 +21,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   style,
 }) => {
   const theme = useTheme();
+  const { t } = useI18n();
   const styles = useMemo(
     () =>
       StyleSheet.create({
@@ -35,7 +37,7 @@ export const Avatar: React.FC<AvatarProps> = ({
       <Image source={source} style={[styles.avatar, { width: size, height: size, borderRadius: size / 2 }]} />
       {showName ? (
         <Text style={styles.username} numberOfLines={1}>
-          {username || 'Usuário'}
+          {username || t('user.userFallback')}
         </Text>
       ) : null}
     </Container>

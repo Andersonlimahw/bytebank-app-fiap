@@ -5,6 +5,7 @@ import { Input } from '../../components/Input';
 import { useAuth } from '../../../store/authStore';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
 import { useTheme } from '../../theme/theme';
+import { useI18n } from '../../i18n/I18nProvider';
 import { makeRegisterStyles } from './RegisterScreen.styles';
 
 export const RegisterScreen: React.FC<any> = ({ navigation }) => {
@@ -17,19 +18,20 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
   const { animatedStyle } = useFadeSlideInOnFocus();
   const theme = useTheme();
   const styles = useMemo(() => makeRegisterStyles(theme), [theme]);
+  const { t } = useI18n();
 
   const handleRegister = async () => {
     setError(null);
     if (!email || !password) {
-      setError('Preencha email e senha');
+      setError(t('auth.fillEmailPassword'));
       return;
     }
     if (password.length < 6) {
-      setError('Senha deve ter no mínimo 6 caracteres');
+      setError(t('auth.passwordMin'));
       return;
     }
     if (password !== confirmPassword) {
-      setError('As senhas não conferem');
+      setError(t('auth.passwordMismatch'));
       return;
     }
     setLoading(true);
@@ -37,7 +39,7 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
       await signUp({ email, password });
       // After sign up, user is considered authenticated by repo; stack will switch automatically.
     } catch (e: any) {
-      setError(e?.message ?? 'Falha ao cadastrar');
+      setError(e?.message ?? t('auth.registerFailed'));
     } finally {
       setLoading(false);
     }
@@ -46,37 +48,37 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
   return (
     <Animated.View style={[styles.container, animatedStyle as any]}>
       <Image source={require('../../../../contents/figma/login/Ilustração cadastro-1.png')} style={styles.illustration} />
-      <Text style={styles.title}>Crie sua conta</Text>
-      <Text style={styles.subtitle}>É rápido e seguro</Text>
+      <Text style={styles.title}>{t('auth.noAccount')}</Text>
+      <Text style={styles.subtitle}> </Text>
 
       <Input
-        placeholder="Email"
+        placeholder={t('auth.email')}
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
-        accessibilityLabel="Email"
+        accessibilityLabel={t('auth.email')}
       />
       <Input
-        placeholder="Senha"
+        placeholder={t('auth.password')}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
-        accessibilityLabel="Senha"
+        accessibilityLabel={t('auth.password')}
       />
       <Input
-        placeholder="Confirmar senha"
+        placeholder={t('auth.password')}
         secureTextEntry
         value={confirmPassword}
         onChangeText={setConfirmPassword}
-        accessibilityLabel="Confirmar senha"
+        accessibilityLabel={t('auth.password')}
         errorText={error}
       />
 
-      <Button title={loading ? 'Criando...' : 'Criar conta'} onPress={handleRegister} />
+      <Button title={loading ? t('common.loading') : t('transactions.save')} onPress={handleRegister} />
 
       <TouchableOpacity onPress={() => navigation?.goBack?.()}>
-        <Text style={styles.link}>Já tem conta? Entrar</Text>
+        <Text style={styles.link}>{t('auth.signInWithEmail')}</Text>
       </TouchableOpacity>
     </Animated.View>
   );

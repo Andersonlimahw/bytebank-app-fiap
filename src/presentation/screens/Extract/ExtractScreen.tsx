@@ -11,11 +11,13 @@ import { Skeleton } from '../../components/Skeleton';
 import { Avatar } from '../../components/Avatar';
 import { useAuth } from '../../../store/authStore';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useI18n } from '../../i18n/I18nProvider';
 
 export const ExtractScreen: React.FC = () => {
   const navigation = useNavigation();
   const { loading, transactions, search, setSearch, refresh, remove, update, supportsRealtime } = useExtractViewModel();
   const { user } = useAuth();
+  const { t } = useI18n();
   const theme = useTheme();
   const styles = useMemo(() => makeExtractStyles(theme), [theme]);
   // navigation object from hook is stable; avoid recreating callbacks per render
@@ -39,13 +41,13 @@ export const ExtractScreen: React.FC = () => {
 
   const confirmDelete = useCallback((tx: Transaction) => {
     Alert.alert(
-      'Excluir transação?',
-      'Esta ação não pode ser desfeita.',
+      t('extract.deleteConfirmTitle'),
+      t('extract.deleteConfirmMessage'),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('extract.cancel'), style: 'cancel' as const },
         {
-          text: 'Excluir',
-          style: 'destructive',
+          text: t('extract.delete'),
+          style: 'destructive' as const,
           onPress: async () => {
             await remove(tx.id);
           },
@@ -56,16 +58,16 @@ export const ExtractScreen: React.FC = () => {
 
   const openOptions = useCallback((tx: Transaction) => {
     Alert.alert(
-      'Opções',
+      t('extract.optionsTitle'),
       tx.description,
       [
-        { text: 'Editar', onPress: () => startEdit(tx) },
+        { text: t('extract.edit'), onPress: () => startEdit(tx) },
         {
-          text: 'Excluir',
-          style: 'destructive',
+          text: t('extract.delete'),
+          style: 'destructive' as const,
           onPress: () => confirmDelete(tx),
         },
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('extract.cancel'), style: 'cancel' as const },
       ],
       { cancelable: true }
     );
@@ -76,7 +78,7 @@ export const ExtractScreen: React.FC = () => {
     const normalized = amountText.replace(/\./g, '').replace(',', '.');
     const num = Number(normalized);
     if (isNaN(num)) {
-      Alert.alert('Valor inválido', 'Informe um valor numérico.');
+      Alert.alert(t('extract.invalidValueTitle'), t('extract.invalidValueMessage'));
       return;
     }
     const cents = Math.round(num * 100);
@@ -137,16 +139,16 @@ export const ExtractScreen: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.hello}>Olá,</Text>
-          <Text style={styles.username}>{user?.name || 'Usuário'}</Text>
+          <Text style={styles.hello}>{t('extract.hello')}</Text>
+          <Text style={styles.username}>{user?.name || t('extract.userFallback')}</Text>
         </View>
         <Avatar username={user?.name} size={40} onPress={goUser} />
       </View>
       <Input
-        placeholder="Buscar"
+        placeholder={t('extract.searchPlaceholder')}
         value={search}
         onChangeText={setSearch}
-        accessibilityLabel="Buscar no extrato"
+        accessibilityLabel={t('extract.searchAccessibility')}
       />
       {loading ? (
         <View style={styles.loadingContainer}>
@@ -157,8 +159,8 @@ export const ExtractScreen: React.FC = () => {
         </View>
       ) : transactions.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Nenhuma transação encontrada</Text>
-          <Button title="Adicionar transação" onPress={goAddTx} />
+          <Text style={styles.emptyText}>{t('extract.empty')}</Text>
+          <Button title={t('extract.addTransaction')} onPress={goAddTx} />
         </View>
       ) : (
         <Animated.FlatList
@@ -183,7 +185,7 @@ export const ExtractScreen: React.FC = () => {
           onPressOut={fabOut}
           onPress={goAddTx}
           accessibilityRole="button"
-          accessibilityLabel="Adicionar transação"
+          accessibilityLabel={t('extract.addTransactionAccessibility')}
           style={styles.fabPressable}
         >
           <Text style={styles.fabText}>+</Text>
@@ -193,11 +195,11 @@ export const ExtractScreen: React.FC = () => {
       <Modal visible={!!editing} transparent animationType="fade" onRequestClose={closeEdit}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Editar transação</Text>
-            <Input label="Descrição" value={desc} onChangeText={setDesc} placeholder="Descrição" />
-            <Input label="Categoria (opcional)" value={category} onChangeText={setCategory} placeholder="Ex.: Alimentação, Transferência" />
+            <Text style={styles.modalTitle}>{t('extract.editTransaction')}</Text>
+            <Input label={t('extract.description')} value={desc} onChangeText={setDesc} placeholder={t('extract.description')} />
+            <Input label={t('extract.categoryOptional')} value={category} onChangeText={setCategory} placeholder={t('extract.categoryOptional')} />
             <Input
-              label="Valor (R$)"
+              label={t('extract.valueBRL')}
               value={amountText}
               onChangeText={setAmountText}
               placeholder="0,00"
@@ -208,23 +210,23 @@ export const ExtractScreen: React.FC = () => {
                 onPress={() => setType('credit')}
                 style={[styles.typeBtn, type === 'credit' ? styles.typeBtnActive : undefined]}
                 accessibilityRole="button"
-                accessibilityLabel="Selecionar crédito"
+                accessibilityLabel={t('extract.credit')}
               >
-                <Text style={[styles.typeText, type === 'credit' ? styles.typeTextActive : undefined]}>Crédito</Text>
+                <Text style={[styles.typeText, type === 'credit' ? styles.typeTextActive : undefined]}>{t('extract.credit')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setType('debit')}
                 style={[styles.typeBtn, { marginLeft: theme.spacing.sm }, type === 'debit' ? styles.typeBtnActive : undefined]}
                 accessibilityRole="button"
-                accessibilityLabel="Selecionar débito"
+                accessibilityLabel={t('extract.debit')}
               >
-                <Text style={[styles.typeText, type === 'debit' ? styles.typeTextActive : undefined]}>Débito</Text>
+                <Text style={[styles.typeText, type === 'debit' ? styles.typeTextActive : undefined]}>{t('extract.debit')}</Text>
               </TouchableOpacity>
             </View>
 
             <View style={styles.modalActions}>
-              <Button title="Cancelar" onPress={closeEdit} style={styles.modalCancelBtn} textStyle={{ color: theme.colors.text }} />
-              <Button title="Salvar" onPress={saveEdit} style={styles.modalSaveBtn} />
+              <Button title={t('extract.cancel')} onPress={closeEdit} style={styles.modalCancelBtn} textStyle={{ color: theme.colors.text }} />
+              <Button title={t('extract.save')} onPress={saveEdit} style={styles.modalSaveBtn} />
             </View>
           </View>
         </View>
