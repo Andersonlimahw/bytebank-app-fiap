@@ -30,6 +30,17 @@ export function useHomeViewModel() {
   }, [getRecentUC, getBalanceUC, user]);
 
   useEffect(() => {
+    if (!user) return;
+    if (typeof txRepo.subscribeRecent === 'function') {
+      setLoading(true);
+      const unsub = txRepo.subscribeRecent(user.id, 10, (txs) => {
+        setTransactions(txs);
+        const bal = txs.reduce((acc, t) => acc + (t.type === 'credit' ? t.amount : -t.amount), 0);
+        setBalance(bal);
+        setLoading(false);
+      });
+      return () => unsub();
+    }
     let mounted = true;
     (async () => {
       if (!mounted) return;
@@ -38,7 +49,7 @@ export function useHomeViewModel() {
     return () => {
       mounted = false;
     };
-  }, [refresh]);
+  }, [txRepo, user, refresh]);
 
   return { loading, transactions, balance, refresh };
 }

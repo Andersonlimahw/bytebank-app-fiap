@@ -36,6 +36,17 @@ export function useExtractViewModel() {
   }, [repo, refresh]);
 
   useEffect(() => {
+    if (!user) return;
+    // Prefer real-time subscription when available
+    if (typeof repo.subscribeRecent === 'function') {
+      setLoading(true);
+      const unsub = repo.subscribeRecent(user.id, 100, (txs) => {
+        setAll(txs);
+        setLoading(false);
+      });
+      return () => unsub();
+    }
+    // Fallback to one-shot load
     let mounted = true;
     (async () => {
       if (!mounted) return;
@@ -44,7 +55,7 @@ export function useExtractViewModel() {
     return () => {
       mounted = false;
     };
-  }, [refresh]);
+  }, [repo, user, refresh]);
 
   useEffect(() => {
     const term = search.trim().toLowerCase();

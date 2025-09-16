@@ -11,6 +11,7 @@ import { ExtractScreen } from "../screens/Extract/ExtractScreen";
 import { Text } from "react-native";
 import { rootNavigatorStyles as styles } from "./RootNavigator.styles";
 import { UserScreen } from "../screens/User/UserScreen";
+import { useI18n } from "../i18n/I18nProvider";
 
 type AuthStackParamList = {
   Onboarding: undefined;
@@ -81,9 +82,10 @@ function AppTabs() {
 
 export function RootNavigator() {
   const { user, loading } = useAuth();
+  const { t } = useI18n();
 
   if (loading || user === undefined) {
-    return <Text style={styles.loading}>Loading...</Text>;
+    return <Text style={styles.loading}>{t('common.loading')}</Text>;
   }
 
   if (!user) {

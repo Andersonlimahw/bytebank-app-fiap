@@ -1,9 +1,7 @@
 # Google Authentication Setup Guide
 
 ## Overview
-This guide will help you configure Google authentication for the ByteBank app. The app uses a dual approach for maximum compatibility:
-1. **Native Google Sign-In** (@react-native-google-signin/google-signin) - Better UX
-2. **Expo AuthSession** - Fallback for compatibility
+This guide helps you configure Google authentication for the ByteBank app using **Expo AuthSession** on native and web. No extra native Google Sign-In package is required; credentials are exchanged with Firebase using the ID token obtained from Google.
 
 ## Prerequisites
 - Google Cloud Console access
@@ -86,25 +84,23 @@ EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=102802199932-your-android-client-id.apps.go
 EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=102802199932-your-web-client-id.apps.googleusercontent.com
 ```
 
-## Step 3: Download Google Services Files
+## Step 3: Firebase Files (optional for AuthSession)
 
-### For Android
-1. In Google Cloud Console, go to your Android OAuth client
-2. Download the `google-services.json` file
-3. Place it in the root of your project: `/google-services.json`
+For AuthSession itself, these files are not required. However, the app also uses Firebase (Auth + Firestore). If you prefer using platform files instead of environment variables only, you can optionally include:
 
-### For iOS
-1. In Google Cloud Console, go to your iOS OAuth client
-2. Download the `GoogleService-Info.plist` file
-3. Place it in the root of your project: `/GoogleService-Info.plist`
+### Android (optional)
+- `google-services.json` at the repo root and referenced in `app.json`.
+
+### iOS (optional)
+- `GoogleService-Info.plist` at the repo root and referenced in `app.json`.
 
 ## Step 4: Firebase Configuration
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Select your project: `projeto-bytebank`
+2. Select your project
 3. Go to **Authentication** > **Sign-in method**
 4. Enable **Google** sign-in provider
-5. Use the **Web Client ID** from Step 1.3.A
+5. Ensure your app is initialized with Firebase config via `.env` (EXPO_PUBLIC_FIREBASE_*)
 
 ## Step 5: Test the Implementation
 
@@ -134,9 +130,9 @@ npm run build:ios:dev
    - Ensure the Web Client ID is correctly configured in Firebase
    - Check that Google Sign-In is enabled in Firebase Authentication
 
-3. **"hasPlayServices failed"**
-   - This is normal on iOS - the app will fallback to AuthSession
-   - On Android, ensure Google Play Services are installed
+3. If AuthSession fails to open
+   - Ensure `scheme` is configured in `app.json` and matches the `makeRedirectUri({ scheme: 'bytebank' })` usage
+   - On native dev, AuthSession will use the Expo proxy automatically
 
 4. **"Login Google cancelado"**
    - User cancelled the login process

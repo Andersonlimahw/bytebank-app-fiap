@@ -5,6 +5,7 @@ import { RootNavigator } from './src/presentation/navigation/RootNavigator';
 import { initAuthStore } from './src/store/authStore';
 import { enableScreens } from 'react-native-screens';
 import { Platform, UIManager } from 'react-native';
+import { I18nProvider } from './src/presentation/i18n/I18nProvider';
 
 // Improves navigation performance and avoids potential blank screens on some setups
 enableScreens(true);
@@ -19,10 +20,12 @@ export default function App() {
     }
   }, []);
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <RootNavigator />
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <I18nProvider>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <RootNavigator />
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </I18nProvider>
   );
 }

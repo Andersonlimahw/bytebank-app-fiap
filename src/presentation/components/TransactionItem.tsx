@@ -29,7 +29,7 @@ export const TransactionItem: React.FC<Props> = ({ tx, onPress, onEdit, onDelete
       accessibilityLabel={onPress ? `Abrir opções para ${tx.description}` : undefined}
     >
       <View style={styles.content}>
-        <Text style={styles.title}>{tx.description}</Text>
+        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{tx.description}</Text>
         <Text style={styles.date}>{formatDateShort(new Date(tx.createdAt))}</Text>
         {!!tx.category && <Text style={styles.category}>{tx.category}</Text>}
       </View>

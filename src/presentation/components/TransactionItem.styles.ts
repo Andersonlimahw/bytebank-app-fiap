@@ -13,6 +13,6 @@ export const transactionItemStyles = StyleSheet.create({
   title: { fontWeight: '600', fontSize: 16, color: theme.colors.text },
   date: { color: theme.colors.muted, marginTop: 2 },
   category: { color: theme.colors.accent, marginTop: 2, fontSize: 12 },
-  amount: { fontWeight: '700' },
-  content: { flex: 1 },
+  amount: { fontWeight: '700', marginLeft: theme.spacing.sm },
+  content: { flex: 1, minWidth: 0, paddingRight: theme.spacing.sm },
 });

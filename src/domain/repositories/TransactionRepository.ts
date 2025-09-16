@@ -6,4 +6,6 @@ export interface TransactionRepository {
   getBalance(userId: string): Promise<number>; // cents
   update(id: string, updates: Partial<Pick<Transaction, 'description' | 'amount' | 'type' | 'category'>>): Promise<void>;
   remove(id: string): Promise<void>;
+  // Subscribe to recent transactions for a user; returns unsubscribe
+  subscribeRecent?(userId: string, limit: number, cb: (txs: Transaction[]) => void): () => void;
 }

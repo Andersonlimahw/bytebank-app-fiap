@@ -9,11 +9,13 @@ import { theme } from '../../theme/theme';
 import { homeStyles as styles } from './HomeScreen.styles';
 import { useFadeSlideInOnFocus } from '../../hooks/animations';
 import { Avatar } from '../../components/Avatar';
+import { useI18n } from '../../i18n/I18nProvider';
 
 export const HomeScreen: React.FC<any> = ({ navigation }) => {
   const { loading, transactions, balance, refresh } = useHomeViewModel();
   const { user, signOut } = useAuth();
   const { animatedStyle } = useFadeSlideInOnFocus();
+  const { t } = useI18n();
 
   return (
     <Animated.ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: theme.spacing.xl }}
@@ -22,7 +24,7 @@ export const HomeScreen: React.FC<any> = ({ navigation }) => {
       <Animated.View style={animatedStyle as any}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.hello}>Olá,</Text>
+          <Text style={styles.hello}>{t('home.hello')}</Text>
           <Text style={styles.username}>{user?.name || 'Usuário'}</Text>
         </View>
         <Avatar username={user?.name} size={40} onPress={() => (navigation as any)?.navigate?.('User')} />
@@ -31,14 +33,14 @@ export const HomeScreen: React.FC<any> = ({ navigation }) => {
       <Image source={require('../../../../contents/figma/home/Banner1-4.png')} style={styles.banner} />
 
       <View style={styles.card}>
-        <Text style={styles.cardLabel}>Saldo atual</Text>
+        <Text style={styles.cardLabel}>{t('home.balance')}</Text>
         <Text style={styles.cardValue}>{formatCurrency(balance)}</Text>
-        <Text onPress={signOut} style={styles.signOut}>Sair</Text>
+        <Text onPress={signOut} style={styles.signOut}>{t('home.signOut')}</Text>
       </View>
 
-      <Text style={styles.sectionTitle}>Atalhos</Text>
+      <Text style={styles.sectionTitle}>{t('home.shortcuts')}</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.actionsRow}>
-        <QuickAction label="Pix" icon={require('../../../../public/assets/images/icons/Ícone Pix.png')} onPress={() => (navigation as any)?.navigate?.('Pix')} />
+        <QuickAction label={t('home.pix')} icon={require('../../../../public/assets/images/icons/Ícone Pix.png')} onPress={() => (navigation as any)?.navigate?.('Pix')} />
         <QuickAction label="Cartões" icon={require('../../../../public/assets/images/icons/Ícone cartões.png')} style={styles.actionGap} />
         <QuickAction label="Empréstimo" icon={require('../../../../public/assets/images/icons/Ícone empréstimo.png')} style={styles.actionGap} />
         <QuickAction label="Saque" icon={require('../../../../public/assets/images/icons/Ícone Saque.png')} style={styles.actionGap} />
@@ -46,7 +48,7 @@ export const HomeScreen: React.FC<any> = ({ navigation }) => {
         <QuickAction label="Doações" icon={require('../../../../public/assets/images/icons/Ícone doações.png')} style={styles.actionGap} />
       </ScrollView>
 
-      <Text style={styles.sectionTitle}>Transações recentes</Text>
+      <Text style={styles.sectionTitle}>{t('home.recentTransactions')}</Text>
       <FlatList
         data={transactions}
         keyExtractor={(item) => item.id}

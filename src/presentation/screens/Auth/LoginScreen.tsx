@@ -7,6 +7,7 @@ import { useFadeSlideInOnFocus } from "../../hooks/animations";
 import { AppConfig } from "../../../config/appConfig";
 import { theme } from "../../theme/theme";
 import { loginStyles as styles } from "./LoginScreen.styles";
+import { useI18n } from "../../i18n/I18nProvider";
 
 export const LoginScreen: React.FC<any> = ({ navigation }) => {
   const { signIn } = useAuth();
@@ -16,6 +17,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
   const [providerLoading, setProviderLoading] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
   const { animatedStyle } = useFadeSlideInOnFocus();
+  const { t } = useI18n();
 
   return (
     <Animated.View style={[styles.container, animatedStyle as any]}>
@@ -23,12 +25,12 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
         source={require("../../../../contents/figma/login/Ilustração-1.png")}
         style={styles.logo}
       />
-      <Text style={styles.title}>Welcome to ByteBank</Text>
-      <Text style={styles.subtitle}>Sign in to continue</Text>
+      <Text style={styles.title}>{t('auth.welcome')}</Text>
+      <Text style={styles.subtitle}>{t('auth.continue')}</Text>
 
       <View style={styles.spacerMd} />
       <Button
-        title="Continue with Google"
+        title={t('auth.google')}
         loading={providerLoading}
         disabled={providerLoading || emailLoading}
         onPress={async () => {
@@ -62,7 +64,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
       <View style={styles.spacerSm} />
       {Platform.OS === "ios" && (
         <Button
-          title="Continue with Apple"
+        title={t('auth.apple')}
           loading={providerLoading}
           disabled={providerLoading || emailLoading}
           onPress={async () => {
@@ -78,7 +80,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
       )}
       <View style={styles.spacerSm} />
       <Button
-        title="Continue Anonymously"
+        title={t('auth.anonymous')}
         loading={providerLoading}
         disabled={providerLoading || emailLoading}
         onPress={async () => {
@@ -95,7 +97,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
       <View style={styles.spacerLg} />
       <Text style={styles.altTitle}>Or use email</Text>
       <Input
-        placeholder="Email"
+        placeholder={t('auth.email')}
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
@@ -103,7 +105,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
         accessibilityLabel="Email"
       />
       <Input
-        placeholder="Password"
+        placeholder={t('auth.password')}
         secureTextEntry
         showPasswordToggle
         value={password}
@@ -112,7 +114,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
         errorText={error}
       />
       <Button
-        title="Sign in with Email"
+        title={t('auth.signInWithEmail')}
         loading={emailLoading}
         disabled={providerLoading || emailLoading}
         onPress={async () => {
@@ -139,13 +141,10 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
       <TouchableOpacity
         onPress={() => (navigation as any)?.navigate?.("Register")}
       >
-        <Text style={styles.link}>No account? Create one</Text>
+        <Text style={styles.link}>{t('auth.noAccount')}</Text>
       </TouchableOpacity>
       {AppConfig.useMock && (
-        <Text style={styles.hint}>
-          Mock mode is enabled by default. Configure Firebase to use real
-          providers.
-        </Text>
+        <Text style={styles.hint}>{t('auth.mockHint')}</Text>
       )}
     </Animated.View>
   );

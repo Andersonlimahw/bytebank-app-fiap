@@ -35,6 +35,23 @@ export class FirebasePixRepository implements PixRepository {
 
   async addKey(userId: string, type: PixKeyType, value?: string): Promise<string> {
     const db = FirebaseAPI.db;
+    // Basic format validation
+    const v = (value || '').trim();
+    if (type === 'email') {
+      const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      if (!ok) throw new Error('E-mail inválido.');
+    }
+    if (type === 'phone') {
+      const digits = v.replace(/\D/g, '');
+      // Accept 10-13 digits to accommodate country code + area + number
+      if (digits.length < 10 || digits.length > 13) throw new Error('Telefone inválido.');
+      value = digits;
+    }
+    if (type === 'cpf') {
+      const digits = v.replace(/\D/g, '');
+      if (digits.length !== 11) throw new Error('CPF inválido.');
+      value = digits;
+    }
     // Basic constraints: prevent more than one of email/phone/cpf; allow up to 5 random keys
     if (type !== 'random') {
       const existing = await getDocs(query(collection(db, 'pixKeys'), where('userId', '==', userId), where('type', '==', type)));

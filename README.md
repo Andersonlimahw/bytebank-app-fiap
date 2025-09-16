@@ -32,14 +32,20 @@ Getting Started
    - or: pnpm i / yarn
 
 3) Run the app
-   - Real (Firebase) mode: `npm run start:firebase` (reads `.env` with `EXPO_PUBLIC_USE_MOCK=false`).
-   - Mock mode (no Firebase needed): `npm run start:mocks`.
-   - Default: `npm run start` (no prebuild, uses current env).
+   - Auto mode (default): `npm run start`.
+     - If Firebase envs are present (`EXPO_PUBLIC_FIREBASE_API_KEY`, `PROJECT_ID`, `APP_ID`), the app runs in real mode.
+     - Otherwise, it falls back to mock mode.
+   - Force real (Firebase) mode: set `EXPO_PUBLIC_USE_MOCK=false` in `.env` and run `npm start`.
+   - Force mock mode: set `EXPO_PUBLIC_USE_MOCK=true` in `.env` and run `npm start`.
    - In Metro, press `i` for iOS simulator or `a` for Android.
 
 Troubleshooting
 - PlatformConstants not found: This usually means a native/JS version mismatch or duplicate native modules.
-  - Remove explicit duplicates from dependencies: avoid pinning `react-native` and `expo-constants` directly in `package.json` for managed apps. Use `expo install` to get compatible versions.
+  - Avoid mismatched dependencies in managed Expo apps:
+    - Do not pin `react-native` directly; let Expo manage it.
+    - Keep `react` on 18.x for SDK 54 (React 19 is not supported).
+    - Run `npx expo install` to align versions for your SDK.
+    - If you had pinned older versions, remove them and reinstall dependencies.
   - Reinstall deps and clear caches:
     - `rm -rf node_modules package-lock.json` then `npm i`
     - `npm run clear-cache` (runs `expo start --clear`)
@@ -49,15 +55,15 @@ Troubleshooting
 Current Status
 - Mock repositories wired via DI, with automatic fallback if Firebase is misconfigured
 - Auth flow (Google/Apple/Email/Anonymous) + guarded navigation
-- Home shows balance and recent transactions
+- Home shows balance and recent transactions (real-time on Firebase)
 - Dashboard shows income/expense summary and allows adding demo credits/debits
-- Extract supports search, edit, delete, and now adding new transactions (modal)
- - PIX screen with send, QR pay/receive, keys, favorites, history, and limits
+- Extract supports search, edit, delete, and now adding new transactions (modal) with real-time updates on Firebase
+- PIX screen with send, QR pay/receive, keys, favorites, history, and limits
 
 Switching to Firebase
 1) Create a Firebase project and a web app to obtain config.
 2) Set the following environment variables (Expo public envs):
-   - EXPO_PUBLIC_USE_MOCK=false
+   - EXPO_PUBLIC_USE_MOCK=false (optional; omit to auto-detect based on Firebase envs)
    - EXPO_PUBLIC_FIREBASE_API_KEY=...
    - EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=...
    - EXPO_PUBLIC_FIREBASE_PROJECT_ID=...
@@ -80,8 +86,8 @@ Switching to Firebase
   - Note: `app.json` includes the `expo-apple-authentication` plugin required for native iOS builds.
 
 5) Providers (native)
-   - Google/Apple/Facebook on native require Expo AuthSession flows and native config.
-   - This starter includes a Firebase popup flow for Web; on native, wire sign-in via expo-auth-session and pass credentials to Firebase (see comments in FirebaseAuthRepository and Expo docs).
+   - Google/Apple on native use Expo AuthSession and pass credentials to Firebase.
+   - Web uses Firebase popup providers.
 
 6) Run with Firebase
   - npm run start
@@ -98,6 +104,7 @@ Auth Persistence on Native
 Transactions (Firestore)
 - Collection: `transactions` with fields: `userId` (string), `type` ('credit'|'debit'), `amount` (number, cents), `description` (string), `category` (optional string), `createdAt` (serverTimestamp)
 - Queries order by `createdAt desc` filtered by `userId` (you may be prompted by Firebase to create a composite index)
+- Real-time: the app subscribes to the recent transactions query, updating Home and Extract live
 
 Investments (Firestore)
 - Collection: `investments` with fields: `userId` (string), `type` (category), `amount` (number, cents)
@@ -139,6 +146,6 @@ Indexes
 - Firestore may prompt you to create indexes for queries combining `where('userId','==',...)` and `orderBy('createdAt','desc')` on collections above. Create the suggested index in the Firebase console if requested.
 
 Enabling Real PIX Mode
-- Set `EXPO_PUBLIC_USE_MOCK=false` and Firebase envs in `.env`.
-- Install required deps (see Switching to Firebase above) and run the app.
+- Ensure Firebase envs are set in `.env` (`EXPO_PUBLIC_FIREBASE_*`). The app auto-detects real mode when these are present.
+- Alternatively, set `EXPO_PUBLIC_USE_MOCK=false` to force real mode.
 - Sign in (email/password, anonymous, or a provider). PIX data is scoped to the signed-in `userId`.

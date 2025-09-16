@@ -4,9 +4,11 @@ import Constants from 'expo-constants';
 import { userStyles as styles } from './UserScreen.styles';
 import { Avatar } from '../../components/Avatar';
 import { useAuth } from '../../../store/authStore';
+import { useI18n } from '../../i18n/I18nProvider';
 
 export const UserScreen: React.FC<any> = () => {
   const { user } = useAuth();
+  const { t, lang, setLang } = useI18n();
   const version = Constants?.expoConfig?.version || Constants?.manifest?.version || '1.0.0';
 
   const accountNumber = useMemo(() => {
@@ -18,7 +20,7 @@ export const UserScreen: React.FC<any> = () => {
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 32 }}>
       <View style={styles.header}>
-        <Text style={styles.title}>Minha Conta</Text>
+        <Text style={styles.title}>{t('user.myAccount')}</Text>
       </View>
 
       <View style={styles.section}>
@@ -34,42 +36,56 @@ export const UserScreen: React.FC<any> = () => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Informações</Text>
+        <Text style={styles.sectionTitle}>{t('user.info')}</Text>
         <View style={styles.card}>
           <View style={styles.row}>
-            <Text style={styles.label}>ID do usuário</Text>
+            <Text style={styles.label}>{t('user.userId')}</Text>
             <Text style={styles.value} numberOfLines={1}>{user?.id ?? '-'}</Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.row}>
-            <Text style={styles.label}>Conta</Text>
+            <Text style={styles.label}>{t('user.account')}</Text>
             <Text style={styles.value}>{accountNumber}</Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.row}>
-            <Text style={styles.label}>Versão do app</Text>
+            <Text style={styles.label}>{t('user.appVersion')}</Text>
             <Text style={styles.value}>{version}</Text>
           </View>
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Ajuda</Text>
+        <Text style={styles.sectionTitle}>{t('user.help')}</Text>
         <View style={styles.card}>
           <TouchableOpacity style={styles.row} onPress={() => Linking.openURL('mailto:suporte@bytebank.app')}>
-            <Text style={styles.label}>Contato do suporte</Text>
-            <Text style={styles.link}>Enviar e-mail</Text>
+            <Text style={styles.label}>{t('user.supportContact')}</Text>
+            <Text style={styles.link}>{t('user.sendEmail')}</Text>
           </TouchableOpacity>
           <View style={styles.divider} />
           <TouchableOpacity style={styles.row} onPress={() => Linking.openURL('https://bytebank.app/ajuda')}>
-            <Text style={styles.label}>Central de ajuda</Text>
-            <Text style={styles.link}>Abrir</Text>
+            <Text style={styles.label}>{t('user.helpCenter')}</Text>
+            <Text style={styles.link}>{t('user.open')}</Text>
           </TouchableOpacity>
           <View style={styles.divider} />
           <TouchableOpacity style={styles.row} onPress={() => Linking.openURL('https://bytebank.app/privacidade')}>
-            <Text style={styles.label}>Privacidade e segurança</Text>
-            <Text style={styles.link}>Ver</Text>
+            <Text style={styles.label}>{t('user.privacy')}</Text>
+            <Text style={styles.link}>{t('user.view')}</Text>
           </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t('user.language')}</Text>
+        <View style={styles.card}>
+          <View style={styles.row}>
+            <TouchableOpacity onPress={() => setLang('pt')}>
+              <Text style={[styles.link, { fontWeight: lang === 'pt' ? '700' : '400' }]}>Português (BR)</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{ marginLeft: 16 }} onPress={() => setLang('en')}>
+              <Text style={[styles.link, { fontWeight: lang === 'en' ? '700' : '400' }]}>English</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
@@ -79,4 +95,3 @@ export const UserScreen: React.FC<any> = () => {
     </ScrollView>
   );
 };
-
