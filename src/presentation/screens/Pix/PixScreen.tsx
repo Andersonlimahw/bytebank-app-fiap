@@ -164,7 +164,7 @@ export const PixScreen: React.FC<any> = () => {
           <View>
             {(keys || []).map((k) => (
               <View key={k.id} style={styles.listItem}>
-                <Text>{k.type.toUpperCase()} • {k.value}</Text>
+                <Text>{t(`pix.type.${k.type}`)} • {k.value}</Text>
                 <View style={[styles.row, { marginTop: 6 }]}> 
               <TouchableOpacity style={styles.smallBtn} onPress={async () => { try { await removeKey(k.id); } catch (e: any) { Alert.alert(t('pix.alert.errorTitle'), e?.message || t('pix.alert.errorRemovingKey')); } }}><Text style={styles.smallBtnText}>{t('pix.remove')}</Text></TouchableOpacity>
                 </View>
@@ -174,13 +174,13 @@ export const PixScreen: React.FC<any> = () => {
           </View>
           <Text style={{ fontWeight: '600', marginTop: 12 }}>{t('pix.addKeyTitle')}</Text>
           <View style={[styles.row, { marginTop: 8, flexWrap: 'wrap' }]}> 
-            {(['email','phone','cpf','random'] as const).map((t) => (
+            {(['email','phone','cpf','random'] as const).map((typeId) => (
               <TouchableOpacity
-                key={t}
+                key={typeId}
                 style={[styles.smallBtn, { marginRight: 8, marginBottom: 8 }]}
-                onPress={() => setNewKey({ type: t })}
+                onPress={() => setNewKey({ type: typeId })}
               >
-                <Text style={styles.smallBtnText}>{newKey.type === t ? '• ' : ''}{t.toUpperCase()}</Text>
+                <Text style={styles.smallBtnText}>{newKey.type === typeId ? '• ' : ''}{t(`pix.type.${typeId}`)}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -206,7 +206,7 @@ export const PixScreen: React.FC<any> = () => {
             }}
             accessibilityRole="button"
           >
-            <Text style={styles.btnText}>{t('pix.addKeyButton')} {newKey.type.toUpperCase()}</Text>
+            <Text style={styles.btnText}>{t('pix.addKeyButton')} {t(`pix.type.${newKey.type}`)}</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -237,7 +237,7 @@ export const PixScreen: React.FC<any> = () => {
 
       {section === 'history' && (
         <View style={styles.card}>
-          <Text style={{ fontWeight: '600' }}>Extrato PIX</Text>
+          <Text style={{ fontWeight: '600' }}>{t('pix.tabs.history')}</Text>
           <FlatList
             data={transfers}
             keyExtractor={(i) => i.id}

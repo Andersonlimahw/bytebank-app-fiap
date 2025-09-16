@@ -1,5 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { View, Text, Image, TouchableOpacity, Platform, Animated } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Platform,
+  Animated,
+} from "react-native";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { useAuth } from "../../../store/authStore";
@@ -25,12 +32,12 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
   return (
     <Animated.View style={[styles.container, animatedStyle as any]}>
       <BrandLogo />
-      <Text style={styles.title}>{t('auth.welcome')}</Text>
-      <Text style={styles.subtitle}>{t('auth.continue')}</Text>
+      <Text style={styles.title}>{t("auth.welcome")}</Text>
+      <Text style={styles.subtitle}>{t("auth.continue")}</Text>
 
       <View style={styles.spacerMd} />
       <Button
-        title={t('auth.google')}
+        title={t("auth.google")}
         loading={providerLoading}
         disabled={providerLoading || emailLoading}
         onPress={async () => {
@@ -40,29 +47,33 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
             await signIn("google");
           } catch (e: any) {
             // Provide more specific error messages for Google authentication
-            let errorMessage = t('auth.googleLoginFailed');
+            let errorMessage = t("auth.googleLoginFailed");
             if (e?.message?.includes("Client ID não configurado")) {
-              errorMessage = t('auth.notConfiguredFirebase');
+              errorMessage = t("auth.notConfiguredFirebase");
             } else if (e?.message?.includes("cancelado")) {
-              errorMessage = t('auth.loginCancelled');
-            } else if (e?.message?.toLowerCase?.().includes("network") || e?.message?.includes("Failed to fetch")) {
-              errorMessage = t('common.networkError');
+              errorMessage = t("auth.loginCancelled");
+            } else if (
+              e?.message?.toLowerCase?.().includes("network") ||
+              e?.message?.includes("Failed to fetch")
+            ) {
+              errorMessage = t("common.networkError");
             } else if (e?.message?.includes("hasPlayServices")) {
-              errorMessage = t('auth.playServicesMissing');
+              errorMessage = t("auth.playServicesMissing");
             } else if (e?.message?.includes("Token inválido")) {
-              errorMessage = t('auth.invalidToken');
-            } else if (e?.message?.includes?.('Firebase config is missing')) {
-              errorMessage = t('auth.firebaseNotConfigured');
+              errorMessage = t("auth.invalidToken");
+            } else if (e?.message?.includes?.("Firebase config is missing")) {
+              errorMessage = t("auth.firebaseNotConfigured");
             } else if (e?.message) {
               errorMessage = e.message;
             }
             setError(errorMessage);
+          } finally {
+            setProviderLoading(false);
           }
-          finally { setProviderLoading(false); }
         }}
       />
       <View style={styles.spacerSm} />
-      {Platform.OS === "ios" && (
+      {/* {Platform.OS === "ios" && (
         <Button
         title={t('auth.apple')}
           loading={providerLoading}
@@ -73,14 +84,24 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
               setProviderLoading(true);
               await signIn("apple");
             } catch (e: any) {
-            setError(e?.message ?? t('auth.appleLoginFailed'));
-          } finally { setProviderLoading(false); }
+              let errorMessage = t('auth.appleLoginFailed');
+              if (e?.message?.includes?.('cancel')) {
+                errorMessage = t('auth.loginCancelled');
+              } else if (e?.message?.toLowerCase?.().includes('network')) {
+                errorMessage = t('common.networkError');
+              } else if (e?.message?.includes?.('Firebase config is missing')) {
+                errorMessage = t('auth.firebaseNotConfigured');
+              } else if (e?.message) {
+                errorMessage = e.message;
+              }
+              setError(errorMessage);
+            } finally { setProviderLoading(false); }
         }}
       />
-      )}
+      )} */}
       <View style={styles.spacerSm} />
-      <Button
-        title={t('auth.anonymous')}
+      {/* <Button
+        title={t("auth.anonymous")}
         loading={providerLoading}
         disabled={providerLoading || emailLoading}
         onPress={async () => {
@@ -89,32 +110,34 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
             setProviderLoading(true);
             await signIn("anonymous");
           } catch (e: any) {
-            setError(e?.message ?? t('auth.anonymousLoginFailed'));
-          } finally { setProviderLoading(false); }
+            setError(e?.message ?? t("auth.anonymousLoginFailed"));
+          } finally {
+            setProviderLoading(false);
+          }
         }}
-      />
+      /> */}
 
       <View style={styles.spacerLg} />
-      <Text style={styles.altTitle}>{t('auth.orUseEmail')}</Text>
+      <Text style={styles.altTitle}>{t("auth.orUseEmail")}</Text>
       <Input
-        placeholder={t('auth.email')}
+        placeholder={t("auth.email")}
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
-        accessibilityLabel={t('auth.email')}
+        accessibilityLabel={t("auth.email")}
       />
       <Input
-        placeholder={t('auth.password')}
+        placeholder={t("auth.password")}
         secureTextEntry
         showPasswordToggle
         value={password}
         onChangeText={setPassword}
-        accessibilityLabel={t('auth.password')}
+        accessibilityLabel={t("auth.password")}
         errorText={error}
       />
       <Button
-        title={t('auth.signInWithEmail')}
+        title={t("auth.signInWithEmail")}
         loading={emailLoading}
         disabled={providerLoading || emailLoading}
         onPress={async () => {
@@ -122,7 +145,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
           const trimmedEmail = email.trim();
           const trimmedPassword = password.trim();
           if (!trimmedEmail || !trimmedPassword) {
-            setError(t('auth.fillEmailPassword'));
+            setError(t("auth.fillEmailPassword"));
             return;
           }
           try {
@@ -132,7 +155,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
               password: trimmedPassword,
             });
           } catch (e: any) {
-            setError(e?.message ?? t('auth.googleLoginFailed'));
+            setError(e?.message ?? t("auth.googleLoginFailed"));
           } finally {
             setEmailLoading(false);
           }
@@ -141,10 +164,10 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
       <TouchableOpacity
         onPress={() => (navigation as any)?.navigate?.("Register")}
       >
-        <Text style={styles.link}>{t('auth.noAccount')}</Text>
+        <Text style={styles.link}>{t("auth.noAccount")}</Text>
       </TouchableOpacity>
       {AppConfig.useMock && (
-        <Text style={styles.hint}>{t('auth.mockHint')}</Text>
+        <Text style={styles.hint}>{t("auth.mockHint")}</Text>
       )}
     </Animated.View>
   );

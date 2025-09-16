@@ -14,7 +14,7 @@ export const makeDigitalCardsStyles = (theme: AppTheme) =>
       width: 56, height: 56, borderRadius: 28,
       alignItems: 'center', justifyContent: 'center',
     },
-    fabText: { color: '#fff', fontSize: 24, fontWeight: '700' },
+    fabText: { color: theme.colors.cardText, fontSize: 24, fontWeight: '700' },
     form: { padding: theme.spacing.lg },
     field: { marginBottom: theme.spacing.md },
     label: { color: theme.colors.muted, marginBottom: 6 },
@@ -36,4 +36,3 @@ export const makeDigitalCardsStyles = (theme: AppTheme) =>
     editRemoveRow: { flexDirection: 'row', gap: 12, marginTop: 8 },
     smallLink: { color: theme.colors.accent, fontWeight: '600' },
   });
-

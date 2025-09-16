@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { TextInput, TextInputProps, View, Text, StyleProp, TextStyle, Animated, Pressable } from 'react-native';
 import { useTheme } from '../theme/theme';
 import { makeInputStyles } from './Input.styles';
+import { useI18n } from '../i18n/I18nProvider';
 
 type Props = TextInputProps & {
   label?: string;
@@ -11,6 +12,7 @@ type Props = TextInputProps & {
 
 export const Input: React.FC<Props> = ({ label, errorText, style, onFocus, onBlur, showPasswordToggle, secureTextEntry, ...rest }) => {
   const theme = useTheme();
+  const { t } = useI18n();
   const styles = useMemo(() => makeInputStyles(theme), [theme]);
   const [focused, setFocused] = useState(false);
   const focusAnim = useRef(new Animated.Value(0)).current; // 0: blur, 1: focus
@@ -69,8 +71,13 @@ export const Input: React.FC<Props> = ({ label, errorText, style, onFocus, onBlu
             {...rest}
           />
           {showPasswordToggle && secureTextEntry ? (
-            <Pressable onPress={() => setHide((v) => !v)} hitSlop={8} accessibilityRole="button" accessibilityLabel={hide ? 'Mostrar senha' : 'Ocultar senha'}>
-              <Text style={styles.toggle}>{hide ? 'Mostrar' : 'Ocultar'}</Text>
+            <Pressable
+              onPress={() => setHide((v) => !v)}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel={hide ? t('auth.showPassword') : t('auth.hidePassword')}
+            >
+              <Text style={styles.toggle}>{hide ? t('common.show') : t('common.hide')}</Text>
             </Pressable>
           ) : null}
         </Animated.View>

@@ -5,6 +5,7 @@ import { useTheme } from '../../theme/theme';
 import { makeDigitalCardsStyles } from './DigitalCardsScreen.styles';
 import { CardVisual, deriveBrandFromNumber } from '../../components/DigitalCard';
 import { useDigitalCardsViewModel } from '../../viewmodels/useDigitalCardsViewModel';
+import { EmptyStateBanner } from '../../components/EmptyStateBanner';
 
 export const DigitalCardsScreen: React.FC<any> = () => {
   const { t } = useI18n();
@@ -106,11 +107,11 @@ export const DigitalCardsScreen: React.FC<any> = () => {
       return;
     }
     if (!luhnValid(number)) {
-      Alert.alert(t('common.errorTitle'), 'Enter a valid card number');
+      Alert.alert(t('common.errorTitle'), t('cards.errors.invalidNumber'));
       return;
     }
     if (!validCvv(brand, cvv)) {
-      Alert.alert(t('common.errorTitle'), 'Enter a valid CVV');
+      Alert.alert(t('common.errorTitle'), t('cards.errors.invalidCVV'));
       return;
     }
     const payload = {
@@ -146,7 +147,15 @@ export const DigitalCardsScreen: React.FC<any> = () => {
         onRefresh={refresh}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
-        ListEmptyComponent={<Text style={styles.emptyText}>{t('dashboard.myCards')}</Text>}
+        ListEmptyComponent={
+          <EmptyStateBanner
+            title={t('cards.empty.title')}
+            description={t('cards.empty.description')}
+            actionLabel={t('cards.empty.action')}
+            onAction={openNew}
+            style={{ marginTop: 24 }}
+          />
+        }
         renderItem={({ item }) => (
           <View style={styles.cardItem}>
             <CardVisual card={item} />
@@ -168,28 +177,64 @@ export const DigitalCardsScreen: React.FC<any> = () => {
 
       <Modal visible={formVisible} animationType="slide" onRequestClose={() => setFormVisible(false)}>
         <View style={styles.form}>
-          <Text style={[styles.label, { fontWeight: '700', marginBottom: 8 }]}>{editingId ? t('common.edit') : t('common.add')}</Text>
+          <Text style={[styles.label, { fontWeight: '700', marginBottom: 8 }]}>{editingId ? t('cards.form.titleEdit') : t('cards.form.titleAdd')}</Text>
 
-          <Text style={styles.label}>Nickname</Text>
-          <TextInput value={nickname} onChangeText={setNickname} placeholder="Ex: Meu Nubank" placeholderTextColor="#9CA3AF" style={styles.input} autoCapitalize="words" />
+          <Text style={styles.label}>{t('cards.form.nickname')}</Text>
+          <TextInput
+            value={nickname}
+            onChangeText={setNickname}
+            placeholder={t('cards.form.nicknamePlaceholder')}
+            placeholderTextColor={theme.colors.muted}
+            style={styles.input}
+            autoCapitalize="words"
+          />
 
-          <Text style={styles.label}>Holder name</Text>
-          <TextInput value={holderName} onChangeText={onChangeName} placeholder="NAME SURNAME" placeholderTextColor="#9CA3AF" style={styles.input} autoCapitalize="characters" />
+          <Text style={styles.label}>{t('cards.form.holderName')}</Text>
+          <TextInput
+            value={holderName}
+            onChangeText={onChangeName}
+            placeholder={t('cards.form.holderNamePlaceholder')}
+            placeholderTextColor={theme.colors.muted}
+            style={styles.input}
+            autoCapitalize="characters"
+          />
 
-          <Text style={styles.label}>Number</Text>
-          <TextInput value={number} onChangeText={onChangeNumber} placeholder="1234 5678 9012 3456" placeholderTextColor="#9CA3AF" style={styles.input} keyboardType="number-pad" />
+          <Text style={styles.label}>{t('cards.form.number')}</Text>
+          <TextInput
+            value={number}
+            onChangeText={onChangeNumber}
+            placeholder={t('cards.form.numberPlaceholder')}
+            placeholderTextColor={theme.colors.muted}
+            style={styles.input}
+            keyboardType="number-pad"
+          />
 
-          <Text style={styles.label}>Expiry (MM/YY)</Text>
-          <TextInput value={expiry} onChangeText={onChangeExpiry} placeholder="MM/YY" placeholderTextColor="#9CA3AF" style={styles.input} keyboardType="number-pad" />
+          <Text style={styles.label}>{t('cards.form.expiry')}</Text>
+          <TextInput
+            value={expiry}
+            onChangeText={onChangeExpiry}
+            placeholder={t('cards.form.expiryPlaceholder')}
+            placeholderTextColor={theme.colors.muted}
+            style={styles.input}
+            keyboardType="number-pad"
+          />
 
-          <Text style={styles.label}>CVV</Text>
-          <TextInput value={cvv} onChangeText={onChangeCvv} placeholder="123" placeholderTextColor="#9CA3AF" style={styles.input} keyboardType="number-pad" secureTextEntry />
+          <Text style={styles.label}>{t('cards.form.cvv')}</Text>
+          <TextInput
+            value={cvv}
+            onChangeText={onChangeCvv}
+            placeholder={t('cards.form.cvvPlaceholder')}
+            placeholderTextColor={theme.colors.muted}
+            style={styles.input}
+            keyboardType="number-pad"
+            secureTextEntry
+          />
 
-          <Text style={styles.label}>Brand</Text>
+          <Text style={styles.label}>{t('cards.form.brand')}</Text>
           <View style={styles.row}>
             {(['bytebank','nubank','oyapal','visa','mastercard','amex','elo','hipercard','other'] as const).map((b) => (
               <TouchableOpacity key={b} onPress={() => setBrand(b)} style={[styles.btn, styles.btnCancel, { marginRight: 8, borderColor: brand === b ? theme.colors.primary : theme.colors.border }]}
-                accessibilityRole="button" accessibilityLabel={`Brand ${b}`}>
+                accessibilityRole="button" accessibilityLabel={`${t('cards.form.brand')} ${b}`}>
                 <Text style={[styles.btnText, { color: brand === b ? theme.colors.primary : theme.colors.text }]}>{b}</Text>
               </TouchableOpacity>
             ))}
@@ -197,10 +242,10 @@ export const DigitalCardsScreen: React.FC<any> = () => {
 
           <View style={styles.actions}>
             <TouchableOpacity onPress={() => setFormVisible(false)} style={[styles.btn, styles.btnCancel]}>
-              <Text style={[styles.btnText, { color: theme.colors.text }]}>{t('common.cancel')}</Text>
+              <Text style={[styles.btnText, { color: theme.colors.text }]}>{t('cards.form.cancel')}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={onSave} style={[styles.btn, styles.btnSave]}>
-              <Text style={styles.btnText}>{t('common.save')}</Text>
+              <Text style={styles.btnText}>{t('cards.form.save')}</Text>
             </TouchableOpacity>
           </View>
         </View>

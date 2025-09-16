@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
-import { View, Text, ViewStyle } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { View, Text, ViewStyle, Animated, Pressable } from 'react-native';
 import type { DigitalCard } from '../../domain/entities/Card';
 import { useTheme } from '../theme/theme';
 import { makeDigitalCardStyles } from './DigitalCard.styles';
 import { BrandLogo } from './BrandLogo';
+import { useI18n } from '../i18n/I18nProvider';
 
 type Props = {
   card: Pick<DigitalCard, 'holderName' | 'number' | 'cvv' | 'expiry' | 'brand' | 'nickname'>;
@@ -34,8 +35,30 @@ export function deriveBrandFromNumber(num?: string): DigitalCard['brand'] | unde
 export const CardVisualView: React.FC<Props> = ({ card, style }) => {
   const theme = useTheme();
   const styles = useMemo(() => makeDigitalCardStyles(theme), [theme]);
+  const { t } = useI18n();
   // Prefer explicit brand; otherwise try to infer from number
   const resolvedBrand = useMemo(() => card.brand || deriveBrandFromNumber(card.number) || 'other', [card.brand, card.number]);
+
+  // Flip + micro interactions
+  const [flipped, setFlipped] = useState(false);
+  const rotate = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const flipTo = (toBack: boolean) => {
+    setFlipped(toBack);
+    Animated.spring(rotate, {
+      toValue: toBack ? 1 : 0,
+      useNativeDriver: true,
+      friction: 8,
+      tension: 40,
+    }).start();
+  };
+  const onPress = () => flipTo(!flipped);
+  const onPressIn = () => Animated.spring(scale, { toValue: 0.98, useNativeDriver: true, friction: 8 }).start();
+  const onPressOut = () => Animated.spring(scale, { toValue: 1, useNativeDriver: true, friction: 8 }).start();
+
+  const frontInterpolate = rotate.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] });
+  const backInterpolate = rotate.interpolate({ inputRange: [0, 1], outputRange: ['180deg', '360deg'] });
 
   const backgroundStyle = useMemo(() => {
     const base: ViewStyle = { backgroundColor: theme.colors.card };
@@ -74,39 +97,73 @@ export const CardVisualView: React.FC<Props> = ({ card, style }) => {
   }, [resolvedBrand, card.nickname]);
 
   return (
-    <View style={[styles.container, backgroundStyle, style]}
-      accessible accessibilityRole="image" accessibilityLabel={`${brandText} ${card.nickname || ''}`.trim()}>
-      <View style={[styles.cornerGlow, { top: -40, left: -40, backgroundColor: 'rgba(255,255,255,0.2)' }]} />
-      <View style={[styles.cornerGlow, { bottom: -60, right: -60, backgroundColor: 'rgba(255,255,255,0.15)' }]} />
+    <Pressable onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}
+      accessibilityRole="button"
+      accessibilityLabel={flipped ? t('cards.card.flipToFront') : t('cards.card.flipToBack')}
+      accessibilityHint={t('cards.card.flipToBack')}
+    >
+      <Animated.View style={[styles.container, backgroundStyle, style, { transform: [{ scale }] }]}
+        accessible accessibilityRole="image"
+        accessibilityLabel={`${brandText} ${card.nickname || ''}`.trim()}>
+        <View style={[styles.cornerGlow, { top: -40, left: -40, backgroundColor: 'rgba(255,255,255,0.2)' }]} />
+        <View style={[styles.cornerGlow, { bottom: -60, right: -60, backgroundColor: 'rgba(255,255,255,0.15)' }]} />
 
-      <View style={styles.row}>
-        <View style={styles.chip} />
-        <View style={{ alignItems: 'flex-end' }}>
-          {/* Prefer compact logo when available; fallback to text */}
-          <BrandLogo size={28} style={{ tintColor: '#fff' }} />
-          {!!card.nickname && <Text style={styles.nickname}>{card.nickname}</Text>}
-        </View>
-      </View>
+        {/* Front */}
+        <Animated.View style={{
+          position: 'absolute', left: 0, top: 0, right: 0, bottom: 0,
+          backfaceVisibility: 'hidden',
+          transform: [{ rotateY: frontInterpolate }],
+          padding: theme.spacing.lg,
+          justifyContent: 'space-between',
+        }}>
+          <View style={styles.row}>
+            <View style={styles.chip} />
+            <View style={{ alignItems: 'flex-end' }}>
+              <BrandLogo size={28} style={{ tintColor: '#fff' }} />
+              {!!card.nickname && <Text style={styles.nickname}>{card.nickname}</Text>}
+            </View>
+          </View>
 
-      <View>
-        <Text style={styles.number}>{maskNumber(card.number)}</Text>
-      </View>
+          <View>
+            <Text style={styles.number}>{maskNumber(card.number)}</Text>
+          </View>
 
-      <View style={styles.row}>
-        <View>
-          <Text style={styles.label}>CARD HOLDER</Text>
-          <Text style={styles.value}>{(card.holderName || '').toUpperCase()}</Text>
-        </View>
-        <View>
-          <Text style={styles.label}>VALID THRU</Text>
-          <Text style={styles.value}>{card.expiry}</Text>
-        </View>
-        <View>
-          <Text style={styles.label}>CVV</Text>
-          <Text style={styles.value}>{(card.cvv || '').replace(/\d/g, '•')}</Text>
-        </View>
-      </View>
-    </View>
+          <View style={styles.row}>
+            <View>
+              <Text style={styles.label}>{t('cards.card.labelHolder')}</Text>
+              <Text style={styles.value}>{(card.holderName || '').toUpperCase()}</Text>
+            </View>
+            <View>
+              <Text style={styles.label}>{t('cards.card.labelValidThru')}</Text>
+              <Text style={styles.value}>{card.expiry}</Text>
+            </View>
+            <View>
+              <Text style={styles.label}>{t('cards.card.labelCVV')}</Text>
+              <Text style={styles.value}>{(card.cvv || '').replace(/\d/g, '•')}</Text>
+            </View>
+          </View>
+        </Animated.View>
+
+        {/* Back */}
+        <Animated.View style={{
+          position: 'absolute', left: 0, top: 0, right: 0, bottom: 0,
+          backfaceVisibility: 'hidden',
+          transform: [{ rotateY: backInterpolate }],
+          padding: theme.spacing.lg,
+          justifyContent: 'space-between',
+        }}>
+          <View style={styles.row}>
+            <Text style={styles.brandText}>{brandText}</Text>
+            <BrandLogo size={28} style={{ tintColor: '#fff' }} />
+          </View>
+          <View style={{ height: 40, backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 6 }} />
+          <View style={{ alignItems: 'flex-end' }}>
+            <Text style={styles.label}>{t('cards.card.labelHolder')}</Text>
+            <Text style={[styles.value, { fontSize: 14 }]}>{(card.holderName || '').toUpperCase()}</Text>
+          </View>
+        </Animated.View>
+      </Animated.View>
+    </Pressable>
   );
 };
 

@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { BrandLogo } from './BrandLogo';
 import { useTheme, useThemeActions, BrandId } from '../theme/theme';
 import { getAvailableBrands } from '../theme/theme';
+import { useI18n } from '../i18n/I18nProvider';
 
 type Props = { compact?: boolean };
 
@@ -10,6 +11,7 @@ export const BrandSelector: React.FC<Props> = ({ compact = false }) => {
   const theme = useTheme();
   const { setBrand } = useThemeActions();
   const brands = useMemo(() => getAvailableBrands(), []);
+  const { t } = useI18n();
 
   const styles = useMemo(
     () =>
@@ -46,7 +48,7 @@ export const BrandSelector: React.FC<Props> = ({ compact = false }) => {
             onPress={() => setBrand(b)}
             style={[styles.chip, b === theme.brand && styles.chipActive]}
             accessibilityRole="button"
-            accessibilityLabel={`Selecionar marca ${b}`}
+            accessibilityLabel={`${t('common.selectBrand')}: ${b}`}
           >
             <BrandLogo size={compact ? 20 : 28} brand={b} mode={theme.mode} />
             {!compact && <Text style={styles.chipText}>{displayName(b)}</Text>}

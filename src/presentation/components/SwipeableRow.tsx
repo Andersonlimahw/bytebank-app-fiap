@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, PanResponder, View, Pressable, LayoutChangeEvent, Vibration } from 'react-native';
 import { useTheme } from '../theme/theme';
+import { useI18n } from '../i18n/I18nProvider';
 import { makeSwipeableRowStyles } from './SwipeableRow.styles';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -14,6 +15,7 @@ type Props = {
 
 export const SwipeableRow: React.FC<Props> = ({ children, onEdit, onDelete, onFullSwipeDelete, rightWidth }) => {
   const theme = useTheme();
+  const { t } = useI18n();
   const styles = useMemo(() => makeSwipeableRowStyles(theme), [theme]);
   const translateX = useRef(new Animated.Value(0)).current;
   const [open, setOpen] = useState(false);
@@ -122,7 +124,7 @@ export const SwipeableRow: React.FC<Props> = ({ children, onEdit, onDelete, onFu
               onEdit?.();
             }}
             accessibilityRole="button"
-            accessibilityLabel="Editar"
+            accessibilityLabel={t('common.edit')}
           >
             {/* iOS-like edit icon */}
             <Ionicons name="create-outline" size={22} color={theme.colors.text} />
@@ -136,7 +138,7 @@ export const SwipeableRow: React.FC<Props> = ({ children, onEdit, onDelete, onFu
               onDelete?.();
             }}
             accessibilityRole="button"
-            accessibilityLabel="Excluir"
+            accessibilityLabel={t('common.delete')}
           >
             {/* iOS-like trash icon */}
             <Ionicons name="trash" size={22} color={theme.colors.cardText} />

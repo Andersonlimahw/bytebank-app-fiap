@@ -62,20 +62,22 @@ export const RegisterScreen: React.FC<any> = ({ navigation }) => {
       <Input
         placeholder={t('auth.password')}
         secureTextEntry
+        showPasswordToggle
         value={password}
         onChangeText={setPassword}
         accessibilityLabel={t('auth.password')}
       />
       <Input
-        placeholder={t('auth.password')}
+        placeholder={t('auth.confirmPassword')}
         secureTextEntry
+        showPasswordToggle
         value={confirmPassword}
         onChangeText={setConfirmPassword}
-        accessibilityLabel={t('auth.password')}
+        accessibilityLabel={t('auth.confirmPassword')}
         errorText={error}
       />
 
-      <Button title={loading ? t('common.loading') : t('transactions.save')} onPress={handleRegister} />
+      <Button title={loading ? t('common.loading') : t('auth.createAccount')} onPress={handleRegister} />
 
       <TouchableOpacity onPress={() => navigation?.goBack?.()}>
         <Text style={styles.link}>{t('auth.signInWithEmail')}</Text>
