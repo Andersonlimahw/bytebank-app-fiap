@@ -95,11 +95,34 @@ export const en = {
     demoCredit: '+ Demo credit',
     demoDebit: '- Demo debit',
   },
+  charts: {
+    noData: 'No data to display',
+    spendingByCategory: 'Spending by category',
+    debitVsCredit: 'Debit vs. credit',
+    debit: 'Debit',
+    credit: 'Credit',
+    categories: {
+      groceries: 'Groceries',
+      foodDrink: 'Food & Drink',
+      shopping: 'Shopping',
+      transport: 'Transport',
+      bills: 'Bills & Utilities',
+      income: 'Income',
+      other: 'Other',
+    },
+  },
   investments: {
     total: 'Total',
     fixedIncome: 'Fixed income',
     variableIncome: 'Variable income',
     stats: 'Statistics',
+    allocation: 'Allocation by category',
+    categories: {
+      funds: 'Investment funds',
+      treasury: 'Government bonds',
+      pension: 'Private pension',
+      stocks: 'Stock market',
+    },
   },
   onboarding: {
     slides: {

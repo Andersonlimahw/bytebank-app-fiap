@@ -21,7 +21,8 @@ export function useDashboardViewModel() {
     if (!user) return;
     setLoading(true);
     const [txs, bal] = await Promise.all([
-      getRecentUC.execute(user.id, 5),
+      // fetch more items to power charts with better sample
+      getRecentUC.execute(user.id, 50),
       getBalanceUC.execute(user.id),
     ]);
     setTransactions(txs);
@@ -45,14 +46,28 @@ export function useDashboardViewModel() {
 
   useEffect(() => {
     let mounted = true;
+    let unsub: undefined | (() => void);
     (async () => {
-      if (!mounted) return;
+      if (!mounted || !user) return;
       await refresh();
+      // live updates for recent transactions if repo supports it
+      if (typeof txRepo.subscribeRecent === 'function') {
+        unsub = txRepo.subscribeRecent(user.id, 50, async (txs) => {
+          if (!mounted) return;
+          setTransactions(txs);
+          // keep balance in sync as data changes
+          try {
+            const bal = await getBalanceUC.execute(user.id);
+            if (mounted) setBalance(bal);
+          } catch {}
+        });
+      }
     })();
     return () => {
       mounted = false;
+      try { unsub?.(); } catch {}
     };
-  }, [refresh]);
+  }, [refresh, txRepo, getBalanceUC, user]);
 
   return { user, loading, transactions, balance, refresh, addDemoCredit, addDemoDebit };
 }

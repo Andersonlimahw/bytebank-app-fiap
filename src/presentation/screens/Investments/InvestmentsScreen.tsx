@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, Image, ScrollView, Animated } from 'react-native';
+import { View, Text, ScrollView, Animated } from 'react-native';
 import { useInvestmentsViewModel } from '../../viewmodels/useInvestmentsViewModel';
 import { useTheme } from '../../theme/theme';
 import { makeInvestmentsStyles } from './InvestmentsScreen.styles';
@@ -9,9 +9,11 @@ import { useFadeSlideInOnFocus, useChartEntranceAndPulse } from '../../hooks/ani
 import { Avatar } from '../../components/Avatar';
 import { useI18n } from '../../i18n/I18nProvider';
 import { useAuth } from '../../../store/authStore';
+import HorizontalBarChart from '../../components/charts/HorizontalBarChart';
+import type { InvestmentCategory } from '../../../domain/entities/Investment';
 
 export const InvestmentsScreen: React.FC<any> = ({ navigation }) => {
-  const { loading, total, rendaFixa, rendaVariavel } = useInvestmentsViewModel();
+  const { loading, total, rendaFixa, rendaVariavel, donutData } = useInvestmentsViewModel();
   const { animatedStyle } = useFadeSlideInOnFocus();
   const { animatedStyle: chartStyle } = useChartEntranceAndPulse(total);
   const { user } = useAuth();
@@ -58,10 +60,15 @@ export const InvestmentsScreen: React.FC<any> = ({ navigation }) => {
             </View>
           </View>
 
-          <Text style={styles.statsTitle}>{t('investments.stats')}</Text>
-          {/* Placeholder chart image (similar pattern used in Dashboard) */}
+          <Text style={styles.statsTitle}>{t('investments.allocation')}</Text>
           <View style={styles.statsRow}>
-            <Animated.Image source={require('../../../../public/assets/images/icons/Gráfico pizza.png')} style={[styles.chart, chartStyle as any]} />
+            <Animated.View style={chartStyle as any}>
+              <HorizontalBarChart
+                data={(donutData || []).map((d) => ({ label: mapInvestmentTypeToLabel(t, d.name as InvestmentCategory), value: d.value }))}
+                formatValue={(v) => formatCurrency(v)}
+                testID="investments-allocation-chart"
+              />
+            </Animated.View>
           </View>
         </Animated.View>
       )}
@@ -70,3 +77,19 @@ export const InvestmentsScreen: React.FC<any> = ({ navigation }) => {
 };
 
 /** styles moved to InvestmentsScreen.styles.ts */
+
+// helpers
+function mapInvestmentTypeToLabel(t: (k: string) => string, type: InvestmentCategory): string {
+  switch (type) {
+    case 'Fundos de investimento':
+      return t('investments.categories.funds');
+    case 'Tesouro Direto':
+      return t('investments.categories.treasury');
+    case 'Previdência Privada':
+      return t('investments.categories.pension');
+    case 'Bolsa de Valores':
+      return t('investments.categories.stocks');
+    default:
+      return String(type);
+  }
+}

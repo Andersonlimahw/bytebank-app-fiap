@@ -95,11 +95,26 @@ export const es = {
     demoCredit: '+ Crédito demo',
     demoDebit: '- Débito demo',
   },
+  charts: {
+    noData: 'Sin datos para mostrar',
+    spendingByCategory: 'Gastos por categoría',
+    debitVsCredit: 'Débito vs. crédito',
+    categories: {
+      groceries: 'Supermercado',
+      foodDrink: 'Comida y bebida',
+      shopping: 'Compras',
+      transport: 'Transporte',
+      bills: 'Cuentas y servicios',
+      income: 'Ingresos',
+      other: 'Otros',
+    },
+  },
   investments: {
     total: 'Total',
     fixedIncome: 'Renta fija',
     variableIncome: 'Renta variable',
     stats: 'Estadísticas',
+    allocation: 'Asignación por categoría',
   },
   onboarding: {
     slides: {

@@ -11,6 +11,7 @@ import { useFadeSlideInOnFocus, useChartEntranceAndPulse } from '../../hooks/ani
 import { Avatar } from '../../components/Avatar';
 import { useDigitalCardsViewModel } from '../../viewmodels/useDigitalCardsViewModel';
 import { CardVisual } from '../../components/DigitalCard';
+import HorizontalBarChart, { type ChartDatum } from '../../components/charts/HorizontalBarChart';
 
 export const DashboardScreen: React.FC<any> = ({ navigation }) => {
   const { user, balance, transactions, loading, refresh, addDemoCredit, addDemoDebit } = useDashboardViewModel();
@@ -85,8 +86,13 @@ export const DashboardScreen: React.FC<any> = ({ navigation }) => {
       </ScrollView>
 
       <Text style={styles.sectionTitle}>{t('dashboard.spendingSummary')}</Text>
-      <Animated.Image source={require('../../../../public/assets/images/icons/Gráfico pizza.png')} style={[styles.chart, chartStyle as any]} />
-      <Text style={styles.caption}>{t('dashboard.distributionExample')}</Text>
+      <View style={{ marginBottom: theme.spacing.sm }}>
+        <HorizontalBarChart
+          data={buildSpendingChartData(transactions || [], t)}
+          formatValue={(v) => formatCurrency(v)}
+          testID="dashboard-spending-chart"
+        />
+      </View>
 
       <Text style={styles.sectionTitle}>{t('dashboard.recentTransactions')}</Text>
       <FlatList
@@ -103,3 +109,39 @@ export const DashboardScreen: React.FC<any> = ({ navigation }) => {
 };
 
 /** styles moved to DashboardScreen.styles.ts */
+
+// Helpers
+type TFunc = (k: string) => string;
+function buildSpendingChartData(transactions: any[], t: TFunc): ChartDatum[] {
+  // Consider only debits for spending
+  const debits = (transactions || []).filter((tx) => tx?.type === 'debit');
+  if (debits.length === 0) return [];
+
+  const groups = new Map<string, number>();
+  for (const tx of debits) {
+    const rawCat: string | undefined = tx?.category;
+    const key = normalizeCategoryKey(rawCat || deriveCategoryFromDescription(String(tx?.description || '')));
+    const prev = groups.get(key) || 0;
+    groups.set(key, prev + (Number(tx?.amount) || 0));
+  }
+  // Sort by value desc and pick top 6
+  const entries = Array.from(groups.entries()).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  return entries.map(([key, value]) => ({ label: t(`charts.categories.${key}`), value }));
+}
+
+function normalizeCategoryKey(k: string): string {
+  const known = ['groceries', 'foodDrink', 'shopping', 'transport', 'bills', 'income', 'other'] as const;
+  const lc = (k || '').toLowerCase();
+  const match = known.find((x) => x === lc);
+  return match || 'other';
+}
+
+function deriveCategoryFromDescription(desc: string): string {
+  const d = desc.toLowerCase();
+  if (d.includes('grocery') || d.includes('grocer') || d.includes('market') || d.includes('super')) return 'groceries';
+  if (d.includes('coffee') || d.includes('cafe') || d.includes('restaurant') || d.includes('food') || d.includes('pizza')) return 'foodDrink';
+  if (d.includes('uber') || d.includes('lyft') || d.includes('bus') || d.includes('metro') || d.includes('gas')) return 'transport';
+  if (d.includes('netflix') || d.includes('energy') || d.includes('water') || d.includes('phone') || d.includes('bill')) return 'bills';
+  if (d.includes('shop') || d.includes('store') || d.includes('mall')) return 'shopping';
+  return 'other';
+}
