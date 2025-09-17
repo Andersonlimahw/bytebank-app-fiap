@@ -10,7 +10,6 @@
     "prebuild": "npx expo prebuild",
     "android": "npx expo run:android",
     "ios": "npx expo run:ios",
-    "web": "npx expo start --web",
     "typecheck": "npx tsc --noEmit",
     "build": "npx tsc -p .",
     "migrate:icons": "node scripts/migrate-icons.js",
