@@ -13,8 +13,14 @@ const extra = {
   EXPO_PUBLIC_USE_MOCK: env("EXPO_PUBLIC_USE_MOCK"),
   EXPO_PUBLIC_BRAND: env("EXPO_PUBLIC_BRAND", "bytebank"),
   EXPO_PUBLIC_THEME_MODE: env("EXPO_PUBLIC_THEME_MODE", "light"),
-  EXPO_PUBLIC_BUNDLE_IDENTIFIER: env("EXPO_PUBLIC_BUNDLE_IDENTIFIER", "com.bytebank.app"),
-  EXPO_PUBLIC_ANDROID_PACKAGE: env("EXPO_PUBLIC_ANDROID_PACKAGE", "com.bytebank.app"),
+  EXPO_PUBLIC_BUNDLE_IDENTIFIER: env(
+    "EXPO_PUBLIC_BUNDLE_IDENTIFIER",
+    "com.andersonlimahw.bytebankapp"
+  ),
+  EXPO_PUBLIC_ANDROID_PACKAGE: env(
+    "EXPO_PUBLIC_ANDROID_PACKAGE",
+    "com.andersonlimahw.bytebankapp"
+  ),
 
   // Firebase
   EXPO_PUBLIC_FIREBASE_API_KEY: env("EXPO_PUBLIC_FIREBASE_API_KEY"),
@@ -65,7 +71,11 @@ module.exports = {
   assetBundlePatterns: ["**/*"],
   ios: {
     supportsTablet: true,
-    bundleIdentifier: extra.EXPO_PUBLIC_BUNDLE_IDENTIFIER || "com.bytebank.app",
+    bundleIdentifier:
+      extra.EXPO_PUBLIC_BUNDLE_IDENTIFIER || "com.andersonlimahw.bytebankapp",
+    // Swift pods must be dynamic to avoid CocoaPods static linkage errors
+    // This writes ios.useFrameworks to Podfile.properties.json during prebuild
+    useFrameworks: "dynamic",
     googleServicesFile: fs.existsSync(
       path.resolve(__dirname, "GoogleService-Info.plist")
     )
@@ -77,7 +87,8 @@ module.exports = {
       foregroundImage: "./contents/figma/icons/Logo.png",
       backgroundColor: "#0A0A0A",
     },
-    package: extra.EXPO_PUBLIC_ANDROID_PACKAGE || "com.bytebank.app",
+    package:
+      extra.EXPO_PUBLIC_ANDROID_PACKAGE || "com.andersonlimahw.bytebankapp",
     googleServicesFile: fs.existsSync(
       path.resolve(__dirname, "google-services.json")
     )
