@@ -20,7 +20,7 @@ const reactNativePersistence = (firebaseAuth as any).getReactNativePersistence;
 // Types are declared in src/types/firebase-react-native.d.ts
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 
 import { getFirestore, Firestore } from "firebase/firestore";
 import { AppConfig } from "../../config/appConfig";
@@ -29,9 +29,16 @@ let app: FirebaseApp | null = null;
 let auth: any | null = null;
 let db: Firestore | null = null;
 export function ensureFirebase() {
-  console.log("AppConfig.useMock", AppConfig.useMock);
+  console.log(
+    "[Firebase]: ensureFirebase(): AppConfig.useMock",
+    AppConfig.useMock
+  );
   if (AppConfig.useMock) return null;
   if (!app) {
+    console.log(
+      "[Firebase]: ensureFirebase(): app not initialized, initializing with config:",
+      AppConfig
+    );
     const cfg = AppConfig.firebase as any;
     if (!cfg?.apiKey || !cfg?.projectId || !cfg?.appId) {
       throw new Error(
@@ -40,17 +47,23 @@ export function ensureFirebase() {
     }
     app = getApps().length ? getApps()[0] : initializeApp(cfg);
     // Use RN persistence on native to avoid web storage and ensure session persistence
-    if (Platform.OS === "ios" || Platform.OS === "android") {
+    if (!auth || Platform.OS === "ios" || Platform.OS === "android") {
       try {
         auth = initializeAuth(app, {
-          persistence: reactNativePersistence(AsyncStorage),
+          persistence: reactNativePersistence(ReactNativeAsyncStorage),
         });
       } catch (e) {
         // If already initialized (hot reload), fallback to getAuth
         auth = getAuth(app);
+        console.log(
+          "[Firebase]: ensureFirebase(): initializeAuth failed, fallback to getAuth()",
+          (e as any)?.message
+        );
       }
     } else {
-      auth = getAuth(app);
+      auth = initializeAuth(app, {
+        persistence: reactNativePersistence(ReactNativeAsyncStorage),
+      });
     }
     db = getFirestore(app);
   }

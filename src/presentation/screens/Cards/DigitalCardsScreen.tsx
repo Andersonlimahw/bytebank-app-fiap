@@ -1,35 +1,57 @@
-import React, { useMemo, useState, useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Modal, TextInput, Alert } from 'react-native';
-import { useI18n } from '../../i18n/I18nProvider';
-import { useTheme } from '../../theme/theme';
-import { makeDigitalCardsStyles } from './DigitalCardsScreen.styles';
-import { CardVisual, deriveBrandFromNumber } from '../../components/DigitalCard';
-import { useDigitalCardsViewModel } from '../../viewmodels/useDigitalCardsViewModel';
-import { EmptyStateBanner } from '../../components/EmptyStateBanner';
+import React, { useMemo, useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Modal,
+  TextInput,
+  Alert,
+} from "react-native";
+import { useI18n } from "../../i18n/I18nProvider";
+import { useTheme } from "../../theme/theme";
+import { makeDigitalCardsStyles } from "./DigitalCardsScreen.styles";
+import {
+  CardVisual,
+  deriveBrandFromNumber,
+} from "../../components/DigitalCard";
+import { useDigitalCardsViewModel } from "../../viewmodels/useDigitalCardsViewModel";
+import { EmptyStateBanner } from "../../components/EmptyStateBanner";
 
 export const DigitalCardsScreen: React.FC<any> = () => {
   const { t } = useI18n();
   const theme = useTheme();
   const styles = useMemo(() => makeDigitalCardsStyles(theme), [theme]);
-  const { cards, loading, refresh, addCard, updateCard, removeCard, user } = useDigitalCardsViewModel();
+  const { cards, loading, refresh, addCard, updateCard, removeCard, user } =
+    useDigitalCardsViewModel();
 
   const [formVisible, setFormVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [holderName, setHolderName] = useState('');
-  const [number, setNumber] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [brand, setBrand] = useState<'bytebank' | 'nubank' | 'oyapal' | 'visa' | 'mastercard' | 'amex' | 'elo' | 'hipercard' | 'other'>('bytebank');
-  const [nickname, setNickname] = useState('');
+  const [holderName, setHolderName] = useState("");
+  const [number, setNumber] = useState("");
+  const [cvv, setCvv] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [brand, setBrand] = useState<
+    | "bytebank"
+    | "nubank"
+    | "oyapal"
+    | "visa"
+    | "mastercard"
+    | "amex"
+    | "elo"
+    | "hipercard"
+    | "other"
+  >("bytebank");
+  const [nickname, setNickname] = useState("");
 
   const openNew = () => {
     setEditingId(null);
-    setHolderName((user?.name || '').toUpperCase());
-    setNumber('');
-    setCvv('');
-    setExpiry('');
-    setBrand('bytebank');
-    setNickname('');
+    setHolderName((user?.name || "").toUpperCase());
+    setNumber("");
+    setCvv("");
+    setExpiry("");
+    setBrand("bytebank");
+    setNickname("");
     setFormVisible(true);
   };
 
@@ -41,34 +63,46 @@ export const DigitalCardsScreen: React.FC<any> = () => {
     setNumber(c.number);
     setCvv(c.cvv);
     setExpiry(c.expiry);
-    setBrand((c.brand as any) || 'other');
-    setNickname(c.nickname || '');
+    setBrand((c.brand as any) || "other");
+    setNickname(c.nickname || "");
     setFormVisible(true);
   };
 
   const formatNumber = useCallback((val: string) => {
-    const digits = (val || '').replace(/\D/g, '').slice(0, 19);
+    const digits = (val || "").replace(/\D/g, "").slice(0, 19);
     const groups = digits.match(/.{1,4}/g) || [];
-    return groups.join(' ');
+    return groups.join(" ");
   }, []);
 
   const formatExpiry = useCallback((val: string) => {
-    const digits = (val || '').replace(/\D/g, '').slice(0, 4);
+    const digits = (val || "").replace(/\D/g, "").slice(0, 4);
     if (digits.length <= 2) return digits;
     const mm = digits.slice(0, 2);
     const yy = digits.slice(2);
     return `${mm}/${yy}`;
   }, []);
 
-  const onChangeName = useCallback((v: string) => setHolderName(v.toUpperCase()), []);
-  const onChangeNumber = useCallback((v: string) => {
-    const formatted = formatNumber(v);
-    setNumber(formatted);
-    const derived = deriveBrandFromNumber(formatted);
-    if (derived) setBrand(derived);
-  }, [formatNumber]);
-  const onChangeExpiry = useCallback((v: string) => setExpiry(formatExpiry(v)), [formatExpiry]);
-  const onChangeCvv = useCallback((v: string) => setCvv((v || '').replace(/\D/g, '').slice(0, 4)), []);
+  const onChangeName = useCallback(
+    (v: string) => setHolderName(v.toUpperCase()),
+    []
+  );
+  const onChangeNumber = useCallback(
+    (v: string) => {
+      const formatted = formatNumber(v);
+      setNumber(formatted);
+      const derived = deriveBrandFromNumber(formatted);
+      if (derived) setBrand(derived);
+    },
+    [formatNumber]
+  );
+  const onChangeExpiry = useCallback(
+    (v: string) => setExpiry(formatExpiry(v)),
+    [formatExpiry]
+  );
+  const onChangeCvv = useCallback(
+    (v: string) => setCvv((v || "").replace(/\D/g, "").slice(0, 4)),
+    []
+  );
 
   const isValidExpiry = useCallback((v: string) => {
     const m = /^(\d{2})\/(\d{2})$/.exec(v);
@@ -78,7 +112,7 @@ export const DigitalCardsScreen: React.FC<any> = () => {
   }, []);
 
   const luhnValid = useCallback((v: string) => {
-    const digits = (v || '').replace(/\D/g, '');
+    const digits = (v || "").replace(/\D/g, "");
     if (digits.length < 13 || digits.length > 19) return false;
     let sum = 0;
     let alt = false;
@@ -94,30 +128,36 @@ export const DigitalCardsScreen: React.FC<any> = () => {
     return sum % 10 === 0;
   }, []);
 
-  const validCvv = useCallback((b: typeof brand, v: string) => {
-    const d = (v || '').replace(/\D/g, '');
-    if (b === 'amex') return d.length === 4; // Amex uses 4
-    return d.length === 3; // Most others use 3
-  }, [brand]);
+  const validCvv = useCallback(
+    (b: typeof brand, v: string) => {
+      const d = (v || "").replace(/\D/g, "");
+      if (b === "amex") return d.length === 4; // Amex uses 4
+      return d.length === 3; // Most others use 3
+    },
+    [brand]
+  );
 
   const onSave = async () => {
     if (!user) return;
     if (!holderName || !number || !cvv || !expiry || !isValidExpiry(expiry)) {
-      Alert.alert(t('common.errorTitle'), t('transactions.errorFillDescAndValidValue'));
+      Alert.alert(
+        t("common.errorTitle"),
+        t("transactions.errorFillDescAndValidValue")
+      );
       return;
     }
     if (!luhnValid(number)) {
-      Alert.alert(t('common.errorTitle'), t('cards.errors.invalidNumber'));
+      Alert.alert(t("common.errorTitle"), t("cards.errors.invalidNumber"));
       return;
     }
     if (!validCvv(brand, cvv)) {
-      Alert.alert(t('common.errorTitle'), t('cards.errors.invalidCVV'));
+      Alert.alert(t("common.errorTitle"), t("cards.errors.invalidCVV"));
       return;
     }
     const payload = {
       userId: user.id,
       holderName: holderName.trim(),
-      number: number.replace(/\s/g, ''),
+      number: number.replace(/\s/g, ""),
       cvv: cvv.trim(),
       expiry: expiry.trim(),
       brand,
@@ -128,14 +168,20 @@ export const DigitalCardsScreen: React.FC<any> = () => {
       else await addCard(payload);
       setFormVisible(false);
     } catch (e) {
-      Alert.alert(t('common.errorTitle'), String((e as any)?.message || e));
+      Alert.alert(t("common.errorTitle"), String((e as any)?.message || e));
     }
   };
 
   const onRemove = async (id: string) => {
-    Alert.alert(t('common.delete'), t('extract.deleteConfirmMessage'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      { text: t('common.delete'), style: 'destructive', onPress: async () => { await removeCard(id); } },
+    Alert.alert(t("common.delete"), t("extract.deleteConfirmMessage"), [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("common.delete"),
+        style: "destructive",
+        onPress: async () => {
+          await removeCard(id);
+        },
+      },
     ]);
   };
 
@@ -149,9 +195,9 @@ export const DigitalCardsScreen: React.FC<any> = () => {
         contentContainerStyle={styles.list}
         ListEmptyComponent={
           <EmptyStateBanner
-            title={t('cards.empty.title')}
-            description={t('cards.empty.description')}
-            actionLabel={t('cards.empty.action')}
+            title={t("cards.empty.title")}
+            description={t("cards.empty.description")}
+            actionLabel={t("cards.empty.action")}
             onAction={openNew}
             style={{ marginTop: 24 }}
           />
@@ -161,91 +207,152 @@ export const DigitalCardsScreen: React.FC<any> = () => {
             <CardVisual card={item} />
             <View style={styles.editRemoveRow}>
               <TouchableOpacity onPress={() => openEdit(item.id)}>
-                <Text style={styles.smallLink}>{t('common.edit')}</Text>
+                <Text style={styles.smallLink}>{t("common.edit")}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => onRemove(item.id)}>
-                <Text style={[styles.smallLink, { color: theme.colors.danger }]}>{t('common.delete')}</Text>
+                <Text
+                  style={[styles.smallLink, { color: theme.colors.danger }]}
+                >
+                  {t("common.delete")}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
         )}
       />
 
-      <TouchableOpacity style={styles.fab} onPress={openNew} accessibilityRole="button" accessibilityLabel={t('common.add')}>
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={openNew}
+        accessibilityRole="button"
+        accessibilityLabel={t("common.add")}
+      >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
 
-      <Modal visible={formVisible} animationType="slide" onRequestClose={() => setFormVisible(false)}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={formVisible}
+        backdropColor={theme.colors.background}
+        onRequestClose={() => setFormVisible(false)}
+        style={styles.modal}
+      >
         <View style={styles.form}>
-          <Text style={[styles.label, { fontWeight: '700', marginBottom: 8 }]}>{editingId ? t('cards.form.titleEdit') : t('cards.form.titleAdd')}</Text>
+          <Text style={[styles.title, { fontWeight: "700", marginBottom: 8 }]}>
+            {editingId ? t("cards.form.titleEdit") : t("cards.form.titleAdd")}
+          </Text>
 
-          <Text style={styles.label}>{t('cards.form.nickname')}</Text>
+          <Text style={styles.label}>{t("cards.form.nickname")}</Text>
           <TextInput
             value={nickname}
             onChangeText={setNickname}
-            placeholder={t('cards.form.nicknamePlaceholder')}
+            placeholder={t("cards.form.nicknamePlaceholder")}
             placeholderTextColor={theme.colors.muted}
             style={styles.input}
             autoCapitalize="words"
           />
 
-          <Text style={styles.label}>{t('cards.form.holderName')}</Text>
+          <Text style={styles.label}>{t("cards.form.holderName")}</Text>
           <TextInput
             value={holderName}
             onChangeText={onChangeName}
-            placeholder={t('cards.form.holderNamePlaceholder')}
+            placeholder={t("cards.form.holderNamePlaceholder")}
             placeholderTextColor={theme.colors.muted}
             style={styles.input}
             autoCapitalize="characters"
           />
 
-          <Text style={styles.label}>{t('cards.form.number')}</Text>
+          <Text style={styles.label}>{t("cards.form.number")}</Text>
           <TextInput
             value={number}
             onChangeText={onChangeNumber}
-            placeholder={t('cards.form.numberPlaceholder')}
+            placeholder={t("cards.form.numberPlaceholder")}
             placeholderTextColor={theme.colors.muted}
             style={styles.input}
             keyboardType="number-pad"
           />
 
-          <Text style={styles.label}>{t('cards.form.expiry')}</Text>
+          <Text style={styles.label}>{t("cards.form.expiry")}</Text>
           <TextInput
             value={expiry}
             onChangeText={onChangeExpiry}
-            placeholder={t('cards.form.expiryPlaceholder')}
+            placeholder={t("cards.form.expiryPlaceholder")}
             placeholderTextColor={theme.colors.muted}
             style={styles.input}
             keyboardType="number-pad"
           />
 
-          <Text style={styles.label}>{t('cards.form.cvv')}</Text>
+          <Text style={styles.label}>{t("cards.form.cvv")}</Text>
           <TextInput
             value={cvv}
             onChangeText={onChangeCvv}
-            placeholder={t('cards.form.cvvPlaceholder')}
+            placeholder={t("cards.form.cvvPlaceholder")}
             placeholderTextColor={theme.colors.muted}
             style={styles.input}
             keyboardType="number-pad"
             secureTextEntry
           />
 
-          <Text style={styles.label}>{t('cards.form.brand')}</Text>
+          <Text style={styles.label}>{t("cards.form.brand")}</Text>
           <View style={styles.row}>
-            {(['bytebank','nubank','oyapal','visa','mastercard','amex','elo','hipercard','other'] as const).map((b) => (
-              <TouchableOpacity key={b} onPress={() => setBrand(b)} style={[styles.btn, styles.btnCancel, { marginRight: 8, borderColor: brand === b ? theme.colors.primary : theme.colors.border }]}
-                accessibilityRole="button" accessibilityLabel={`${t('cards.form.brand')} ${b}`}>
-                <Text style={[styles.btnText, { color: brand === b ? theme.colors.primary : theme.colors.text }]}>{b}</Text>
+            {(
+              [
+                "bytebank",
+                "nubank",
+                "oyapal",
+                "visa",
+                "mastercard",
+                "amex",
+                "elo",
+                "hipercard",
+                "other",
+              ] as const
+            ).map((b) => (
+              <TouchableOpacity
+                key={b}
+                onPress={() => setBrand(b)}
+                style={[
+                  styles.btn,
+                  styles.btnCancel,
+                  {
+                    marginRight: 8,
+                    borderColor:
+                      brand === b ? theme.colors.primary : theme.colors.border,
+                  },
+                ]}
+                accessibilityRole="button"
+                accessibilityLabel={`${t("cards.form.brand")} ${b}`}
+              >
+                <Text
+                  style={[
+                    styles.btnText,
+                    {
+                      color:
+                        brand === b ? theme.colors.primary : theme.colors.text,
+                    },
+                  ]}
+                >
+                  {b}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
 
           <View style={styles.actions}>
-            <TouchableOpacity onPress={() => setFormVisible(false)} style={[styles.btn, styles.btnCancel]}>
-              <Text style={[styles.btnText, { color: theme.colors.text }]}>{t('cards.form.cancel')}</Text>
+            <TouchableOpacity
+              onPress={() => setFormVisible(false)}
+              style={[styles.btn, styles.btnCancel]}
+            >
+              <Text style={[styles.btnText, { color: theme.colors.text }]}>
+                {t("cards.form.cancel")}
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={onSave} style={[styles.btn, styles.btnSave]}>
-              <Text style={styles.btnText}>{t('cards.form.save')}</Text>
+            <TouchableOpacity
+              onPress={onSave}
+              style={[styles.btn, styles.btnSave]}
+            >
+              <Text style={styles.btnText}>{t("cards.form.save")}</Text>
             </TouchableOpacity>
           </View>
         </View>

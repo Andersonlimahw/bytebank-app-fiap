@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "EXPO_PUBLIC_USE_MOCK=true npx expo start --clear",
-    "start:firebase": "EXPO_PUBLIC_USE_MOCK=false npx expo start",
+    "start:firebase": "EXPO_PUBLIC_USE_MOCK=false npx expo start --clear",
     "start:mocks": "EXPO_PUBLIC_USE_MOCK=true npx expo start",
     "prebuild": "npx expo prebuild",
     "android": "npx expo run:android",
@@ -23,7 +23,8 @@
     "config:set": "npx dotenv -e .env -- npx expo config --type public",
     "expo:doctor": "npx expo-doctor",
     "expo:check": "npx expo install --check",
-    "clean": "rm -rf .expo .expo-shared node_modules .turbo dist && npm install && npx expo install"
+    "clean": "rm -rf .expo .expo-shared node_modules .turbo dist && npm install && npx expo install",
+    "watchman:del": "watchman watch-del-all"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
