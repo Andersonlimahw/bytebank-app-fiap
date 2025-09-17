@@ -4,7 +4,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "npx expo start",
+    "start": "EXPO_PUBLIC_USE_MOCK=true npx expo start --clear",
     "start:firebase": "EXPO_PUBLIC_USE_MOCK=false npx expo start",
     "start:mocks": "EXPO_PUBLIC_USE_MOCK=true npx expo start",
     "prebuild": "npx expo prebuild",
@@ -18,7 +18,9 @@
     "build:android:dev": "eas build --platform android --profile development",
     "build:android:release": "eas build --platform android --profile production",
     "build:ios:dev": "eas build --platform ios --profile development",
-    "build:ios:release": "eas build --platform ios --profile production"
+    "build:ios:release": "eas build --platform ios --profile production",
+    "config:get": "npx expo config --json",
+    "config:set": "dotenv -e .env -- npx expo config --type public"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
