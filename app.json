@@ -3,7 +3,7 @@
     "name": "ByteBank",
     "slug": "bytebank-app",
     "scheme": "bytebank",
-    "version": "1.0.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./contents/figma/icons/Logo.png",
     "splash": {
@@ -14,9 +14,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.andersonlimahw.bytebankapp",
