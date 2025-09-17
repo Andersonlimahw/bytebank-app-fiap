@@ -1,21 +1,39 @@
 import "react-native-get-random-values"; // For Firebase
 import { Platform } from "react-native";
 import { initializeApp, getApps, FirebaseApp } from "firebase/app";
-import * as firebaseAuth from "firebase/auth";
-const {
+import {
   getAuth,
   initializeAuth,
   GoogleAuthProvider,
   signInWithPopup,
   signInWithCredential,
-  onAuthStateChanged: fbOnAuthStateChanged,
-  signOut: fbSignOut,
+  onAuthStateChanged as fbOnAuthStateChanged,
+  signOut as fbSignOut,
   signInAnonymously,
   OAuthProvider,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-} = firebaseAuth as any;
-const reactNativePersistence = (firebaseAuth as any).getReactNativePersistence;
+  browserLocalPersistence,
+  indexedDBLocalPersistence,
+} from "firebase/auth";
+
+// Get the persistence mechanism based on platform
+const getAuthPersistence = () => {
+  if (Platform.OS === "web") {
+    return browserLocalPersistence;
+  }
+  try {
+    // Dynamic import for React Native persistence
+    return require("firebase/auth").getReactNativePersistence;
+  } catch (e) {
+    console.warn(
+      "[Firebase]: Failed to load React Native persistence, falling back to indexedDB",
+      e
+    );
+    return indexedDBLocalPersistence;
+  }
+};
+const reactNativePersistence = getAuthPersistence();
 // RN-specific persistence helper (tree-shaken on web)
 // Types are declared in src/types/firebase-react-native.d.ts
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
