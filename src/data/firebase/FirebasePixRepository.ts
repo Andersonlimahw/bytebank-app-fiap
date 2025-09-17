@@ -1,21 +1,6 @@
 import type { PixRepository } from '../../domain/repositories/PixRepository';
 import type { PixFavorite, PixKey, PixKeyType, PixLimits, PixTransfer } from '../../domain/entities/Pix';
-import { FirebaseAPI } from '../../infrastructure/firebase/firebase';
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  limit as qlimit,
-  addDoc,
-  getDocs,
-  serverTimestamp,
-  doc,
-  updateDoc,
-  deleteDoc,
-  getDoc,
-  setDoc,
-} from 'firebase/firestore';
+import firestore from '@react-native-firebase/firestore';
 
 function tsToMillis(ts: any): number {
   return ts?.toMillis ? ts.toMillis() : Number(ts) || Date.now();
@@ -24,9 +9,11 @@ function tsToMillis(ts: any): number {
 export class FirebasePixRepository implements PixRepository {
   // Keys CRUD
   async listKeys(userId: string): Promise<PixKey[]> {
-    const db = FirebaseAPI.db;
-    const q = query(collection(db, 'pixKeys'), where('userId', '==', userId), orderBy('createdAt', 'desc'));
-    const snap = await getDocs(q);
+    const snap = await firestore()
+      .collection('pixKeys')
+      .where('userId', '==', userId)
+      .orderBy('createdAt', 'desc')
+      .get();
     return snap.docs.map((d) => {
       const data = d.data() as any;
       return { id: d.id, ...data, createdAt: tsToMillis(data.createdAt) } as PixKey;
@@ -34,7 +21,7 @@ export class FirebasePixRepository implements PixRepository {
   }
 
   async addKey(userId: string, type: PixKeyType, value?: string): Promise<string> {
-    const db = FirebaseAPI.db;
+    const db = firestore();
     // Basic format validation
     const v = (value || '').trim();
     if (type === 'email') {
@@ -54,38 +41,36 @@ export class FirebasePixRepository implements PixRepository {
     }
     // Basic constraints: prevent more than one of email/phone/cpf; allow up to 5 random keys
     if (type !== 'random') {
-      const existing = await getDocs(query(collection(db, 'pixKeys'), where('userId', '==', userId), where('type', '==', type)));
+      const existing = await db.collection('pixKeys').where('userId', '==', userId).where('type', '==', type).get();
       if (!existing.empty) {
         throw new Error('Você já possui uma chave deste tipo.');
       }
     } else {
-      const existingRandom = await getDocs(query(collection(db, 'pixKeys'), where('userId', '==', userId), where('type', '==', 'random')));
+      const existingRandom = await db.collection('pixKeys').where('userId', '==', userId).where('type', '==', 'random').get();
       if (existingRandom.size >= 5) {
         throw new Error('Limite de chaves aleatórias atingido (5).');
       }
     }
 
-    const res = await addDoc(collection(db, 'pixKeys'), {
+    const res = await db.collection('pixKeys').add({
       userId,
       type,
       value: value || this.generateRandomKey(),
       active: true,
-      createdAt: serverTimestamp(),
+      createdAt: firestore.FieldValue.serverTimestamp(),
     });
     return res.id;
   }
 
   async removeKey(userId: string, keyId: string): Promise<void> {
-    const db = FirebaseAPI.db;
-    const ref = doc(db, 'pixKeys', keyId);
-    await deleteDoc(ref);
+    await firestore().collection('pixKeys').doc(keyId).delete();
   }
 
   // Transfers and QR
   async transferByKey(params: { userId: string; toKey: string; amount: number; description?: string; toNameHint?: string; }): Promise<string> {
     const { userId, toKey, amount, description, toNameHint } = params;
     if (amount <= 0) throw new Error('Invalid amount');
-    const db = FirebaseAPI.db;
+    const db = firestore();
 
     // Enforce PIX limits (daily, nightly, and per transfer)
     const limits = await this.getLimits(userId);
@@ -94,13 +79,12 @@ export class FirebasePixRepository implements PixRepository {
     }
 
     // Load recent transfers and compute today's totals
-    const qRecent = query(
-      collection(db, 'pixTransfers'),
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc'),
-      qlimit(200)
-    );
-    const snap = await getDocs(qRecent);
+    const qRecent = db
+      .collection('pixTransfers')
+      .where('userId', '==', userId)
+      .orderBy('createdAt', 'desc')
+      .limit(200);
+    const snap = await qRecent.get();
     const now = new Date();
     const midnight = new Date(now);
     midnight.setHours(0, 0, 0, 0);
@@ -136,7 +120,7 @@ export class FirebasePixRepository implements PixRepository {
     }
 
     // Create a PIX transfer doc for payer
-    const transferRef = await addDoc(collection(db, 'pixTransfers'), {
+    const transferRef = await db.collection('pixTransfers').add({
       userId,
       toKey,
       toName: toNameHint || null,
@@ -144,32 +128,32 @@ export class FirebasePixRepository implements PixRepository {
       description: description || null,
       method: 'key',
       status: 'completed',
-      createdAt: serverTimestamp(),
+      createdAt: firestore.FieldValue.serverTimestamp(),
     });
 
     // Mirror debit for payer
-    await addDoc(collection(db, 'transactions'), {
+    await db.collection('transactions').add({
       userId,
       type: 'debit',
       amount,
       description: description || `PIX para ${toNameHint || toKey}`,
-      createdAt: serverTimestamp(),
+      createdAt: firestore.FieldValue.serverTimestamp(),
       category: 'Pix',
     } as any);
 
     // Attempt to credit recipient by resolving key owner
     try {
-      const keySnap = await getDocs(query(collection(db, 'pixKeys'), where('value', '==', toKey), qlimit(1)));
+      const keySnap = await db.collection('pixKeys').where('value', '==', toKey).limit(1).get();
       if (!keySnap.empty) {
         const keyDoc = keySnap.docs[0].data() as any;
         const recipientId = keyDoc.userId as string | undefined;
         if (recipientId) {
-          await addDoc(collection(db, 'transactions'), {
+          await db.collection('transactions').add({
             userId: recipientId,
             type: 'credit',
             amount,
             description: description || `PIX de ${userId}`,
-            createdAt: serverTimestamp(),
+            createdAt: firestore.FieldValue.serverTimestamp(),
             category: 'Pix',
           } as any);
         }
@@ -191,22 +175,22 @@ export class FirebasePixRepository implements PixRepository {
 
     const transferId = await this.transferByKey({ userId, toKey, amount, description: desc, toNameHint: merchantId });
     try {
-      await updateDoc(doc(FirebaseAPI.db, 'pixTransfers', transferId), { method: 'qr' });
+      await firestore().collection('pixTransfers').doc(transferId).update({ method: 'qr' });
     } catch {}
 
     // If this QR references a generated charge, mark it paid and credit the merchant
-    const db = FirebaseAPI.db;
+    const db = firestore();
     if (toKey && merchantId) {
       try {
-        const chargeRef = doc(db, 'pixQrCharges', toKey);
-        await updateDoc(chargeRef, { status: 'paid', paidAt: serverTimestamp(), payerId: userId });
+        const chargeRef = db.collection('pixQrCharges').doc(toKey);
+        await chargeRef.update({ status: 'paid', paidAt: firestore.FieldValue.serverTimestamp(), payerId: userId });
         // Credit merchant with incoming PIX
-        await addDoc(collection(db, 'transactions'), {
+        await db.collection('transactions').add({
           userId: merchantId,
           type: 'credit',
           amount,
           description: desc || `PIX via QR` ,
-          createdAt: serverTimestamp(),
+          createdAt: firestore.FieldValue.serverTimestamp(),
           category: 'Pix',
         } as any);
       } catch {
@@ -219,24 +203,26 @@ export class FirebasePixRepository implements PixRepository {
 
   async createQrCharge(params: { userId: string; amount?: number; description?: string }): Promise<{ id: string; qr: string; }> {
     const { userId, amount, description } = params;
-    const db = FirebaseAPI.db;
-    const docRef = await addDoc(collection(db, 'pixQrCharges'), {
+    const db = firestore();
+    const docRef = await db.collection('pixQrCharges').add({
       userId,
       amount: amount ?? null,
       description: description || null,
       status: 'pending',
-      createdAt: serverTimestamp(),
+      createdAt: firestore.FieldValue.serverTimestamp(),
     });
     const qr = this.buildQr({ userId, chargeId: docRef.id, amount, description });
-    await updateDoc(doc(db, 'pixQrCharges', docRef.id), { payload: qr });
+    await db.collection('pixQrCharges').doc(docRef.id).update({ payload: qr });
     return { id: docRef.id, qr };
   }
 
   // Favorites
   async listFavorites(userId: string): Promise<PixFavorite[]> {
-    const db = FirebaseAPI.db;
-    const q = query(collection(db, 'pixFavorites'), where('userId', '==', userId), orderBy('createdAt', 'desc'));
-    const snap = await getDocs(q);
+    const snap = await firestore()
+      .collection('pixFavorites')
+      .where('userId', '==', userId)
+      .orderBy('createdAt', 'desc')
+      .get();
     return snap.docs.map((d) => {
       const data = d.data() as any;
       return { id: d.id, ...data, createdAt: tsToMillis(data.createdAt) } as PixFavorite;
@@ -244,33 +230,28 @@ export class FirebasePixRepository implements PixRepository {
   }
 
   async addFavorite(userId: string, alias: string, keyValue: string, name?: string): Promise<string> {
-    const db = FirebaseAPI.db;
-    const res = await addDoc(collection(db, 'pixFavorites'), {
+    const res = await firestore().collection('pixFavorites').add({
       userId,
       alias,
       keyValue,
       name: name || null,
-      createdAt: serverTimestamp(),
+      createdAt: firestore.FieldValue.serverTimestamp(),
     });
     return res.id;
   }
 
   async removeFavorite(userId: string, favoriteId: string): Promise<void> {
-    const db = FirebaseAPI.db;
-    const ref = doc(db, 'pixFavorites', favoriteId);
-    await deleteDoc(ref);
+    await firestore().collection('pixFavorites').doc(favoriteId).delete();
   }
 
   // History
   async listTransfers(userId: string, limit = 20): Promise<PixTransfer[]> {
-    const db = FirebaseAPI.db;
-    const q = query(
-      collection(db, 'pixTransfers'),
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc'),
-      qlimit(limit)
-    );
-    const snap = await getDocs(q);
+    const snap = await firestore()
+      .collection('pixTransfers')
+      .where('userId', '==', userId)
+      .orderBy('createdAt', 'desc')
+      .limit(limit)
+      .get();
     return snap.docs.map((d) => {
       const data = d.data() as any;
       return { id: d.id, ...data, createdAt: tsToMillis(data.createdAt) } as PixTransfer;
@@ -279,10 +260,9 @@ export class FirebasePixRepository implements PixRepository {
 
   // Limits
   async getLimits(userId: string): Promise<PixLimits> {
-    const db = FirebaseAPI.db;
-    const ref = doc(db, 'pixLimits', userId);
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
+    const ref = firestore().collection('pixLimits').doc(userId);
+    const snap = await ref.get();
+    if (typeof (snap as any).exists === 'function' ? (snap as any).exists() : (snap as any).exists) {
       const data = snap.data() as any;
       return {
         userId,
@@ -299,14 +279,13 @@ export class FirebasePixRepository implements PixRepository {
       perTransferLimitCents: 300000,
       updatedAt: Date.now(),
     };
-    await setDoc(ref, { ...defaults, updatedAt: serverTimestamp() });
+    await ref.set({ ...defaults, updatedAt: firestore.FieldValue.serverTimestamp() });
     return defaults;
   }
 
   async updateLimits(userId: string, partial: Partial<Omit<PixLimits, 'userId'>>): Promise<void> {
-    const db = FirebaseAPI.db;
-    const ref = doc(db, 'pixLimits', userId);
-    await setDoc(ref, { ...partial, updatedAt: serverTimestamp(), userId }, { merge: true });
+    const ref = firestore().collection('pixLimits').doc(userId);
+    await ref.set({ ...partial, updatedAt: firestore.FieldValue.serverTimestamp(), userId }, { merge: true });
   }
 
   // Helpers (simplified QR payload, not full EMV)

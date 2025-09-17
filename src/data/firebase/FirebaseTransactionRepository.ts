@@ -1,71 +1,72 @@
-import type { TransactionRepository } from '../../domain/repositories/TransactionRepository';
-import type { Transaction } from '../../domain/entities/Transaction';
-import { FirebaseAPI } from '../../infrastructure/firebase/firebase';
-import { collection, query, where, orderBy, limit as qlimit, addDoc, getDocs, serverTimestamp, doc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
+import type { TransactionRepository } from "../../domain/repositories/TransactionRepository";
+import type { Transaction } from "../../domain/entities/Transaction";
+import firestore from "@react-native-firebase/firestore";
 
 export class FirebaseTransactionRepository implements TransactionRepository {
   async listRecent(userId: string, limit = 10): Promise<Transaction[]> {
-    const db = FirebaseAPI.db;
-    const q = query(
-      collection(db, 'transactions'),
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc'),
-      qlimit(limit)
-    );
-    const snap = await getDocs(q);
-    return snap.docs.map((d) => {
-      const data = d.data() as any;
-      const createdAt = data.createdAt?.toMillis ? data.createdAt.toMillis() : Number(data.createdAt) || Date.now();
-      return { id: d.id, ...data, createdAt } as Transaction;
+    const snapshot = await firestore()
+      .collection("transactions")
+      .where("userId", "==", userId)
+      .orderBy("createdAt", "desc")
+      .limit(limit)
+      .get();
+
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      const createdAt = data.createdAt?.toMillis() ?? Date.now();
+      return { id: doc.id, ...data, createdAt } as Transaction;
     });
   }
 
-  async add(tx: Omit<Transaction, 'id' | 'createdAt'>): Promise<string> {
-    const db = FirebaseAPI.db;
-    const res = await addDoc(
-      collection(db, 'transactions'),
-      {
+  async add(tx: Omit<Transaction, "id" | "createdAt">): Promise<string> {
+    const doc = await firestore()
+      .collection("transactions")
+      .add({
         ...tx,
-        createdAt: serverTimestamp(),
-      }
-    );
-    return res.id;
+        createdAt: firestore.FieldValue.serverTimestamp(),
+      });
+    return doc.id;
   }
 
   async getBalance(userId: string): Promise<number> {
     // For demo simplicity, compute from last 100 txs
     const txs = await this.listRecent(userId, 100);
-    return txs.reduce((acc, t) => acc + (t.type === 'credit' ? t.amount : -t.amount), 0);
+    return txs.reduce(
+      (acc, t) => acc + (t.type === "credit" ? t.amount : -t.amount),
+      0
+    );
   }
 
-  async update(id: string, updates: Partial<Pick<Transaction, 'description' | 'amount' | 'type' | 'category'>>): Promise<void> {
-    const db = FirebaseAPI.db;
-    const ref = doc(db, 'transactions', id);
-    await updateDoc(ref, { ...updates });
+  async update(
+    id: string,
+    updates: Partial<
+      Pick<Transaction, "description" | "amount" | "type" | "category">
+    >
+  ): Promise<void> {
+    await firestore().collection("transactions").doc(id).update(updates);
   }
 
   async remove(id: string): Promise<void> {
-    const db = FirebaseAPI.db;
-    const ref = doc(db, 'transactions', id);
-    await deleteDoc(ref);
+    await firestore().collection("transactions").doc(id).delete();
   }
 
-  subscribeRecent(userId: string, limit = 10, cb: (txs: Transaction[]) => void): () => void {
-    const db = FirebaseAPI.db;
-    const q = query(
-      collection(db, 'transactions'),
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc'),
-      qlimit(limit)
-    );
-    const unsub = onSnapshot(q, (snap) => {
-      const list = snap.docs.map((d) => {
-        const data = d.data() as any;
-        const createdAt = data.createdAt?.toMillis ? data.createdAt.toMillis() : Number(data.createdAt) || Date.now();
-        return { id: d.id, ...data, createdAt } as Transaction;
+  subscribeRecent(
+    userId: string,
+    limit = 10,
+    cb: (txs: Transaction[]) => void
+  ): () => void {
+    return firestore()
+      .collection("transactions")
+      .where("userId", "==", userId)
+      .orderBy("createdAt", "desc")
+      .limit(limit)
+      .onSnapshot((snapshot) => {
+        const list = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          const createdAt = data.createdAt?.toMillis() ?? Date.now();
+          return { id: doc.id, ...data, createdAt } as Transaction;
+        });
+        cb(list);
       });
-      cb(list);
-    });
-    return unsub;
   }
 }

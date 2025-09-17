@@ -99,6 +99,8 @@ export const es = {
     noData: 'Sin datos para mostrar',
     spendingByCategory: 'Gastos por categoría',
     debitVsCredit: 'Débito vs. crédito',
+    debit: 'Débito',
+    credit: 'Crédito',
     categories: {
       groceries: 'Supermercado',
       foodDrink: 'Comida y bebida',
@@ -115,6 +117,12 @@ export const es = {
     variableIncome: 'Renta variable',
     stats: 'Estadísticas',
     allocation: 'Asignación por categoría',
+    categories: {
+      funds: 'Fondos de inversión',
+      treasury: 'Bonos del gobierno',
+      pension: 'Pensión privada',
+      stocks: 'Mercado de acciones',
+    },
   },
   onboarding: {
     slides: {

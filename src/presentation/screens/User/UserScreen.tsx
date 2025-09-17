@@ -11,7 +11,7 @@ import { useI18n } from '../../i18n/I18nProvider';
 export const UserScreen: React.FC<any> = () => {
   const { user } = useAuth();
   const { t, lang, setLang } = useI18n();
-  const version = Constants?.expoConfig?.version || Constants?.manifest?.version || '1.0.0';
+  const version = Constants?.expoConfig?.version ?? '1.0.0';
   const theme = useTheme();
   const { toggleMode } = useThemeActions();
   const styles = useMemo(() => makeUserStyles(theme), [theme]);
