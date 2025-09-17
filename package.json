@@ -24,7 +24,14 @@
     "expo:doctor": "npx expo-doctor",
     "expo:check": "npx expo install --check",
     "clean": "rm -rf .expo .expo-shared node_modules .turbo dist && npm install && npx expo install",
-    "watchman:del": "watchman watch-del-all"
+    "watchman:del": "watchman watch-del-all",
+    "cache:metro": "rm -rf $TMPDIR/metro-* $TMPDIR/haste-* $TMPDIR/react-* $TMPDIR/react-native-*",
+    "clean:deps": "rm -rf .expo .expo-shared node_modules && npm i",
+    "clean:ios": "rm -rf ios/Pods ios/build && (cd ios && pod deintegrate && pod install) && rm -rf ~/Library/Developer/Xcode/DerivedData/*",
+    "clean:android": "cd android && ./gradlew clean && cd .. && rm -rf android/app/build android/.gradle",
+    "prebuild:clean": "npx expo prebuild --clean",
+    "reset:all": "npm run watchman:del || true && npm run cache:metro && npm run clean:deps && npm run prebuild:clean && npm run clean:ios && npm run clean:android",
+    "start:clean": "npm run reset:all && npx expo start -c"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",

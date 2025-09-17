@@ -47,45 +47,52 @@ let app: FirebaseApp | null = null;
 let auth: any | null = null;
 let db: Firestore | null = null;
 export function ensureFirebase() {
-  console.log(
-    "[Firebase]: ensureFirebase(): AppConfig.useMock",
-    AppConfig.useMock
-  );
-  if (AppConfig.useMock) return null;
-  if (!app) {
-    console.log(
-      "[Firebase]: ensureFirebase(): app not initialized, initializing with config:",
-      AppConfig
-    );
-    const cfg = AppConfig.firebase as any;
-    if (!cfg?.apiKey || !cfg?.projectId || !cfg?.appId) {
-      throw new Error(
-        "Firebase config is missing. Set EXPO_PUBLIC_FIREBASE_* envs or enable mock mode."
-      );
+  try {
+    if (AppConfig.useMock) {
+      console.log("[Firebase]: Running in mock mode");
+      return null;
     }
-    app = getApps().length ? getApps()[0] : initializeApp(cfg);
-    // Use RN persistence on native to avoid web storage and ensure session persistence
-    if (!auth || Platform.OS === "ios" || Platform.OS === "android") {
-      try {
+
+    if (!app) {
+      // Clear any existing apps first
+      if (getApps().length) {
+        console.log("[Firebase]: Cleaning up existing Firebase instances");
+        getApps().forEach((app) => (app as any).delete());
+      }
+
+      const cfg = AppConfig.firebase as any;
+      if (!cfg?.apiKey || !cfg?.projectId || !cfg?.appId) {
+        throw new Error(
+          "Firebase config is missing. Set EXPO_PUBLIC_FIREBASE_* envs or enable mock mode."
+        );
+      }
+
+      console.log("[Firebase]: Initializing new Firebase instance");
+      app = initializeApp(cfg);
+      db = getFirestore(app);
+
+      // Initialize Auth with proper persistence
+      if (Platform.OS === "web") {
+        console.log("[Firebase]: Initializing web auth");
+        auth = getAuth(app);
+      } else {
+        console.log("[Firebase]: Initializing native auth with persistence");
         auth = initializeAuth(app, {
           persistence: reactNativePersistence(ReactNativeAsyncStorage),
         });
-      } catch (e) {
-        // If already initialized (hot reload), fallback to getAuth
-        auth = getAuth(app);
-        console.log(
-          "[Firebase]: ensureFirebase(): initializeAuth failed, fallback to getAuth()",
-          (e as any)?.message
-        );
       }
-    } else {
-      auth = initializeAuth(app, {
-        persistence: reactNativePersistence(ReactNativeAsyncStorage),
-      });
+
+      return { app, auth, db } as {
+        app: FirebaseApp;
+        auth: any;
+        db: Firestore;
+      };
     }
-    db = getFirestore(app);
+  } catch (e) {
+    console.error("[Firebase]: ensureFirebase() failed:", (e as any)?.message);
+    throw e;
   }
-  return { app, auth, db } as { app: FirebaseApp; auth: any; db: Firestore };
+  return null;
 }
 
 export const Providers = {

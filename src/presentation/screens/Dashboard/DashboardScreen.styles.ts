@@ -24,7 +24,7 @@ export const makeDashboardStyles = (theme: AppTheme) =>
     avatar: { width: 40, height: 40, borderRadius: 20 },
     banner: {
       width: "100%",
-      height: 250,
+      height: 200,
       resizeMode: "cover",
       borderRadius: theme.radius.md,
       marginBottom: theme.spacing.lg,
