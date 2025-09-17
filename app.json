@@ -31,7 +31,14 @@
       "favicon": "./contents/figma/icons/Favicon 64px.png"
     },
     "plugins": [
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      [
+        "@react-native-firebase/app",
+        {
+          "android_package_name": "com.andersonlimahw.bytebankapp",
+          "ios_bundle_id": "com.andersonlimahw.bytebank-app"
+        }
+      ]
     ],
     "extra": {
       "eas": {

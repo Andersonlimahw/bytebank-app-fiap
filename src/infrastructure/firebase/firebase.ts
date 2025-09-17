@@ -1,51 +1,19 @@
-import "react-native-get-random-values"; // For Firebase
-import { Platform } from "react-native";
-import { initializeApp, getApps, FirebaseApp } from "firebase/app";
-import {
-  getAuth,
-  initializeAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInWithCredential,
-  onAuthStateChanged as fbOnAuthStateChanged,
-  signOut as fbSignOut,
-  signInAnonymously,
-  OAuthProvider,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  browserLocalPersistence,
-  indexedDBLocalPersistence,
-} from "firebase/auth";
-
-// Get the persistence mechanism based on platform
-const getAuthPersistence = () => {
-  if (Platform.OS === "web") {
-    return browserLocalPersistence;
-  }
-  try {
-    // Dynamic import for React Native persistence
-    return require("firebase/auth").getReactNativePersistence;
-  } catch (e) {
-    console.warn(
-      "[Firebase]: Failed to load React Native persistence, falling back to indexedDB",
-      e
-    );
-    return indexedDBLocalPersistence;
-  }
-};
-const reactNativePersistence = getAuthPersistence();
-// RN-specific persistence helper (tree-shaken on web)
-// Types are declared in src/types/firebase-react-native.d.ts
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
-
-import { getFirestore, Firestore } from "firebase/firestore";
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import firestore, {
+  FirebaseFirestoreTypes,
+} from "@react-native-firebase/firestore";
+import app from "@react-native-firebase/app";
 import { AppConfig } from "../../config/appConfig";
 
-let app: FirebaseApp | null = null;
-let auth: any | null = null;
-let db: Firestore | null = null;
+export type Auth = FirebaseAuthTypes.Module;
+export type Firestore = FirebaseFirestoreTypes.Module;
+export type User = FirebaseAuthTypes.User;
+export type QueryConstraint = {
+  field: string;
+  operator: FirebaseFirestoreTypes.WhereFilterOp | 'orderBy' | 'limit';
+  value: any;
+};
+
 export function ensureFirebase() {
   try {
     if (AppConfig.useMock) {
@@ -53,72 +21,91 @@ export function ensureFirebase() {
       return null;
     }
 
-    if (!app) {
-      // Clear any existing apps first
-      if (getApps().length) {
-        console.log("[Firebase]: Cleaning up existing Firebase instances");
-        getApps().forEach((app) => (app as any).delete());
-      }
+    console.log("[Firebase]: Checking Firebase instance");
 
-      const cfg = AppConfig.firebase as any;
-      if (!cfg?.apiKey || !cfg?.projectId || !cfg?.appId) {
-        throw new Error(
-          "Firebase config is missing. Set EXPO_PUBLIC_FIREBASE_* envs or enable mock mode."
-        );
-      }
+    // React Native Firebase is already initialized via native configuration
+    // Just verify we can get instances
+    const currentAuth = auth();
+    const currentDb = firestore();
 
-      console.log("[Firebase]: Initializing new Firebase instance");
-      app = initializeApp(cfg);
-      db = getFirestore(app);
-
-      // Initialize Auth with proper persistence
-      if (Platform.OS === "web") {
-        console.log("[Firebase]: Initializing web auth");
-        auth = getAuth(app);
-      } else {
-        console.log("[Firebase]: Initializing native auth with persistence");
-        auth = initializeAuth(app, {
-          persistence: reactNativePersistence(ReactNativeAsyncStorage),
-        });
-      }
-
-      return { app, auth, db } as {
-        app: FirebaseApp;
-        auth: any;
-        db: Firestore;
-      };
-    }
+    return {
+      auth: currentAuth,
+      db: currentDb,
+    };
   } catch (e) {
     console.error("[Firebase]: ensureFirebase() failed:", (e as any)?.message);
     throw e;
   }
-  return null;
 }
 
 export const Providers = {
-  google: () => new GoogleAuthProvider(),
-  apple: () => new OAuthProvider("apple.com"),
-  facebook: () => new OAuthProvider("facebook.com"),
+  google: () => auth.GoogleAuthProvider.PROVIDER_ID,
+  apple: () => auth.OAuthProvider.PROVIDER_ID,
+  facebook: () => auth.OAuthProvider.PROVIDER_ID,
 };
 
 export const FirebaseAPI = {
   ensureFirebase,
   get auth() {
-    ensureFirebase();
-    if (!auth) throw new Error("Auth not initialized");
-    return auth;
+    if (AppConfig.useMock) return null;
+    return auth();
   },
   get db() {
-    ensureFirebase();
-    if (!db) throw new Error("Firestore not initialized");
-    return db;
+    if (AppConfig.useMock) return null;
+    return firestore();
   },
-  fbOnAuthStateChanged,
-  fbSignOut,
-  signInAnonymously,
-  signInWithPopup,
-  signInWithCredential,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
+  fbOnAuthStateChanged: (
+    callback: (user: FirebaseAuthTypes.User | null) => void
+  ) => auth().onAuthStateChanged(callback),
+  fbSignOut: () => auth().signOut(),
+  signInAnonymously: () => auth().signInAnonymously(),
+  signInWithCredential: (credential: FirebaseAuthTypes.AuthCredential) =>
+    auth().signInWithCredential(credential),
+  signInWithEmailAndPassword: (email: string, password: string) =>
+    auth().signInWithEmailAndPassword(email, password),
+  createUserWithEmailAndPassword: (email: string, password: string) =>
+    auth().createUserWithEmailAndPassword(email, password),
   Providers,
+
+  // Firestore helpers
+  collection: (path: string) => {
+    if (AppConfig.useMock) return null;
+    return firestore().collection(path);
+  },
+  doc: (path: string) => {
+    if (AppConfig.useMock) return null;
+    return firestore().doc(path);
+  },
+  query: (...queryConstraints: FirebaseFirestoreTypes.QueryConstraint[]) => {
+    return (collectionRef: FirebaseFirestoreTypes.CollectionReference) => {
+      return queryConstraints.reduce((acc, constraint) => acc.where(constraint.field, constraint.operator, constraint.value), collectionRef);
+    };
+  },
+  where: (field: string, op: FirebaseFirestoreTypes.WhereFilterOp, value: any) => ({
+    field,
+    operator: op,
+    value,
+  }),
+  orderBy: (field: string, direction: 'asc' | 'desc' = 'asc') => ({
+    field,
+    operator: 'orderBy',
+    value: direction,
+  }),
+  limit: (value: number) => ({
+    field: '',
+    operator: 'limit',
+    value,
+  }),
+  addDoc: (coll: FirebaseFirestoreTypes.CollectionReference, data: any) =>
+    coll.add(data),
+  getDocs: (query: FirebaseFirestoreTypes.Query) =>
+    query.get(),
+  serverTimestamp: () =>
+    firestore.FieldValue.serverTimestamp(),
+  updateDoc: (docRef: FirebaseFirestoreTypes.DocumentReference, data: any) =>
+    docRef.update(data),
+  deleteDoc: (docRef: FirebaseFirestoreTypes.DocumentReference) =>
+    docRef.delete(),
+  onSnapshot: (query: FirebaseFirestoreTypes.Query, callback: (snapshot: FirebaseFirestoreTypes.QuerySnapshot) => void) =>
+    query.onSnapshot(callback),
 };
