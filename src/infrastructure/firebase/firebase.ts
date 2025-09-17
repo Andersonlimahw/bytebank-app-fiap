@@ -1,3 +1,4 @@
+import "react-native-get-random-values"; // For Firebase
 import { Platform } from "react-native";
 import { initializeApp, getApps, FirebaseApp } from "firebase/app";
 import * as firebaseAuth from "firebase/auth";
@@ -28,6 +29,7 @@ let app: FirebaseApp | null = null;
 let auth: any | null = null;
 let db: Firestore | null = null;
 export function ensureFirebase() {
+  console.log("AppConfig.useMock", AppConfig.useMock);
   if (AppConfig.useMock) return null;
   if (!app) {
     const cfg = AppConfig.firebase as any;
