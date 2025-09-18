@@ -1,0 +1,22 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useMemo } from "react";
+import { View, Text, Image, FlatList, ScrollView, Animated, } from "react-native";
+import { useHomeViewModel } from "../../viewmodels/useHomeViewModel";
+import { TransactionItem } from "../../components/TransactionItem";
+import { useAuth } from "../../../store/authStore";
+import { formatCurrency } from "../../../utils/format";
+import { QuickAction } from "../../components/QuickAction";
+import { useTheme } from "../../theme/theme";
+import { makeHomeStyles } from "./HomeScreen.styles";
+import { useFadeSlideInOnFocus } from "../../hooks/animations";
+import { Avatar } from "../../components/Avatar";
+import { useI18n } from "../../i18n/I18nProvider";
+export const HomeScreen = ({ navigation }) => {
+    const { loading, transactions, balance, refresh } = useHomeViewModel();
+    const { user, signOut } = useAuth();
+    const { animatedStyle } = useFadeSlideInOnFocus();
+    const { t } = useI18n();
+    const theme = useTheme();
+    const styles = useMemo(() => makeHomeStyles(theme), [theme]);
+    return (_jsx(Animated.ScrollView, { style: styles.container, contentContainerStyle: { paddingBottom: theme.spacing.xl }, showsVerticalScrollIndicator: false, children: _jsxs(Animated.View, { style: animatedStyle, children: [_jsxs(View, { style: styles.header, children: [_jsxs(View, { children: [_jsx(Text, { style: styles.hello, children: t("home.hello") }), _jsx(Text, { style: styles.username, children: user?.name || t("home.userFallback") })] }), _jsx(Avatar, { username: user?.name, size: 40, onPress: () => navigation?.navigate?.("User") })] }), _jsx(Image, { source: require("../../../../public/assets/images/banners/home.png"), style: styles.banner }), _jsxs(View, { style: styles.card, children: [_jsx(Text, { style: styles.cardLabel, children: t("home.balance") }), _jsx(Text, { style: styles.cardValue, children: formatCurrency(balance) }), _jsx(Text, { onPress: signOut, style: styles.signOut, children: t("home.signOut") })] }), _jsx(Text, { style: styles.sectionTitle, children: t("home.shortcuts") }), _jsxs(ScrollView, { horizontal: true, showsHorizontalScrollIndicator: false, contentContainerStyle: styles.actionsRow, children: [_jsx(QuickAction, { label: t("home.pix"), icon: require("../../../../public/assets/images/icons/Ícone Pix.png"), onPress: () => navigation?.navigate?.("Pix") }), _jsx(QuickAction, { label: t("home.cards"), icon: require("../../../../public/assets/images/icons/Ícone cartões.png"), style: styles.actionGap, onPress: () => navigation?.navigate?.("DigitalCards") }), _jsx(QuickAction, { label: t("home.loan"), icon: require("../../../../public/assets/images/icons/Ícone empréstimo.png"), style: styles.actionGap }), _jsx(QuickAction, { label: t("home.withdraw"), icon: require("../../../../public/assets/images/icons/Ícone Saque.png"), style: styles.actionGap }), _jsx(QuickAction, { label: t("home.insurance"), icon: require("../../../../public/assets/images/icons/Ícone seguros.png"), style: styles.actionGap }), _jsx(QuickAction, { label: t("home.donations"), icon: require("../../../../public/assets/images/icons/Ícone doações.png"), style: styles.actionGap })] }), _jsx(Text, { style: styles.sectionTitle, children: t("home.recentTransactions") }), _jsx(FlatList, { data: transactions, keyExtractor: (item) => item.id, renderItem: ({ item }) => _jsx(TransactionItem, { tx: item }), refreshing: loading, onRefresh: refresh, scrollEnabled: false })] }) }));
+};

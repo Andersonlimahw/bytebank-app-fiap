@@ -1,0 +1,82 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useMemo } from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useAuth } from "../../store/authStore";
+import { LoginScreen } from "../screens/Auth/LoginScreen";
+import { OnboardingScreen } from "../screens/Onboarding/OnboardingScreen";
+import { HomeScreen } from "../screens/Home/HomeScreen";
+import { DashboardScreen } from "../screens/Dashboard/DashboardScreen";
+import { InvestmentsScreen } from "../screens/Investments/InvestmentsScreen";
+import { ExtractScreen } from "../screens/Extract/ExtractScreen";
+import { Text } from "react-native";
+import { rootNavigatorStyles as styles } from "./RootNavigator.styles";
+import { UserScreen } from "../screens/User/UserScreen";
+import { useI18n } from "../i18n/I18nProvider";
+import { useTheme } from "../theme/theme";
+const AuthStack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+const AppStack = createNativeStackNavigator();
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+function AppTabs() {
+    const theme = useTheme();
+    const { t } = useI18n();
+    const commonTabOptions = useMemo(() => ({
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.muted,
+        tabBarStyle: { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border },
+        tabBarHideOnKeyboard: true,
+    }), [theme]);
+    return (_jsxs(Tab.Navigator, { screenOptions: ({ route }) => ({
+            ...commonTabOptions,
+            tabBarIcon: ({ color, size }) => {
+                let iconName = 'help';
+                if (route.name === "Home")
+                    iconName = "home";
+                else if (route.name === "Dashboard")
+                    iconName = "dashboard";
+                else if (route.name === "Investments")
+                    iconName = "trending-up";
+                else if (route.name === "Extract")
+                    iconName = "receipt";
+                return _jsx(MaterialIcons, { name: iconName, size: size, color: color });
+            },
+        }), children: [_jsx(Tab.Screen, { name: "Home", component: HomeScreen, options: { tabBarLabel: t('tabs.home'), headerTitle: t('titles.home') } }), _jsx(Tab.Screen, { name: "Dashboard", component: DashboardScreen, options: { tabBarLabel: t('tabs.dashboard'), headerTitle: t('titles.dashboard') } }), _jsx(Tab.Screen, { name: "Investments", component: InvestmentsScreen, options: { tabBarLabel: t('tabs.investments'), headerTitle: t('titles.investments') } }), _jsx(Tab.Screen, { name: "Extract", component: ExtractScreen, options: { tabBarLabel: t('tabs.extract'), headerTitle: t('titles.extract') } })] }));
+}
+export function RootNavigator() {
+    const { user, loading } = useAuth();
+    const { t } = useI18n();
+    const theme = useTheme();
+    if (loading || user === undefined) {
+        return _jsx(Text, { style: [styles.loading, { color: theme.colors.text }], children: t('common.loading') });
+    }
+    if (!user) {
+        return (_jsxs(AuthStack.Navigator, { initialRouteName: "Onboarding", screenOptions: {
+                headerShown: false,
+                animation: "slide_from_right",
+                animationTypeForReplace: "push",
+                fullScreenGestureEnabled: true,
+                contentStyle: { backgroundColor: theme.colors.background },
+            }, children: [_jsx(AuthStack.Screen, { name: "Onboarding", component: OnboardingScreen, options: {
+                        // Onboarding entra com fade para dar sensação de leveza
+                        animation: "fade",
+                    } }), _jsx(AuthStack.Screen, { name: "Login", component: LoginScreen, options: {
+                        // Login mantém push padrão lateral
+                        animation: "slide_from_right",
+                    } }), _jsx(AuthStack.Screen, { name: "Register", component: require("../screens/Auth/RegisterScreen").RegisterScreen, options: {
+                        // Registro sobe de baixo para cima (modal-like)
+                        animation: "slide_from_bottom",
+                    } })] }));
+    }
+    return (_jsxs(AppStack.Navigator, { screenOptions: {
+            headerStyle: { backgroundColor: theme.colors.surface },
+            headerTintColor: theme.colors.text,
+            contentStyle: { backgroundColor: theme.colors.background },
+        }, children: [_jsx(AppStack.Screen, { name: "MainTabs", component: AppTabs, options: { headerShown: false } }), _jsx(AppStack.Screen, { name: "User", component: UserScreen, options: { title: t('titles.myAccount') } }), _jsx(AppStack.Screen, { name: "Pix", component: require("../screens/Pix/PixScreen").PixScreen, options: { title: t('titles.pix') } }), _jsx(AppStack.Screen, { name: "DigitalCards", component: require("../screens/Cards/DigitalCardsScreen").DigitalCardsScreen, options: { title: t('titles.digitalCards') } }), _jsx(AppStack.Screen, { name: "AddTransaction", component: require("../screens/Transactions/AddTransactionScreen")
+                    .AddTransactionScreen, options: {
+                    presentation: "modal",
+                    title: t('titles.newTransaction'),
+                } })] }));
+}
