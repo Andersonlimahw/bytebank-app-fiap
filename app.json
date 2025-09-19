@@ -3,7 +3,7 @@
     "name": "ByteBank",
     "slug": "bytebank-app",
     "scheme": "bytebank",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./contents/figma/icons/Logo.png",
     "splash": {
@@ -14,9 +14,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.andersonlimahw.bytebank-app",
@@ -30,14 +28,12 @@
       "bundler": "metro",
       "favicon": "./contents/figma/icons/Favicon 64px.png"
     },
-    "plugins": [
-      "expo-apple-authentication"
-    ],
+    "plugins": ["expo-apple-authentication"],
     "extra": {
       "eas": {
         "projectId": "00000000-0000-0000-0000-000000000000"
       },
-      "version": "1.0.0",
+      "version": "1.0.1",
       "firebase": {
         "apiKey": "AIzaSyDz5LzOWv0F4VD23s9J5z_UUxWqMwkUrf8",
         "authDomain": "projeto-bytebank.firebaseapp.com",

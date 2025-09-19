@@ -38,22 +38,21 @@ export const AppConfig = {
   },
   firebase: {
     apiKey:
-      Constants.expoConfig?.extra?.EXPO_PUBLIC_FIREBASE_API_KEY ||
+      Constants.expoConfig?.extra?.firebase?.apiKey ||
       "AIzaSyDz5LzOWv0F4VD23s9J5z_UUxWqMwkUrf8",
     authDomain:
-      Constants.expoConfig?.extra?.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN ||
+      Constants.expoConfig?.extra?.firebase?.authDomain ||
       "projeto-bytebank.firebaseapp.com",
     projectId:
-      Constants.expoConfig?.extra?.EXPO_PUBLIC_FIREBASE_PROJECT_ID ||
-      "projeto-bytebank",
+      Constants.expoConfig?.extra?.firebase?.projectId || "projeto-bytebank",
     appId:
-      Constants.expoConfig?.extra?.EXPO_PUBLIC_FIREBASE_APP_ID ||
+      Constants.expoConfig?.extra?.firebase?.appId ||
       "1:102802199932:web:28f905156987a9166880f9",
     storageBucket:
-      Constants.expoConfig?.extra?.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET ||
+      Constants.expoConfig?.extra?.firebase?.storageBucket ||
       "projeto-bytebank.firebasestorage.app",
     messagingSenderId:
-      Constants.expoConfig?.extra?.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ||
+      Constants.expoConfig?.extra?.firebase?.messagingSenderId ||
       "102802199932",
   } as FirebaseConfig,
 };

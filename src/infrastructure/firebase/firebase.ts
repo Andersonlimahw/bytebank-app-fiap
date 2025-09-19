@@ -1,107 +1,61 @@
-import "react-native-get-random-values"; // For Firebase
+// src/infrastructure/firebase/auth-setup.ts
 import { Platform } from "react-native";
-import { initializeApp, getApps, FirebaseApp } from "firebase/app";
+import { getApps, initializeApp, type FirebaseApp } from "firebase/app";
 import {
-  getAuth,
   initializeAuth,
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+  // ❗️não importamos getReactNativePersistence aqui
+} from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as AuthModule from "firebase/auth"; // fallback dinâmico
+
+import {
   GoogleAuthProvider,
-  signInWithPopup,
-  signInWithCredential,
-  onAuthStateChanged as fbOnAuthStateChanged,
-  signOut as fbSignOut,
-  signInAnonymously,
   OAuthProvider,
+  onAuthStateChanged,
+  signOut,
+  signInAnonymously,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  browserLocalPersistence,
-  indexedDBLocalPersistence,
+  signInWithCredential,
 } from "firebase/auth";
 
-// Get the persistence mechanism based on platform
-const getAuthPersistence = () => {
-  if (Platform.OS === "web") {
-    return browserLocalPersistence;
-  }
-  try {
-    // Dynamic import for React Native persistence
-    return require("firebase/auth").getReactNativePersistence;
-  } catch (e) {
-    console.warn(
-      "[Firebase]: Failed to load React Native persistence, falling back to indexedDB",
-      e
-    );
-    return indexedDBLocalPersistence;
-  }
-};
-const reactNativePersistence = getAuthPersistence();
-// RN-specific persistence helper (tree-shaken on web)
-// Types are declared in src/types/firebase-react-native.d.ts
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
-
-import { getFirestore, Firestore } from "firebase/firestore";
-import { AppConfig } from "../../config/appConfig";
-
 let app: FirebaseApp | null = null;
-let auth: any | null = null;
-let db: Firestore | null = null;
-export function ensureFirebase() {
-  try {
-    if (AppConfig.useMock) {
-      console.log("[Firebase]: Running in mock mode");
-      return null;
-    }
 
-    if (!app) {
-      // Clear any existing apps first
-      if (getApps().length) {
-        console.log("[Firebase]: Cleaning up existing Firebase instances");
-        getApps().forEach((app) => (app as any).delete());
-      }
-
-      const cfg = AppConfig.firebase as any;
-      if (!cfg?.apiKey || !cfg?.projectId || !cfg?.appId) {
-        throw new Error(
-          "Firebase config is missing. Set EXPO_PUBLIC_FIREBASE_* envs or enable mock mode."
-        );
-      }
-
-      console.log("[Firebase]: Initializing new Firebase instance");
-      app = initializeApp(cfg);
-      db = getFirestore(app);
-
-      // Initialize Auth with proper persistence
-      if (Platform.OS === "web") {
-        console.log("[Firebase]: Initializing web auth");
-        auth = getAuth(app);
-      } else {
-        console.log("[Firebase]: Initializing native auth with persistence");
-        auth = initializeAuth(app, {
-          persistence: reactNativePersistence(ReactNativeAsyncStorage),
-        });
-      }
-
-      return { app, auth, db } as {
-        app: FirebaseApp;
-        auth: any;
-        db: Firestore;
-      };
-    }
-  } catch (e) {
-    console.error("[Firebase]: ensureFirebase() failed:", (e as any)?.message);
-    app = initializeApp(AppConfig.firebase);
-    db = getFirestore(app);
-    auth = initializeAuth(app, {
-      persistence: reactNativePersistence(ReactNativeAsyncStorage),
+export function getFirebaseAuth() {
+  app =
+    app ??
+    getApps()[0] ??
+    initializeApp({
+      apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY!,
+      authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID!,
+      appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID!,
+      storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
     });
-    return { app, auth, db } as {
-      app: FirebaseApp;
-      auth: any;
-      db: Firestore;
-    };
+
+  if (Platform.OS === "web") {
+    const auth = getAuth(app);
+    setPersistence(auth, browserLocalPersistence).catch(() => {});
+    return { app, auth };
   }
+
+  // RN: tenta obter a função em runtime; se não houver, cai para memória (sem persistência)
+  const getRNP = (AuthModule as any)?.getReactNativePersistence;
+  if (typeof getRNP === "function") {
+    const auth = initializeAuth(app, { persistence: getRNP(AsyncStorage) });
+    return { app, auth };
+  }
+
+  // Fallback: inicializa sem persistência (funciona; só não persiste após fechar app)
+  const auth = initializeAuth(app, {});
+  return { app, auth };
 }
+
+const { auth } = getFirebaseAuth();
 
 export const Providers = {
   google: () => new GoogleAuthProvider(),
@@ -109,24 +63,12 @@ export const Providers = {
   facebook: () => new OAuthProvider("facebook.com"),
 };
 
-export const FirebaseAPI = {
-  ensureFirebase,
-  get auth() {
-    ensureFirebase();
-    if (!auth) throw new Error("Auth not initialized");
-    return auth;
-  },
-  get db() {
-    ensureFirebase();
-    if (!db) throw new Error("Firestore not initialized");
-    return db;
-  },
-  fbOnAuthStateChanged,
-  fbSignOut,
+export {
+  auth,
+  onAuthStateChanged,
+  signOut,
   signInAnonymously,
-  signInWithPopup,
-  signInWithCredential,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  Providers,
+  signInWithCredential,
 };
