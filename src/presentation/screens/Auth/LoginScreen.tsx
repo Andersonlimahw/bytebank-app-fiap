@@ -46,7 +46,6 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
             setProviderLoading(true);
             await signIn("google").then(() => {
               console.log("Sign-in successful");
-              (navigation as any)?.navigate?.("Home");
             });
           } catch (e: any) {
             // Provide more specific error messages for Google authentication

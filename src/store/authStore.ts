@@ -3,8 +3,14 @@ import { devtools } from "zustand/middleware";
 import type { User } from "../domain/entities/User";
 import type { AuthRepository } from "../domain/repositories/AuthRepository";
 import type { AuthProvider } from "../domain/entities/AuthProvider";
+
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { TOKENS } from "../core/di/container";
 import { useDIStore } from "./diStore";
+
+GoogleSignin.configure({
+  iosClientId: '102802199932-3c8av88ho09numo7u87evflujm83v3sn.apps.googleusercontent.com',
+});
 
 type AuthState = {
   user: User | null | undefined; // undefined while initializing
@@ -34,10 +40,30 @@ export const useAuthStore = create<AuthState>()(
         .di.resolve<AuthRepository>(TOKENS.AuthRepository);
       set({ loading: true });
       try {
-        await repo.signIn(provider, options);
-        const u = await repo.getCurrentUser();
-        set({ user: u });
-      } finally {
+        console.log("[Firebase]: GoogleSignin.hasPlayServices : Init");
+        // await repo.signIn(provider, options);
+        // const u = await repo.getCurrentUser();
+        await GoogleSignin.hasPlayServices();
+        const response = await GoogleSignin.signIn();
+        console.log("[Firebase]: GoogleSignin.hasPlayServices : Response -> ", {
+          response,
+        });
+        if(response.user) {
+          // await repo.signIn("google", { email: response.user.email });
+          // const u = await repo.getCurrentUser();
+          set({ user: response.user });
+          console.log("[Firebase]: GoogleSignin.hasPlayServices : Response User -> ", {
+            user: response.user,
+          });
+        }
+      } catch (e: any) {
+        console.error("[Firebase]: GoogleSignin.hasPlayServices : Error -> ", {       
+          message: e.message,
+          code: e.code,
+          error: e,
+        });
+      }
+      finally {
         set({ loading: false });
       }
     },

@@ -6,7 +6,8 @@ import {
   initializeAuth,
   type Auth,
 } from 'firebase/auth';
-import { getReactNativePersistence } from 'firebase/auth/react-native';
+// import { getReactNativePersistence } from 'firebase/auth/react-native';
+
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { AppConfig } from '../../config/appConfig';
 
@@ -38,7 +39,7 @@ function ensureApp(): FirebaseApp {
     throw new Error('Firebase disabled because AppConfig.useMock=true.');
   }
   assertFirebaseConfig();
-  if (!appInstance) {
+  if (!appInstance) {    
     appInstance = getApps()[0] ?? initializeApp(firebaseOptions as any);
   }
   return appInstance;
@@ -50,9 +51,7 @@ function ensureAuth(): Auth {
     if (Platform.OS === 'web') {
       authInstance = getAuth(app);
     } else {
-      authInstance = initializeAuth(app, {
-        persistence: getReactNativePersistence(AsyncStorage),
-      });
+      authInstance = initializeAuth(app);
     }
   }
   return authInstance;
