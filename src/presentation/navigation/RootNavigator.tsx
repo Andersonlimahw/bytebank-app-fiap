@@ -42,7 +42,10 @@ function AppTabs() {
       headerTintColor: theme.colors.text,
       tabBarActiveTintColor: theme.colors.primary,
       tabBarInactiveTintColor: theme.colors.muted,
-      tabBarStyle: { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border },
+      tabBarStyle: {
+        backgroundColor: theme.colors.surface,
+        borderTopColor: theme.colors.border,
+      },
       tabBarHideOnKeyboard: true,
     }),
     [theme]
@@ -52,7 +55,8 @@ function AppTabs() {
       screenOptions={({ route }) => ({
         ...commonTabOptions,
         tabBarIcon: ({ color, size }) => {
-          let iconName: React.ComponentProps<typeof MaterialIcons>['name'] = 'help';
+          let iconName: React.ComponentProps<typeof MaterialIcons>["name"] =
+            "help";
           if (route.name === "Home") iconName = "home";
           else if (route.name === "Dashboard") iconName = "dashboard";
           else if (route.name === "Investments") iconName = "trending-up";
@@ -64,22 +68,31 @@ function AppTabs() {
       <Tab.Screen
         name="Home"
         component={HomeScreen}
-        options={{ tabBarLabel: t('tabs.home'), headerTitle: t('titles.home') }}
+        options={{ tabBarLabel: t("tabs.home"), headerTitle: t("titles.home") }}
       />
       <Tab.Screen
         name="Dashboard"
         component={DashboardScreen}
-        options={{ tabBarLabel: t('tabs.dashboard'), headerTitle: t('titles.dashboard') }}
+        options={{
+          tabBarLabel: t("tabs.dashboard"),
+          headerTitle: t("titles.dashboard"),
+        }}
       />
       <Tab.Screen
         name="Investments"
         component={InvestmentsScreen}
-        options={{ tabBarLabel: t('tabs.investments'), headerTitle: t('titles.investments') }}
+        options={{
+          tabBarLabel: t("tabs.investments"),
+          headerTitle: t("titles.investments"),
+        }}
       />
       <Tab.Screen
         name="Extract"
         component={ExtractScreen}
-        options={{ tabBarLabel: t('tabs.extract'), headerTitle: t('titles.extract') }}
+        options={{
+          tabBarLabel: t("tabs.extract"),
+          headerTitle: t("titles.extract"),
+        }}
       />
     </Tab.Navigator>
   );
@@ -91,7 +104,11 @@ export function RootNavigator() {
   const theme = useTheme();
 
   if (loading || user === undefined) {
-    return <Text style={[styles.loading, { color: theme.colors.text }]}>{t('common.loading')}</Text>;
+    return (
+      <Text style={[styles.loading, { color: theme.colors.text }]}>
+        {t("common.loading")}
+      </Text>
+    );
   }
 
   if (!user) {
@@ -143,24 +160,26 @@ export function RootNavigator() {
       }}
     >
       <AppStack.Screen
-        name="MainTabs"
+        name={"Back"}
         component={AppTabs}
-        options={{ headerShown: false }}
+        options={{ title: t("common.back") }}
       />
       <AppStack.Screen
         name="User"
         component={UserScreen}
-        options={{ title: t('titles.myAccount') }}
+        options={{ title: t("titles.myAccount") }}
       />
       <AppStack.Screen
         name="Pix"
         component={require("../screens/Pix/PixScreen").PixScreen}
-        options={{ title: t('titles.pix') }}
+        options={{ title: t("titles.pix") }}
       />
       <AppStack.Screen
         name="DigitalCards"
-        component={require("../screens/Cards/DigitalCardsScreen").DigitalCardsScreen}
-        options={{ title: t('titles.digitalCards') }}
+        component={
+          require("../screens/Cards/DigitalCardsScreen").DigitalCardsScreen
+        }
+        options={{ title: t("titles.digitalCards") }}
       />
       <AppStack.Screen
         name="AddTransaction"
@@ -170,7 +189,7 @@ export function RootNavigator() {
         }
         options={{
           presentation: "modal",
-          title: t('titles.newTransaction'),
+          title: t("titles.newTransaction"),
         }}
       />
     </AppStack.Navigator>

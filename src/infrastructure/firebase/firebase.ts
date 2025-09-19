@@ -90,9 +90,17 @@ export function ensureFirebase() {
     }
   } catch (e) {
     console.error("[Firebase]: ensureFirebase() failed:", (e as any)?.message);
-    throw e;
+    app = initializeApp(AppConfig.firebase);
+    db = getFirestore(app);
+    auth = initializeAuth(app, {
+      persistence: reactNativePersistence(ReactNativeAsyncStorage),
+    });
+    return { app, auth, db } as {
+      app: FirebaseApp;
+      auth: any;
+      db: Firestore;
+    };
   }
-  return null;
 }
 
 export const Providers = {
