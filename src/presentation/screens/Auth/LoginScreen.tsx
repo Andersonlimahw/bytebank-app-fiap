@@ -19,29 +19,11 @@ import { BrandLogo } from "../../components/BrandLogo";
 import { AuthScreenProps } from "../../navigation/types";
 import { CommonActions } from "@react-navigation/native";
 import { useEffect } from "react";
+import { goToHome } from "@app/presentation/navigation/navigationUtils";
 
 export const LoginScreen: React.FC<AuthScreenProps<'Login'>> = ({ navigation }) => {
   const { signIn, user } = useAuth();
   
-  // Redireciona para a home quando o usuário estiver autenticado
-  useEffect(() => {
-    if (user) {
-      // Usando setTimeout para garantir que a navegação ocorra após a atualização do estado
-      const timer = setTimeout(() => {
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ 
-              name: 'Home', // Nome da rota principal do AppTabs
-              params: { screen: 'Home' } // Navega para a tela Home dentro do AppTabs
-            }],
-          })
-        );
-      }, 100);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [user, navigation]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -67,8 +49,10 @@ export const LoginScreen: React.FC<AuthScreenProps<'Login'>> = ({ navigation }) 
           setError(null);
           try {
             setProviderLoading(true);
+            console.log('Success on Google Sign-In');
             await signIn("google");
-            // O redirecionamento será tratado pelo useEffect quando o usuário for autenticado
+            // The RootNavigator will handle the navigation based on auth state
+            // No need to navigate manually here
           } catch (error: any) {
             console.error('Google Sign-In Error:', error);
             
@@ -131,7 +115,7 @@ export const LoginScreen: React.FC<AuthScreenProps<'Login'>> = ({ navigation }) 
         }}
       />
       )} */}
-      <View style={styles.spacerSm} />
+      {/* <View style={styles.spacerSm} />
       <Button
         title={t("auth.anonymous")}
         loading={providerLoading}
@@ -200,7 +184,7 @@ export const LoginScreen: React.FC<AuthScreenProps<'Login'>> = ({ navigation }) 
         onPress={() => (navigation as any)?.navigate?.("Register")}
       >
         <Text style={styles.link}>{t("auth.noAccount")}</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       {AppConfig.useMock && (
         <Text style={styles.hint}>{t("auth.mockHint")}</Text>
       )}

@@ -116,7 +116,7 @@ const AppConfig: AppConfigType = {
   firebase: firebaseConfig,
   
   // Feature flags
-  useMock: getEnv('USE_MOCK', 'false') === 'true',
+  useMock: false, // getEnv('USE_MOCK', 'false') === 'true',
   isDevelopment: __DEV__
 };
 
