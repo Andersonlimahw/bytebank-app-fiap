@@ -41,7 +41,7 @@ const reactNativePersistence = getAuthPersistence();
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 
 import { getFirestore, Firestore } from "firebase/firestore";
-import { AppConfig } from "../../config/appConfig";
+import AppConfig from "../../config/appConfig";
 
 let app: FirebaseApp | null = null;
 let auth: any | null = null;

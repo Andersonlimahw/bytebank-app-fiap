@@ -67,6 +67,10 @@ export const es = {
     withdraw: "Retiro",
     insurance: "Seguros",
     donations: "Donaciones",
+    back: "Volver",
+    confirm: "Confirmar",
+    close: "Cerrar",
+    select: "Seleccionar"
   },
   user: {
     myAccount: "Mi Cuenta",

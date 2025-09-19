@@ -27,7 +27,7 @@ import {
   getFirebaseAuth,
   getFirestoreDb,
 } from './expoFirebaseApp';
-import { AppConfig } from '../../config/appConfig';
+import AppConfig from '../../config/appConfig';
 
 let initialized = false;
 

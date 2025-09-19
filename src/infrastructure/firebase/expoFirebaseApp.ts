@@ -9,7 +9,7 @@ import {
 // import { getReactNativePersistence } from 'firebase/auth/react-native';
 
 import { getFirestore, type Firestore } from 'firebase/firestore';
-import { AppConfig } from '../../config/appConfig';
+import AppConfig from '../../config/appConfig';
 
 type FirebaseEnvConfig = {
   apiKey: string;

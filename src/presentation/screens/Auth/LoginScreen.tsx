@@ -11,7 +11,7 @@ import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { useAuth } from "../../../store/authStore";
 import { useFadeSlideInOnFocus } from "../../hooks/animations";
-import { AppConfig } from "../../../config/appConfig";
+import AppConfig from "../../../config/appConfig";
 import { useTheme } from "../../theme/theme";
 import { makeLoginStyles } from "./LoginScreen.styles";
 import { useI18n } from "../../i18n/I18nProvider";

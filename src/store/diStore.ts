@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { AppConfig } from "../config/appConfig";
+import AppConfig from "../config/appConfig";
 import { FirebaseAPI } from "../infrastructure/firebase/firebase";
 import { Container, TOKENS, createDI, type DI } from "../core/di/container";
 import { MockAuthRepository } from "../data/mock/MockAuthRepository";

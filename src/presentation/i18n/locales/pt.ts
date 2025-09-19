@@ -67,6 +67,10 @@ export const pt = {
     withdraw: "Saque",
     insurance: "Seguros",
     donations: "Doações",
+    back: "Voltar",
+    confirm: "Confirmar",
+    close: "Fechar",
+    select: "Selecionar"
   },
   user: {
     myAccount: "Minha Conta",
@@ -268,7 +272,7 @@ export const pt = {
     },
   },
   tabs: {
-    home: "Home",
+    home: "Início",
     dashboard: "Dashboard",
     investments: "Investimentos",
     extract: "Extrato",
