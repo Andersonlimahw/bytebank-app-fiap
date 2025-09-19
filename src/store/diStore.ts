@@ -35,7 +35,7 @@ function buildContainer(): Container {
 
   // In real mode, try to init Firebase; if it fails, gracefully fallback to mocks
   try {
-    FirebaseAPI.ensureFirebase();
+    FirebaseAPI.auth;
     container.set(TOKENS.AuthRepository, new FirebaseAuthRepository());
     container.set(
       TOKENS.TransactionRepository,

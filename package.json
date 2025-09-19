@@ -4,7 +4,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "EXPO_PUBLIC_USE_MOCK=true npx expo start --clear",
+    "start": "EXPO_PUBLIC_USE_MOCK=false npx expo start --clear",
     "start:firebase": "EXPO_PUBLIC_USE_MOCK=false npx expo start --clear",
     "start:mocks": "EXPO_PUBLIC_USE_MOCK=true npx expo start",
     "prebuild": "npx expo prebuild",

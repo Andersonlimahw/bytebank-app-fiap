@@ -19,7 +19,7 @@ const getEnv = (key: string, fallback?: string): string | undefined => {
 // - Otherwise, enable real mode when required Firebase envs are present; fallback to mock.
 function detectUseMock(): boolean {
   const raw = getEnv("USE_MOCK");
-  if (raw !== undefined) {
+  if (raw !== undefined && raw === "true") {
     return raw.toString() === "true";
   }
   const hasFirebaseBasics = !!(
