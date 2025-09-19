@@ -1,10 +1,20 @@
 import type { AuthRepository } from '../../domain/repositories/AuthRepository';
 import type { User } from '../../domain/entities/User';
 import type { AuthProvider } from '../../domain/entities/AuthProvider';
-import { FirebaseAPI } from '../../infrastructure/firebase/firebase';
 import { Platform } from 'react-native';
-import { signInWithGoogleNative, signInWithAppleNative } from '../../infrastructure/auth/expoAuth';
-import type { User as FirebaseUser } from 'firebase/auth';
+import {
+  currentUser,
+  observeAuthState,
+  signInWithGoogle,
+  signOut as signOutFirebase,
+  getAuthInstance,
+} from '../../infrastructure/auth/expoFirebaseAuth';
+import {
+  signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
+  createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword,
+  signInAnonymously as firebaseSignInAnonymously,
+  type User as FirebaseUser,
+} from 'firebase/auth';
 
 function mapUser(u: FirebaseUser): User {
   return {
@@ -17,56 +27,59 @@ function mapUser(u: FirebaseUser): User {
 
 export class FirebaseAuthRepository implements AuthRepository {
   async getCurrentUser(): Promise<User | null> {
-    const auth = FirebaseAPI.auth;
-    const u = auth.currentUser;
+    const u = currentUser();
     return u ? mapUser(u) : null;
   }
 
   onAuthStateChanged(cb: (user: User | null) => void): () => void {
-    const auth = FirebaseAPI.auth;
-    return FirebaseAPI.fbOnAuthStateChanged(auth, (u: FirebaseUser | null) => cb(u ? mapUser(u) : null));
+    return observeAuthState((u: FirebaseUser | null) =>
+      cb(u ? mapUser(u) : null)
+    );
   }
 
   async signIn(provider: AuthProvider, options?: { email?: string; password?: string }): Promise<User> {
-    const auth = FirebaseAPI.auth;
     if (provider === 'password') {
       if (!options?.email || !options?.password) {
         throw new Error('Email and password are required');
       }
-      const res = await FirebaseAPI.signInWithEmailAndPassword(auth as any, options.email, options.password);
+      const auth = getAuthInstance();
+      const res = await firebaseSignInWithEmailAndPassword(
+        auth,
+        options.email,
+        options.password
+      );
       return mapUser(res.user);
     }
     if (provider === 'anonymous') {
-      const res = await FirebaseAPI.signInAnonymously(auth);
+      const auth = getAuthInstance();
+      const res = await firebaseSignInAnonymously(auth);
       if (!res.user) throw new Error('Anonymous sign-in failed');
       return mapUser(res.user);
     }
-    // Native apps: handle Google/Apple using Expo Auth Session
-    if (Platform.OS !== 'web') {
-      if (provider === 'google') {
-        const u = await signInWithGoogleNative();
-        return mapUser(u as any);
-      }
-      if (provider === 'apple') {
-        const u = await signInWithAppleNative();
-        return mapUser(u as any);
-      }
+    if (provider === 'google') {
+      const u = await signInWithGoogle();
+      return mapUser(u as FirebaseUser);
     }
-    // Web fallback using popup providers
-    const provFactory = (FirebaseAPI.Providers as any)[provider];
-    if (!provFactory) throw new Error(`Provider ${provider} not supported`);
-    const prov = provFactory();
-    const res = await FirebaseAPI.signInWithPopup(auth as any, prov as any);
-    return mapUser(res.user);
+    if (provider === 'apple') {
+      if (Platform.OS !== 'ios') {
+        throw new Error('Apple Sign-In disponível apenas no iOS');
+      }
+      throw new Error('Apple Sign-In não foi configurado nesta build.');
+    }
+    throw new Error(`Provider ${provider} not supported`);
   }
 
   async signOut(): Promise<void> {
-    await FirebaseAPI.fbSignOut(FirebaseAPI.auth);
+    await signOutFirebase();
   }
 
   async signUp(options: { email: string; password: string }): Promise<User> {
-    const auth = FirebaseAPI.auth;
-    const res = await FirebaseAPI.createUserWithEmailAndPassword(auth as any, options.email, options.password);
+    const auth = getAuthInstance();
+    const res = await firebaseCreateUserWithEmailAndPassword(
+      auth,
+      options.email,
+      options.password
+    );
     return mapUser(res.user);
   }
 }

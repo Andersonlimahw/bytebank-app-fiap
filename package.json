@@ -57,6 +57,7 @@
   "devDependencies": {
     "@types/react": "~19.1.10",
     "babel-preset-expo": "~54.0.0",
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+    "@react-native-community/cli": "latest"
   }
 }

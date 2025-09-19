@@ -44,7 +44,10 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
           setError(null);
           try {
             setProviderLoading(true);
-            await signIn("google");
+            await signIn("google").then(() => {
+              console.log("Sign-in successful");
+              (navigation as any)?.navigate?.("Home");
+            });
           } catch (e: any) {
             // Provide more specific error messages for Google authentication
             let errorMessage = t("auth.googleLoginFailed");
@@ -100,7 +103,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
       />
       )} */}
       <View style={styles.spacerSm} />
-      {/* <Button
+      <Button
         title={t("auth.anonymous")}
         loading={providerLoading}
         disabled={providerLoading || emailLoading}
@@ -115,7 +118,7 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
             setProviderLoading(false);
           }
         }}
-      /> */}
+      />
 
       <View style={styles.spacerLg} />
       <Text style={styles.altTitle}>{t("auth.orUseEmail")}</Text>
@@ -153,6 +156,9 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
             await signIn("password", {
               email: trimmedEmail,
               password: trimmedPassword,
+            }).then(() => {
+              console.log("Sign-in successful");
+              (navigation as any)?.navigate?.("Home");
             });
           } catch (e: any) {
             setError(e?.message ?? t("auth.googleLoginFailed"));

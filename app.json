@@ -19,7 +19,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.andersonlimahw.bytebank-app",
+      "bundleIdentifier": "com.bytebank.app",
       "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {

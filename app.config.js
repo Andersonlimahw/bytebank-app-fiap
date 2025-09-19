@@ -21,6 +21,7 @@ module.exports = ({ config }) => {
 
   return {
     ...config,
+    scheme: "bytebank",
     expo: {
       ...config.expo,
       extra: {
