@@ -44,6 +44,7 @@
       "eas": {
         "projectId": "00000000-0000-0000-0000-000000000000"
       },
+      "useMock": false,
       "version": "1.0.1",
       "firebase": {
         "apiKey": "AIzaSyDz5LzOWv0F4VD23s9J5z_UUxWqMwkUrf8",

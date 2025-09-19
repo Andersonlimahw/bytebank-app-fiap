@@ -24,8 +24,7 @@ function detectUseMock(): boolean {
   }
   const hasFirebaseBasics = !!(
     getEnv("FIREBASE_API_KEY") &&
-    getEnv("FIREBASE_PROJECT_ID") &&
-    getEnv("FIREBASE_APP_ID")
+    getEnv("FIREBASE_PROJECT_ID")
   );
   return !hasFirebaseBasics;
 }

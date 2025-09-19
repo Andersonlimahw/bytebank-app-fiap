@@ -16,9 +16,32 @@ import { useTheme } from "../../theme/theme";
 import { makeLoginStyles } from "./LoginScreen.styles";
 import { useI18n } from "../../i18n/I18nProvider";
 import { BrandLogo } from "../../components/BrandLogo";
+import { AuthScreenProps } from "../../navigation/types";
+import { CommonActions } from "@react-navigation/native";
+import { useEffect } from "react";
 
-export const LoginScreen: React.FC<any> = ({ navigation }) => {
-  const { signIn } = useAuth();
+export const LoginScreen: React.FC<AuthScreenProps<'Login'>> = ({ navigation }) => {
+  const { signIn, user } = useAuth();
+  
+  // Redireciona para a home quando o usuário estiver autenticado
+  useEffect(() => {
+    if (user) {
+      // Usando setTimeout para garantir que a navegação ocorra após a atualização do estado
+      const timer = setTimeout(() => {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ 
+              name: 'Home', // Nome da rota principal do AppTabs
+              params: { screen: 'Home' } // Navega para a tela Home dentro do AppTabs
+            }],
+          })
+        );
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [user, navigation]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -44,30 +67,37 @@ export const LoginScreen: React.FC<any> = ({ navigation }) => {
           setError(null);
           try {
             setProviderLoading(true);
-            await signIn("google").then(() => {
-              console.log("Sign-in successful");
-            });
-          } catch (e: any) {
-            // Provide more specific error messages for Google authentication
+            await signIn("google");
+            // O redirecionamento será tratado pelo useEffect quando o usuário for autenticado
+          } catch (error: any) {
+            console.error('Google Sign-In Error:', error);
+            
+            // Handle specific error cases
             let errorMessage = t("auth.googleLoginFailed");
-            if (e?.message?.includes("Client ID não configurado")) {
-              errorMessage = t("auth.notConfiguredFirebase");
-            } else if (e?.message?.includes("cancelado")) {
+            
+            if (error?.code === 'SIGN_IN_CANCELLED') {
               errorMessage = t("auth.loginCancelled");
-            } else if (
-              e?.message?.toLowerCase?.().includes("network") ||
-              e?.message?.includes("Failed to fetch")
-            ) {
-              errorMessage = t("common.networkError");
-            } else if (e?.message?.includes("hasPlayServices")) {
+            } else if (error?.code === 'IN_PROGRESS') {
+              // Another sign-in is in progress, handle if needed
+              console.log('Sign in already in progress');
+              return;
+            } else if (error?.code === 'PLAY_SERVICES_NOT_AVAILABLE') {
               errorMessage = t("auth.playServicesMissing");
-            } else if (e?.message?.includes("Token inválido")) {
-              errorMessage = t("auth.invalidToken");
-            } else if (e?.message?.includes?.("Firebase config is missing")) {
-              errorMessage = t("auth.firebaseNotConfigured");
-            } else if (e?.message) {
-              errorMessage = e.message;
+            } else if (error?.code === 'SIGN_IN_REQUIRED') {
+              errorMessage = t("auth.signInRequired");
+            } else if (error?.message) {
+              // Handle other Firebase/Google Sign-In specific errors
+              if (error.message.includes('network error')) {
+                errorMessage = t("common.networkError");
+              } else if (error.message.includes('invalid token')) {
+                errorMessage = t("auth.invalidToken");
+              } else if (error.message.includes('Firebase config is missing')) {
+                errorMessage = t("auth.firebaseNotConfigured");
+              } else if (error.message.includes('Client ID não configurado')) {
+                errorMessage = t("auth.notConfiguredFirebase");
+              }
             }
+            
             setError(errorMessage);
           } finally {
             setProviderLoading(false);
