@@ -1,13 +1,22 @@
-import React, { useMemo, useRef, useState, useEffect } from 'react';
-import { View, Text, ScrollView, Dimensions, Image, NativeSyntheticEvent, NativeScrollEvent, Animated } from 'react-native';
-import { Button } from '../../components/Button';
-import { useFadeSlideInOnFocus } from '../../hooks/animations';
-import { goToLogin } from '../../navigation/navigationUtils';
-import { useTheme } from '../../theme/theme';
-import { makeOnboardingStyles } from './OnboardingScreen.styles';
-import { useI18n } from '../../i18n/I18nProvider';
+import React, { useMemo, useRef, useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  Dimensions,
+  Image,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+  Animated,
+} from "react-native";
+import { Button } from "../../components/Button";
+import { useFadeSlideInOnFocus } from "../../hooks/animations";
+import { goToLogin } from "../../navigation/navigationUtils";
+import { useTheme } from "../../theme/theme";
+import { makeOnboardingStyles } from "./OnboardingScreen.styles";
+import { useI18n } from "../../i18n/I18nProvider";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 type Slide = {
   key: string;
@@ -23,22 +32,22 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
   const slides: Slide[] = useMemo(
     () => [
       {
-        key: 'secure-banking',
-        title: t('onboarding.slides.secureBanking.title'),
-        subtitle: t('onboarding.slides.secureBanking.subtitle'),
-        image: require('../../../../contents/figma/home/Banner1-7.png'),
+        key: "secure-banking",
+        title: t("onboarding.slides.secureBanking.title"),
+        subtitle: t("onboarding.slides.secureBanking.subtitle"),
+        image: require("../../../../public/assets/images/banners/home.png"),
       },
       {
-        key: 'insights',
-        title: t('onboarding.slides.insights.title'),
-        subtitle: t('onboarding.slides.insights.subtitle'),
-        image: require('../../../../public/assets/images/icons/Gráfico pizza.png'),
+        key: "insights",
+        title: t("onboarding.slides.insights.title"),
+        subtitle: t("onboarding.slides.insights.subtitle"),
+        image: require("../../../../public/assets/images/icons/Gráfico pizza.png"),
       },
       {
-        key: 'login',
-        title: t('onboarding.slides.login.title'),
-        subtitle: t('onboarding.slides.login.subtitle'),
-        image: require('../../../../contents/figma/login/Ilustração-1.png'),
+        key: "login",
+        title: t("onboarding.slides.login.title"),
+        subtitle: t("onboarding.slides.login.subtitle"),
+        image: require("../../../../public/assets/images/banners/login.png"),
       },
     ],
     [t]
@@ -103,7 +112,16 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
               style={[
                 styles.dot,
                 i === index ? styles.dotActive : null,
-                { transform: [{ scale: dotScales[i].interpolate({ inputRange: [0, 1], outputRange: [1, 1.25] }) }] },
+                {
+                  transform: [
+                    {
+                      scale: dotScales[i].interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [1, 1.25],
+                      }),
+                    },
+                  ],
+                },
               ]}
             />
           ))}
@@ -111,12 +129,12 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
         <View style={styles.actions}>
           {index < slides.length - 1 ? (
             <>
-              <Button title={t('onboarding.skip')} onPress={finish} />
+              <Button title={t("onboarding.skip")} onPress={finish} />
               <View style={styles.spacer} />
-              <Button title={t('onboarding.next')} onPress={goNext} />
+              <Button title={t("onboarding.next")} onPress={goNext} />
             </>
           ) : (
-            <Button title={t('onboarding.getStarted')} onPress={finish} />
+            <Button title={t("onboarding.getStarted")} onPress={finish} />
           )}
         </View>
       </View>

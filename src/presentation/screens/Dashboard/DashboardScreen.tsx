@@ -25,6 +25,7 @@ import { CardVisual } from "../../components/DigitalCard";
 import HorizontalBarChart, {
   type ChartDatum,
 } from "../../components/charts/HorizontalBarChart";
+import { EmptyStateBanner } from "@app/presentation/components/EmptyStateBanner";
 
 export const DashboardScreen: React.FC<any> = ({ navigation }) => {
   const {
@@ -167,12 +168,7 @@ export const DashboardScreen: React.FC<any> = ({ navigation }) => {
               </TouchableOpacity>
             ))
           ) : (
-            <Image
-              source={require("../../../../contents/figma/dashboard/cards/Cartão Byte digital.png")}
-              style={styles.cardImage}
-              accessibilityRole="image"
-              accessibilityLabel={t("dashboard.myCards")}
-            />
+            <EmptyStateBanner title={"Nenhum cartão adicionado"} />
           )}
         </ScrollView>
 
