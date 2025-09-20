@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "ByteBank",
+    "name": "$EXPO_PUBLIC_APP_NAME",
     "slug": "bytebank-app",
     "scheme": "bytebank",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./contents/figma/icons/Logo.png",
     "splash": {
@@ -19,33 +19,40 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.andersonlimahw.bytebank-app",
+      "bundleIdentifier": "com.bytebank.ios",
       "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
-      "package": "com.andersonlimahw.bytebankapp",
-      "googleServicesFile": "./google-services.json"
+      "package": "com.bytebankapp.android"
     },
     "web": {
       "bundler": "metro",
       "favicon": "./contents/figma/icons/Favicon 64px.png"
     },
     "plugins": [
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.102802199932-3c8av88ho09numo7u87evflujm83v3sn",
+          "androidUrlScheme": "com.googleusercontent.apps.102802199932-lnv0non6dphbc4i6r8rrd4motkct34gq.apps.googleusercontent.com"
+        }
+      ]
     ],
     "extra": {
       "eas": {
-        "projectId": "00000000-0000-0000-0000-000000000000"
+        "projectId": "$EXPO_PUBLIC_PROJECT_ID"
       },
-      "version": "1.0.0",
+      "useMock": "$EXPO_PUBLIC_USE_MOCK",
+      "version": "$EXPO_PUBLIC_APP_VERSION",
       "firebase": {
-        "apiKey": "AIzaSyDz5LzOWv0F4VD23s9J5z_UUxWqMwkUrf8",
-        "authDomain": "projeto-bytebank.firebaseapp.com",
-        "projectId": "projeto-bytebank",
-        "appId": "1:102802199932:web:28f905156987a9166880f9",
-        "storageBucket": "projeto-bytebank.firebasestorage.app",
-        "messagingSenderId": "102802199932",
-        "databaseURL": "https://projeto-bytebank-default-rtdb.firebaseio.com"
+        "apiKey": "$EXPO_PUBLIC_FIREBASE_API_KEY",
+        "authDomain": "$EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN",
+        "projectId": "$EXPO_PUBLIC_FIREBASE_PROJECT_ID",
+        "appId": "$EXPO_PUBLIC_FIREBASE_APP_ID",
+        "storageBucket": "$EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET",
+        "messagingSenderId": "$EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
+        "databaseURL": "$EXPO_PUBLIC_FIREBASE_DATABASE_URL"
       }
     }
   }

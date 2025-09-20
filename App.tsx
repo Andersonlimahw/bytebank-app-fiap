@@ -8,7 +8,14 @@ import { Platform, UIManager, StatusBar } from "react-native";
 import { I18nProvider } from "./src/presentation/i18n/I18nProvider";
 import { getNavigationTheme, useTheme } from "./src/presentation/theme/theme";
 import Constants from "expo-constants";
-console.log("Current app version: ", Constants.expoConfig?.extra?.version);
+import AppConfig from "./src/config/appConfig";
+
+console.log(
+  "Current app version: ",
+  Constants.expoConfig?.extra?.version || Constants.expoConfig?.version,
+  "Using mocks? ",
+  Constants.expoConfig?.extra?.useMock || AppConfig.useMock,
+);
 console.log("Current platform: ", Platform.OS);
 
 // Improves navigation performance and avoids potential blank screens on some setups

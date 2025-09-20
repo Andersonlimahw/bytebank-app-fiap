@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { devtools, persist, createJSONStorage } from 'zustand/middleware';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppConfig } from '../config/appConfig';
+import AppConfig from '../config/appConfig';
 
 export type ThemeMode = 'light' | 'dark';
 export type BrandId = 'bytebank' | 'heliobank';

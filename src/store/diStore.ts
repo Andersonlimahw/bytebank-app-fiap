@@ -1,12 +1,13 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { AppConfig } from "../config/appConfig";
+import AppConfig from "../config/appConfig";
 import { FirebaseAPI } from "../infrastructure/firebase/firebase";
 import { Container, TOKENS, createDI, type DI } from "../core/di/container";
 import { MockAuthRepository } from "../data/mock/MockAuthRepository";
 import { MockTransactionRepository } from "../data/mock/MockTransactionRepository";
 import { MockInvestmentRepository } from "../data/mock/MockInvestmentRepository";
 import { FirebaseAuthRepository } from "../data/firebase/FirebaseAuthRepository";
+import { GoogleAuthRepository } from "../data/google/GoogleAuthRepository";
 import { FirebaseTransactionRepository } from "../data/firebase/FirebaseTransactionRepository";
 import { FirebaseInvestmentRepository } from "../data/firebase/FirebaseInvestmentRepository";
 import { FirebasePixRepository } from "../data/firebase/FirebasePixRepository";
@@ -36,7 +37,8 @@ function buildContainer(): Container {
   // In real mode, try to init Firebase; if it fails, gracefully fallback to mocks
   try {
     FirebaseAPI.ensureFirebase();
-    container.set(TOKENS.AuthRepository, new FirebaseAuthRepository());
+    // Autenticação via GoogleSignin (sem firebase/auth)
+    container.set(TOKENS.AuthRepository, new GoogleAuthRepository());
     container.set(
       TOKENS.TransactionRepository,
       new FirebaseTransactionRepository()

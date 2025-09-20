@@ -80,3 +80,8 @@ ios/*.xcodeproj/project.xcsettings
 
 .env.prod
 .env.local
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
