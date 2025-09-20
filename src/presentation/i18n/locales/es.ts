@@ -20,6 +20,7 @@ export const es = {
     confirm: "Confirmar",
     close: "Cerrar",
     select: "Seleccionar",
+    appName: "ByteBank",
   },
   auth: {
     welcome: "Bienvenido a ByteBank",
@@ -70,7 +71,7 @@ export const es = {
     back: "Volver",
     confirm: "Confirmar",
     close: "Cerrar",
-    select: "Seleccionar"
+    select: "Seleccionar",
   },
   user: {
     myAccount: "Mi Cuenta",

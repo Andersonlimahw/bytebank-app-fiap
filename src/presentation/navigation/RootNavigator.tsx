@@ -114,6 +114,7 @@ export function RootNavigator() {
   if (!user) {
     return (
       <AuthStack.Navigator
+        key={"auth"}
         initialRouteName="Onboarding"
         screenOptions={{
           headerShown: false,
@@ -153,6 +154,8 @@ export function RootNavigator() {
 
   return (
     <AppStack.Navigator
+      key={"app"}
+      initialRouteName="App"
       screenOptions={{
         headerStyle: { backgroundColor: theme.colors.surface },
         headerTintColor: theme.colors.text,
@@ -160,9 +163,9 @@ export function RootNavigator() {
       }}
     >
       <AppStack.Screen
-        name={"Back"}
+        name="App"
         component={AppTabs}
-        options={{ title: t("common.back") }}
+        options={{ title: t("common.appName"), headerShown: false }}
       />
       <AppStack.Screen
         name="User"

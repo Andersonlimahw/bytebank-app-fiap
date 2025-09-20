@@ -1,15 +1,9 @@
-import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
-import {
-  getAuth,
-  initializeAuth,
-  type Auth,
-} from 'firebase/auth';
+import { Platform } from "react-native";
+import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 // import { getReactNativePersistence } from 'firebase/auth/react-native';
 
-import { getFirestore, type Firestore } from 'firebase/firestore';
-import AppConfig from '../../config/appConfig';
+import { getFirestore, type Firestore } from "firebase/firestore";
+import AppConfig from "../../config/appConfig";
 
 type FirebaseEnvConfig = {
   apiKey: string;
@@ -22,39 +16,33 @@ type FirebaseEnvConfig = {
 const firebaseOptions: FirebaseEnvConfig = AppConfig.firebase;
 
 function assertFirebaseConfig() {
-  const requiredKeys: Array<keyof FirebaseEnvConfig> = ['apiKey', 'projectId', 'appId'];
+  const requiredKeys: Array<keyof FirebaseEnvConfig> = [
+    "apiKey",
+    "projectId",
+    "appId",
+  ];
   for (const key of requiredKeys) {
     if (!firebaseOptions[key]) {
-      throw new Error(`Firebase config missing ${key}. Check your EXPO_PUBLIC_FIREBASE_* envs.`);
+      throw new Error(
+        `Firebase config missing ${key}. Check your EXPO_PUBLIC_FIREBASE_* envs.`
+      );
     }
   }
 }
 
 let appInstance: FirebaseApp | null = null;
-let authInstance: Auth | null = null;
 let firestoreInstance: Firestore | null = null;
 
 function ensureApp(): FirebaseApp {
   if (AppConfig.useMock) {
-    throw new Error('Firebase disabled because AppConfig.useMock=true.');
+    console.log("Firebase disabled because AppConfig.useMock=true.");
+    return null as any;
   }
   assertFirebaseConfig();
-  if (!appInstance) {    
+  if (!appInstance) {
     appInstance = getApps()[0] ?? initializeApp(firebaseOptions as any);
   }
   return appInstance;
-}
-
-function ensureAuth(): Auth {
-  if (!authInstance) {
-    const app = ensureApp();
-    if (Platform.OS === 'web') {
-      authInstance = getAuth(app);
-    } else {
-      authInstance = initializeAuth(app);
-    }
-  }
-  return authInstance;
 }
 
 function ensureFirestore(): Firestore {
@@ -67,22 +55,26 @@ function ensureFirestore(): Firestore {
 
 export function initFirebase() {
   if (AppConfig.useMock) {
-    throw new Error('Cannot initialize Firebase while running with mocks.');
+    console.log("Cannot initialize Firebase while running with mocks.");
+    return null as any;
   }
   const app = ensureApp();
-  const auth = ensureAuth();
   const db = ensureFirestore();
-  return { app, auth, db };
+  return { app, db };
 }
 
 export function getFirebaseApp(): FirebaseApp {
   return ensureApp();
 }
 
-export function getFirebaseAuth(): Auth {
-  return ensureAuth();
-}
-
 export function getFirestoreDb(): Firestore {
   return ensureFirestore();
+}
+
+// Provided only for legacy imports; this project does not require firebase/auth
+// at runtime for Google Sign-In. Calling this will throw to make it explicit.
+export function getFirebaseAuth(): any {
+  // Auth via firebase/auth não é utilizado nesta build.
+  // Mantemos a função para compatibilidade com imports legados.
+  return null as any;
 }

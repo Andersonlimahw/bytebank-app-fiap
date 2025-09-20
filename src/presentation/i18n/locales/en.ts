@@ -20,6 +20,7 @@ export const en = {
     confirm: "Confirm",
     close: "Close",
     select: "Select",
+    appName: "ByteBank",
   },
   auth: {
     welcome: "Welcome to ByteBank",

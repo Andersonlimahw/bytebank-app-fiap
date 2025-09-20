@@ -20,6 +20,7 @@ export const pt = {
     close: "Fechar",
     select: "Selecionar",
     selectBrand: "Selecionar marca",
+    appName: "ByteBank",
   },
   auth: {
     welcome: "Bem-vindo ao ByteBank",
@@ -70,7 +71,7 @@ export const pt = {
     back: "Voltar",
     confirm: "Confirmar",
     close: "Fechar",
-    select: "Selecionar"
+    select: "Selecionar",
   },
   user: {
     myAccount: "Minha Conta",
